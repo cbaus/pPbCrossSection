@@ -1,69 +1,39 @@
-#define MAXEVT -50000
+#define MAXEVT 50000
 
 #include "TTree.h"
+#include "TMath.h"
 #include "TROOT.h"
 #include "TFile.h"
 #include "TH2D.h"
-#include "iostream"
+#include <iostream>
+#include <vector>
+#include <string>
 
 #include "style.h"
 
+enum e_type
+{
+  MC = 0,
+  DATA
+};
+
+vector<string> sample_fname;
+vector<string> sample_name;
+vector<e_type> sample_type;
 using namespace std;
 
 void csana()
 {
-  gROOT->ProcessLine(" .L style.cc++");
+  gROOT->ProcessLine(" .L style.cc+");
   //**********************************************INPUT******************************
-  TFile* data_file = NULL; //****FILE
-  data_file = TFile::Open("root://eoscms//eos/cms/store/group/phys_heavyions/velicanu/forest/PA2013_HiForest_Express_r210658_autoforest_v51.root");
-  if (!data_file) cerr << "Cannot find data file" << endl;
-
-  TTree* data_tree = NULL; //****TREE0
-  ((TDirectory*)data_file->Get("rechitanalyzer"))->GetObject("castor",data_tree);
-  if (!data_tree) cerr << "Cannot find data tree" << endl;
-
-  TTree* data_friend_tree0 = NULL; //****TREE1
-  ((TDirectory*)data_file->Get("pfTowers"))->GetObject("hf",data_friend_tree0);
-  if (!data_friend_tree0) cerr << "Cannot find data friend tree" << endl;
-  data_tree->AddFriend(data_friend_tree0);
-
-  TTree* data_friend_tree1 = NULL; //****TREE2
-  ((TDirectory*)data_file->Get("hltanalysis"))->GetObject("HltTree",data_friend_tree1);
-  if (!data_friend_tree1) cerr << "Cannot find data friend tree" << endl;
-  data_tree->AddFriend(data_friend_tree1);
-
-  TTree* data_friend_tree2 = NULL; //****TREE3
-  ((TDirectory*)data_file->Get("pixelTrack"))->GetObject("trackTree",data_friend_tree2);
-  if (!data_friend_tree2) cerr << "Cannot find data friend tree" << endl;
-  data_tree->AddFriend(data_friend_tree2);
-
-
-
-  TFile* mc_file = NULL; //****FILE
-  mc_file = TFile::Open("root://eoscms//eos/cms//store/caf/user/dgulhan/pPb_Hijing_MB/HiForest_v03_mergedv02/merged_forest_0.root");
-  if (!mc_file) cerr << "Cannot find mc file" << endl;
-
-  TTree* mc_tree = NULL; //****TREE0
-  ((TDirectory*)mc_file->Get("rechitanalyzer"))->GetObject("castor",mc_tree);
-  if (!mc_tree) cerr << "Cannot find mc tree" << endl;
-
-  TTree* mc_friend_tree0 = NULL; //****TREE1
-  ((TDirectory*)mc_file->Get("pfTowers"))->GetObject("hf",mc_friend_tree0);
-  if (!mc_friend_tree0) cerr << "Cannot find mc friend tree" << endl;
-  mc_tree->AddFriend(mc_friend_tree0);
-
-  TTree* mc_friend_tree1 = NULL; //****TREE2
-  ((TDirectory*)mc_file->Get("hltanalysis"))->GetObject("HltTree",mc_friend_tree1);
-  if (!mc_friend_tree1) cerr << "Cannot find mc friend tree" << endl;
-  mc_tree->AddFriend(mc_friend_tree1);
-
-  TTree* mc_friend_tree2 = NULL; //****TREE3
-  ((TDirectory*)mc_file->Get("pixelTrack"))->GetObject("trackTree",mc_friend_tree2);
-  if (!mc_friend_tree2) cerr << "Cannot find mc friend tree" << endl;
-  mc_tree->AddFriend(mc_friend_tree2);
+  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/velicanu/forest/PA2013_HiForest_Express_r210658_au\
+toforest_v51.root"); sample_name.push_back("data"); sample_type.push_back(DATA);
+  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/azsigmon/HiForest_pPb_Epos_336800.root"); sample_name.push_back("Epos"); sample_type.push_back(MC); 
+  sample_fname.push_back("root://eoscms//eos/cms//store/caf/user/dgulhan/pPb_Hijing_MB/HiForest_v03_mergedv02/merged_forest_0.root"); sample_name.push_back("HIJING"); sample_type.push_back(MC); 
+  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/pPb_5020_QGSJetII_5_3_8_HI_patch2/forest.root"); sample_name.push_back("QGSJetII"); sample_type.push_back(MC); 
 
   const int n_cas_rechits = 224;
-  const int n_hf_rechits = 1800;
+  const int n_hf_rechits = 1728;
   
   int hf_n;
   float hf_e[n_hf_rechits];
@@ -77,6 +47,8 @@ void csana()
   int nTrk;
 
   int zero_bias;
+  int random;
+  int bptx_p_m;
   int bptx_p_nm;
   int bptx_np_m;
 
@@ -88,22 +60,60 @@ void csana()
   TH1D* h_zero_count_zb_no_coll;
   TH1D* h_hf_towers_zb_coll;
   TH1D* h_hf_towers_zb_no_coll;
+  TH1D* h_castor_hf_diff_3;
+  TH1D* h_castor_hf_diff_5;
+  TH1D* h_castor_hf_diff_10;
   TH1D* h_eff;
 
 
 
   //**********************************LOOP*******************
 
-  for (int type=0; type<2; type++)
+  for (int sample=0; sample<int(sample_name.size()); sample++)
     {
-      TTree* tree = NULL;
+      TFile* file = NULL; //****FILE
+      file = TFile::Open(sample_fname[sample].c_str());
+      if (!file) cerr << "Cannot find file" << endl;
+      
+      TTree* tree = NULL; //****TREE0
+      ((TDirectory*)file->Get("rechitanalyzer"))->GetObject("castor",tree);
+      if (!tree) cerr << "Cannot find tree" << endl;
+      
+      TTree* friend_tree0 = NULL; //****TREE1
+      ((TDirectory*)file->Get("pfTowers"))->GetObject("hf",friend_tree0);
+      if (!friend_tree0) cerr << "Cannot find friend tree" << endl;
+      tree->AddFriend(friend_tree0);
+      
+      TTree* friend_tree1 = NULL; //****TREE2
+      ((TDirectory*)file->Get("hltanalysis"))->GetObject("HltTree",friend_tree1);
+      if (!friend_tree1) cerr << "Cannot find friend tree" << endl;
+      tree->AddFriend(friend_tree1);
+      
+      TTree* friend_tree2 = NULL; //****TREE3
+      ((TDirectory*)file->Get("pixelTrack"))->GetObject("trackTree",friend_tree2);
+      if (!friend_tree2) cerr << "Cannot find friend tree" << endl;
+      tree->AddFriend(friend_tree2);
+      
+      tree->SetBranchStatus("*",0);
 
-      switch (type)
-        {
-        case 0:tree = mc_tree; break;
-        case 1:tree = data_tree; break;
-        default: cerr << "switch op wrong" << endl; break;
-        }
+      tree->SetBranchStatus("hf.n",1);
+      tree->SetBranchStatus("hf.e",1);
+      tree->SetBranchStatus("hf.depth",1);
+
+      tree->SetBranchStatus("e",1);
+      tree->SetBranchStatus("saturation",1);
+      tree->SetBranchStatus("depth",1);
+      tree->SetBranchStatus("iphi",1);
+
+
+      tree->SetBranchStatus("nTrk",1);
+
+      tree->SetBranchStatus("HLT_PAZeroBias_v1",1);
+      tree->SetBranchStatus("HLT_PARandom_v1",1);
+      tree->SetBranchStatus("L1Tech_BPTX_plus_AND_minus.v0",1);
+      tree->SetBranchStatus("L1Tech_BPTX_plus_AND_NOT_minus.v0",1);
+      tree->SetBranchStatus("L1Tech_BPTX_minus_AND_not_plus.v0",1);
+      //________________________________
 
       tree->SetBranchAddress("hf.n",&hf_n);
       tree->SetBranchAddress("hf.e",hf_e);
@@ -118,62 +128,63 @@ void csana()
       tree->SetBranchAddress("nTrk",&nTrk);
 
       tree->SetBranchAddress("HLT_PAZeroBias_v1",&zero_bias);
-      tree->SetBranchAddress("HLT_PABptxPlusNotBptxMinus_v1",&bptx_p_nm);
-      tree->SetBranchAddress("HLT_PABptxMinusNotBptxPlus_v1",&bptx_np_m);
+      tree->SetBranchAddress("HLT_PARandom_v1",&random);
+      tree->SetBranchAddress("L1Tech_BPTX_plus_AND_minus.v0",&bptx_p_m);
+      tree->SetBranchAddress("L1Tech_BPTX_plus_AND_NOT_minus.v0",&bptx_p_nm);
+      tree->SetBranchAddress("L1Tech_BPTX_minus_AND_not_plus.v0",&bptx_np_m);
 
-      switch(type)
-        {
-        case 0:
-          out_file->mkdir("mc");
-          out_file->cd("mc");
-          h_zero_count_zb_coll               = new TH1D("mc_h_zero_count_zb_coll","",100,0,1000);
-          h_zero_count_zb_no_coll            = new TH1D("mc_h_zero_count_zb_no_coll","",100,0,1000);
-          h_hf_towers_zb_coll                = new TH1D("mc_h_hf_towers_zb_coll","",100,0,200);
-          h_hf_towers_zb_no_coll             = new TH1D("mc_h_hf_towers_zb_no_coll","",100,0,200);
-          h_eff                              = new TH1D("mc_h_eff","",9,-0.5,8.5);
-          break;
-        case 1:
-          out_file->mkdir("data");
-          out_file->cd("data");
-          h_zero_count_zb_coll               = new TH1D("data_h_zero_count_zb_coll","",100,0,1000);
-          h_zero_count_zb_no_coll            = new TH1D("data_h_zero_count_zb_no_coll","",100,0,1000);
-          h_hf_towers_zb_coll                = new TH1D("data_h_hf_towers_zb_coll","",100,0,200);
-          h_hf_towers_zb_no_coll             = new TH1D("data_h_hf_towers_zb_no_coll","",100,0,200);
-          h_eff                              = new TH1D("data_h_eff","",9,-0.5,8.5);
-          break;
-        default: cerr << "switch op wrong" << endl; break;
-        }
+      out_file->mkdir(sample_name[sample].c_str());
+      out_file->cd(sample_name[sample].c_str());
+      h_zero_count_zb_coll      = new TH1D((sample_name[sample] + string("_h_zero_count_zb_coll")).c_str(),"",100,728,1728);
+      h_zero_count_zb_no_coll   = new TH1D((sample_name[sample] + string("_h_zero_count_zb_no_coll")).c_str(),"",100,728,1728);
+      h_hf_towers_zb_coll       = new TH1D((sample_name[sample] + string("_h_hf_towers_zb_coll")).c_str(),"",100,0,200);
+      h_hf_towers_zb_no_coll    = new TH1D((sample_name[sample] + string("_h_hf_towers_zb_no_coll")).c_str(),"",100,0,200);
+      h_castor_hf_diff_3        = new TH1D((sample_name[sample] + string("_h_castor_hf_diff_3")).c_str(),"",100,0,10000);
+      h_castor_hf_diff_5        = new TH1D((sample_name[sample] + string("_h_castor_hf_diff_5")).c_str(),"",100,0,10000);
+      h_castor_hf_diff_10       = new TH1D((sample_name[sample] + string("_h_castor_hf_diff_10")).c_str(),"",100,0,10000);
+      h_eff                     = new TH1D((sample_name[sample] + string("_h_eff")).c_str(),"",9,-0.5,8.5);
       
       h_eff->GetXaxis()->SetBinLabel(1,"ZB");
-      h_eff->GetXaxis()->SetBinLabel(2,"No coll (BBTX)");
-      h_eff->GetXaxis()->SetBinLabel(3,"HF#pm zero count < 500");
-      h_eff->GetXaxis()->SetBinLabel(4,"HF energy cut >3GeV");
-      h_eff->GetXaxis()->SetBinLabel(5,"HF energy cut >4GeV");
-      h_eff->GetXaxis()->SetBinLabel(6,"HF energy cut >5GeV");
+      h_eff->GetXaxis()->SetBinLabel(2,"HF#pm zero count < 1700");
+      h_eff->GetXaxis()->SetBinLabel(3,"HF energy cut >3GeV");
+      h_eff->GetXaxis()->SetBinLabel(4,"HF energy cut >4GeV");
+      h_eff->GetXaxis()->SetBinLabel(5,"HF energy cut >5GeV");
+      h_eff->GetXaxis()->SetBinLabel(6,"No coll (BPTX)");
       h_eff->GetXaxis()->SetBinLabel(7,"Pixel tracks >0");
-      h_eff->GetXaxis()->SetBinLabel(8,"Pixel tracks >3");
-      h_eff->GetXaxis()->SetBinLabel(9,"Pixel tracks >7");
+      h_eff->GetXaxis()->SetBinLabel(8,"HF energy cut >3GeV (noise)");
+      h_eff->GetXaxis()->SetBinLabel(9,"HF energy cut >4GeV (noise)");
 
 
       for(int iEvent=0; iEvent<tree->GetEntries(); iEvent++)
         {
           if(iEvent==MAXEVT) break;
-          string s_type = type?string("DATA"):string("MC");
-          if(iEvent % 10000 == 0) cout << s_type.c_str() << " Entry: " << iEvent << " / " << tree->GetEntries() << endl;
+          if(iEvent % 10000 == 0) cout << sample << "/" << sample_name.size() << " " << sample_name[sample].c_str() << " Entry: " << iEvent << " / " << (MAXEVT>0?MAXEVT:tree->GetEntries()) << endl;
           tree->GetEntry(iEvent);
           
-          if(type == 1 && zero_bias == 0)
+          bool coll=0, noise=0, beam_gas=0;
+
+          coll          = zero_bias && bptx_p_m; //double beam
+          beam_gas      = (random || zero_bias) && (bptx_np_m || bptx_p_nm); // only single beam
+          noise         = (random || zero_bias) && !bptx_p_m && !bptx_np_m && !bptx_p_nm; //not both and not single beam
+
+          if(sample_type[sample] == MC)
+            {
+              beam_gas = 0;
+              noise = 0;
+              coll = 1;
+            }
+
+          if(!coll && !noise && !beam_gas) //not intersted
             continue;
           
+
           double sum_cas_e_em = 0;
-          double sum_cas_e_had = 0;
-          
-          bool no_coll = bptx_p_nm==1 || bptx_np_m==1;
+          double sum_cas_e_had = 0;          
           
           int hf_zero_count = n_hf_rechits - hf_n;
           
           for(int ch_cas=0; ch_cas<n_cas_rechits; ch_cas++) // no ZS
-            {break;
+            {//break;
               if(cas_depth[ch_cas] < 3)
                 sum_cas_e_em += cas_e[ch_cas];
               else
@@ -186,19 +197,24 @@ void csana()
                 hf_energy_max = hf_e[ch_hf];
             }
           //Filling HISTOS
-          if(1)                    h_zero_count_zb_coll->Fill(hf_zero_count);
-          if(no_coll)              h_zero_count_zb_no_coll->Fill(hf_zero_count);
-          if(1)                    h_hf_towers_zb_coll->Fill(hf_energy_max);
-          if(no_coll)              h_hf_towers_zb_no_coll->Fill(hf_energy_max);
-          if(zero_bias)            h_eff->Fill(0);
-          if(no_coll == 1)         h_eff->Fill(1);
-          if(hf_zero_count < 500)  h_eff->Fill(2);
-          if(hf_energy_max > 3)    h_eff->Fill(3);
-          if(hf_energy_max > 4)    h_eff->Fill(4);
-          if(hf_energy_max > 5)    h_eff->Fill(5);
-          if(nTrk > 0)             h_eff->Fill(6);
-          if(nTrk > 3)             h_eff->Fill(7);
-          if(nTrk > 7)             h_eff->Fill(8);
+          if(coll)                                    h_zero_count_zb_coll->Fill(hf_zero_count);
+          if(!coll)                                   h_zero_count_zb_no_coll->Fill(hf_zero_count);
+          if(coll)                                    h_hf_towers_zb_coll->Fill(hf_energy_max);
+          if(!coll)                                   h_hf_towers_zb_no_coll->Fill(hf_energy_max);
+
+          if(coll && hf_energy_max < 3)               h_castor_hf_diff_3->Fill(sum_cas_e_em);
+          if(coll && hf_energy_max < 5)               h_castor_hf_diff_5->Fill(sum_cas_e_em);
+          if(coll && hf_energy_max < 10)              h_castor_hf_diff_10->Fill(sum_cas_e_em);
+
+          if(coll)                                    h_eff->Fill(0);
+          if(coll && hf_zero_count < 1700)            h_eff->Fill(1);
+          if(coll && hf_energy_max > 3)               h_eff->Fill(2);
+          if(coll && hf_energy_max > 4)               h_eff->Fill(3);
+          if(coll && hf_energy_max > 5)               h_eff->Fill(4);
+          if(coll && nTrk > 0)                        h_eff->Fill(5);
+          if(!coll)                                   h_eff->Fill(6);
+          if(!coll && hf_energy_max > 3)              h_eff->Fill(7);
+          if(!coll && hf_energy_max > 4)              h_eff->Fill(8);
           
         }
       double lumi = 1854.344875;// nb^-1
