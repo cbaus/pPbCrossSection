@@ -1,72 +1,50 @@
-#define MAXEVT 50000
+#define MAXEVT 20000
 
-#include "TTree.h"
-#include "TMath.h"
-#include "TROOT.h"
+#include "TChain.h"
 #include "TFile.h"
 #include "TH1D.h"
 #include "TH2D.h"
+#include "TMath.h"
 #include "TProfile.h"
+#include "TROOT.h"
+#include "TTree.h"
+
 #include <iostream>
 #include <vector>
 #include <string>
 
+#include <CastorTreeVariables.h>
+#include <ParticleInfo.h>
+
 //#include "style.h"
 
 enum e_type
-{
-  MC = 0,
-  DATA
-};
+  {
+    MC = 0,
+    DATA
+  };
+
+using namespace std;
 
 vector<string> sample_fname;
 vector<string> sample_name;
 vector<e_type> sample_type;
-using namespace std;
 
-void csana()
+int main()
 {
   TH1::SetDefaultSumw2();
-  gROOT->ProcessLine(".L style.cc+");
   //style();
-  //**********************************************INPUT******************************
-  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/velicanu/forest/PA2013_HiForest_Express_r210614_autoforest_v51.root"); sample_name.push_back("data"); sample_type.push_back(DATA);
-  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/azsigmon/HiForest_pPb_Epos_336800.root"); sample_name.push_back("Epos"); sample_type.push_back(MC); 
-  sample_fname.push_back("root://eoscms//eos/cms//store/caf/user/dgulhan/pPb_Hijing_MB/HiForest_v03_mergedv02/merged_forest_0.root"); sample_name.push_back("HIJING"); sample_type.push_back(MC); 
-  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/pPb_5020_QGSJetII_5_3_8_HI_patch2/forest.root"); sample_name.push_back("QGSJetII"); sample_type.push_back(MC);
-  sample_fname.push_back("/afs/cern.ch/user/t/tuos/work/public/pPb/starlight/starlight_pythia_pPb.root"); sample_name.push_back("Starlight_Pythia");  sample_type.push_back(MC);
-  sample_fname.push_back("/afs/cern.ch/user/t/tuos/work/public/pPb/starlight/starlight_dpmjet_pPb.root"); sample_name.push_back("Starlight_DPMJet");  sample_type.push_back(MC);
 
-  const int n_cas_rechits = 224;
-  const int n_hf_rechits = 1728;
-  
-  int hf_n;
-  float hf_e[n_hf_rechits];
-  int hf_depth[n_hf_rechits];
-  float hf_eta[n_hf_rechits];
+  //*************************************************************INPUT***********************************************************
+  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Data/*_1*_*.root"); sample_name.push_back("data"); sample_type.push_back(DATA);
+  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Epos/*.root"); sample_name.push_back("Epos"); sample_type.push_back(MC);
+  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Hijing/*.root"); sample_name.push_back("Hijing"); sample_type.push_back(MC);
+  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/QGSJetII/reeMC.root"); sample_name.push_back("QGSJetII"); sample_type.push_back(MC);
+  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/StarlighDPMjet/treeMC.root"); sample_name.push_back("Starlight_DPMJet");  sample_type.push_back(MC);
 
-  float cas_e[n_cas_rechits];
-  int cas_sat[n_cas_rechits];
-  int cas_depth[n_cas_rechits];
-  int cas_iphi[n_cas_rechits];
+  //**************************************************************OUTPUT*********************************************************
 
-  float fsc_sum_minus;
-  float fsc_sum_plus;
-
-  int nTrk;
-
-  int zero_bias;
-  int min_bias;
-  int random;
-  int bptx_p_m;
-  int bptx_p_nm;
-  int bptx_np_m;
-
-  int lumi;
-
-  //*********************************OUTPUT************************************
-
-  TFile* out_file = new TFile("histos_EM.root","RECREATE");
+  TFile* out_file = new TFile("histos.root","RECREATE");
 
   TH1D* h_zero_count_zb_coll;
   TH1D* h_zero_count_zb_no_coll;
@@ -108,100 +86,65 @@ void csana()
   TH1D* h_perf_hf_totE_eta_single_3gev;
   TH1D* h_perf_hf_totE_eta_double_1dot5gev;
 
-  //**********************************LOOP*************************************
+  //****************************************************************LOOP*******************************************************************
 
   for (int sample=0; sample<int(sample_name.size()); sample++)
     {
-      TFile* file = NULL; //****FILE
-      file = TFile::Open(sample_fname[sample].c_str());
-      if (!file || !file->IsOpen() || file->IsZombie()) cerr << "Cannot find file" << endl;
-      else cout << "file opened" << endl;
 
-      TFile* file2 = NULL; //****FILE
-      file2 = TFile::Open("./fsctree_614.root");
-      if (!file2 || !file2->IsOpen() || file2->IsZombie()) cerr << "Cannot find file" << endl;
-      else cout << "file2 opened" << endl;
-      
-      TTree* tree = NULL; //****TREE0
-      ((TDirectory*)file->Get("rechitanalyzer"))->GetObject("castor",tree);
-      if (!tree) cerr << "Cannot find tree" << endl;
-      
-      TTree* friend_tree0 = NULL; //****TREE1
-      ((TDirectory*)file->Get("pfTowers"))->GetObject("hf",friend_tree0);
-      if (!friend_tree0) cerr << "Cannot find friend tree" << endl;
-      tree->AddFriend(friend_tree0);
-      
-      TTree* friend_tree1 = NULL; //****TREE2
-      ((TDirectory*)file->Get("hltanalysis"))->GetObject("HltTree",friend_tree1);
-      if (!friend_tree1) cerr << "Cannot find friend tree" << endl;
-      tree->AddFriend(friend_tree1);
-      
-      TTree* friend_tree2 = NULL; //****TREE3
-      ((TDirectory*)file->Get("pixelTrack"))->GetObject("trackTree",friend_tree2);
-      if (!friend_tree2) cerr << "Cannot find friend tree" << endl;
-      tree->AddFriend(friend_tree2);
+      TChain* tree = new TChain("cAnalyzer/ikCastorTree");
+      const int nFiles = tree->Add(sample_fname[sample].c_str()); // file name(s)
 
-      TTree* friend_tree3 = NULL; //****TREE4
-      file2->GetObject("fsctree",friend_tree3);
-      if (!friend_tree3) cerr << "Cannot find friend tree" << endl;
-      tree->AddFriend(friend_tree3); 
-     
-      TTree* friend_tree4 = NULL; //****TREE3
-      ((TDirectory*)file->Get("hiEvtAnalyzer"))->GetObject("HiTree",friend_tree4);
-      if (!friend_tree4) cerr << "Cannot find friend tree" << endl;
-      tree->AddFriend(friend_tree4);
+      if (nFiles == 0) {
+        cout << "No tree files have been found \"" << sample_fname[sample] << "\"" << endl;
+        return 0;
+      }
+
+      if (tree->GetEntries() == 0) {
+        cout << "No events found in file \"" << sample_fname[sample] << "\"" << endl;
+        return 0;
+      }
+
       //________________________________________________________________________________
-      
-      tree->SetBranchStatus("*",0);
 
-      tree->SetBranchStatus("hf.n",1);
-      tree->SetBranchStatus("hf.e",1);
-      tree->SetBranchStatus("hf.depth",1);
-      tree->SetBranchStatus("hf.eta",1);
-
-      tree->SetBranchStatus("e",1);
-      tree->SetBranchStatus("saturation",1);
-      tree->SetBranchStatus("depth",1);
-      tree->SetBranchStatus("iphi",1);
-
-      tree->SetBranchStatus("fsc_sum_plus",1);
-      tree->SetBranchStatus("fsc_sum_minus",1);
-
-      tree->SetBranchStatus("nTrk",1);
+      tree->SetBranchStatus("*", 0);
+      tree->SetBranchStatus("event", 1);
+      tree->SetBranchStatus("genProcessID", 1);
+      tree->SetBranchStatus("*HFtowers*", 1);
+      tree->SetBranchStatus("*HFtowers.*", 1);
+      tree->SetBranchStatus("CASTOR*", 1);
+      tree->SetBranchStatus("*lumi*", 1);
 
       tree->SetBranchStatus("HLT_PAZeroBias_v1",1);
       tree->SetBranchStatus("HLT_PAL1Tech53_MB_SingleTrack_v1",1);
       tree->SetBranchStatus("HLT_PARandom_v1",1);
-      tree->SetBranchStatus("L1Tech_BPTX_plus_AND_minus.v0",1);
-      tree->SetBranchStatus("L1Tech_BPTX_plus_AND_NOT_minus.v0",1);
-      tree->SetBranchStatus("L1Tech_BPTX_minus_AND_not_plus.v0",1);
+      tree->SetBranchStatus("L1Tech_BPTX_plus_AND_minus.v0_DecisionBeforeMask",1);
+      tree->SetBranchStatus("L1Tech_BPTX_plus_AND_NOT_minus.v0_DecisionBeforeMask",1);
+      tree->SetBranchStatus("L1Tech_BPTX_minus_AND_not_plus.v0_DecisionBeforeMask",1);
 
-      tree->SetBranchStatus("lumi",1);
       //________________________________________________________________________________
 
-      tree->SetBranchAddress("hf.n",&hf_n);
-      tree->SetBranchAddress("hf.e",hf_e);
-      tree->SetBranchAddress("hf.depth",hf_depth);
-      tree->SetBranchAddress("hf.eta",hf_eta);
 
-      tree->SetBranchAddress("e",cas_e);
-      tree->SetBranchAddress("saturation",cas_sat);
-      tree->SetBranchAddress("depth",cas_depth);
-      tree->SetBranchAddress("iphi",cas_iphi);
+      AnalysisEvent* event = 0;
+      tree->SetBranchAddress("event", &event);
+      int genProcessID;
+      tree->SetBranchAddress("genProcessID", &genProcessID);
 
-      tree->SetBranchAddress("fsc_sum_plus",&fsc_sum_plus);
-      tree->SetBranchAddress("fsc_sum_minus",&fsc_sum_minus);
+      float fsc_sum_minus;
+      float fsc_sum_plus;
 
-      tree->SetBranchAddress("nTrk",&nTrk);
-
+      int zero_bias;
+      int min_bias;
+      int random;
+      int bptx_p_m;
+      int bptx_p_nm;
+      int bptx_np_m;
       tree->SetBranchAddress("HLT_PAZeroBias_v1",&zero_bias);
       tree->SetBranchAddress("HLT_PAL1Tech53_MB_SingleTrack_v1",&min_bias);
       tree->SetBranchAddress("HLT_PARandom_v1",&random);
-      tree->SetBranchAddress("L1Tech_BPTX_plus_AND_minus.v0",&bptx_p_m);
-      tree->SetBranchAddress("L1Tech_BPTX_plus_AND_NOT_minus.v0",&bptx_p_nm);
-      tree->SetBranchAddress("L1Tech_BPTX_minus_AND_not_plus.v0",&bptx_np_m);
+      tree->SetBranchAddress("L1Tech_BPTX_plus_AND_minus.v0_DecisionBeforeMask",&bptx_p_m);
+      tree->SetBranchAddress("L1Tech_BPTX_plus_AND_NOT_minus.v0_DecisionBeforeMask",&bptx_p_nm);
+      tree->SetBranchAddress("L1Tech_BPTX_minus_AND_not_plus.v0_DecisionBeforeMask",&bptx_np_m);
 
-      tree->SetBranchAddress("lumi",&lumi);
       //________________________________________________________________________________
 
       out_file->mkdir(sample_name[sample].c_str());
@@ -246,8 +189,8 @@ void csana()
       h_perf_hf_totE_double_1dot5gev       = new TH1D((add + string("_h_perf_hf_totE_double_1dot5gev")).c_str(),"",500,0,10000);
       h_perf_hf_totE_eta_single_3gev       = new TH1D((add + string("_h_perf_hf_totE_eta_single_3gev")).c_str(),"",100,-5.2,5.2);
       h_perf_hf_totE_eta_double_1dot5gev   = new TH1D((add + string("_h_perf_hf_totE_eta_double_1dot5gev")).c_str(),"",100,-5.2,5.2);
-      
-      
+
+
       h_eff->GetXaxis()->SetBinLabel(1,"MinBias");
       h_eff->GetXaxis()->SetBinLabel(2,"ZeroBias");
       h_eff->GetXaxis()->SetBinLabel(3,"Noise");
@@ -264,7 +207,7 @@ void csana()
           if(iEvent==MAXEVT) break;
           if(iEvent % 10000 == 0) cout << sample+1 << "/" << sample_name.size() << " -- " << sample_name[sample].c_str() << " -- Entry: " << iEvent << " / " << (MAXEVT>0?MAXEVT:tree->GetEntries()) << endl;
           tree->GetEntry(iEvent);
-          
+
           bool coll=0, noise=0, beam_gas=0;
 
           coll          = zero_bias && bptx_p_m; //double beam
@@ -281,42 +224,44 @@ void csana()
 
           if(!coll && !noise && !beam_gas && !min_bias) //not intersted
             continue;
-          
+
 
           double sum_cas_e_em = 0;
           double sum_cas_e_had = 0;
           double sum_cas_e = 0;
-          for(int ch_cas=0; ch_cas<n_cas_rechits; ch_cas++) // no ZS
+          for (vector<RecHitCASTOR>::const_iterator it = event->CASTOR.begin(); it < event->CASTOR.end(); ++it)
             {//break;
-              if(cas_depth[ch_cas] < 3)
-                sum_cas_e_em += cas_e[ch_cas];
-              else if(cas_depth[ch_cas] < 5)
-                sum_cas_e_had += cas_e[ch_cas];
+              if(it->GetModuleId() < 3)
+                sum_cas_e_em += it->Energy;
+              else if(it->GetModuleId() < 5)
+                sum_cas_e_had += it->Energy;
             }
           sum_cas_e = sum_cas_e_had + sum_cas_e_em;
 
-          
-          int hf_zero_count = n_hf_rechits - hf_n;
+          int hf_n = event->HFtowers.size();
+          int hf_zero_count = ForwardRecord::nMaxHFMRecHits - hf_n;
           double hf_double_energy_max = -1;
           double hf_single_energy_max = -1;
           double hf_m_energy_max = -1;
           double hf_p_energy_max = -1;
           double hf_p_energy = 0;
           double hf_m_energy = 0;
-          for(int ch_hf=0; ch_hf<hf_n; ch_hf++)
+          for (vector<TowerHF>::const_iterator it = event->HFtowers.begin(); it < event->HFtowers.end(); ++it)
             {
-              if(hf_eta[ch_hf] > 0. && hf_e[ch_hf] > hf_p_energy_max)
-                hf_p_energy_max = hf_e[ch_hf];
-              if(hf_eta[ch_hf] <= 0. && hf_e[ch_hf] > hf_m_energy_max)
-                hf_m_energy_max = hf_e[ch_hf];
+              //cout << it->Eta << " " << it->Energy << endl;
+              if(it->Eta > 0. && it->Energy > hf_p_energy_max)
+                hf_p_energy_max = it->Energy;
+              if(it->Eta <= 0. && it->Energy > hf_m_energy_max)
+                hf_m_energy_max = it->Energy;
 
-              if(hf_eta[ch_hf] > 0.)
-                hf_p_energy += hf_e[ch_hf];
+              if(it->Eta > 0.)
+                hf_p_energy += it->Energy;
               else
-                hf_m_energy += hf_e[ch_hf];
-                
+                hf_m_energy += it->Energy;
+
             }
           double hf_pm_energy = hf_p_energy + hf_m_energy;
+          //cout << "rechit: " << hf_pm_energy << endl;
 
           hf_double_energy_max = TMath::Min(hf_m_energy_max,hf_p_energy_max);
           hf_single_energy_max = TMath::Max(hf_m_energy_max,hf_p_energy_max);
@@ -358,16 +303,16 @@ void csana()
           if(coll)                                                  h_hf_fsc_p->Fill(hf_p_energy_max,fsc_sum_plus);
           if(coll)                                                  h_hf_fsc_m->Fill(hf_m_energy_max,fsc_sum_minus);
 
-          if(coll && hf_double_energy_max > 1.5)                    h_hf_hits_coll_lumi->Fill(lumi,hf_double_energy_max);
-          if(coll && hf_double_energy_max > 1.5)                    h_hf_hits_minus_lumi->Fill(lumi,hf_m_energy_max);
-          if(coll && hf_double_energy_max > 1.5)                    h_hf_hits_plus_lumi->Fill(lumi,hf_p_energy_max);
-          if((noise || beam_gas))                                   h_hf_hits_noise_lumi->Fill(lumi,hf_double_energy_max);
-          if(coll && hf_double_energy_max > 1.5)                    h_hf_totE_coll_lumi->Fill(lumi,hf_pm_energy);
-          if(coll && hf_double_energy_max > 1.5)                    h_hf_totE_minus_lumi->Fill(lumi,hf_m_energy);
-          if(coll && hf_double_energy_max > 1.5)                    h_hf_totE_plus_lumi->Fill(lumi,hf_p_energy);
-          if((noise || beam_gas))                                   h_hf_totE_noise_lumi->Fill(lumi,hf_pm_energy);
-          if(coll && hf_double_energy_max > 1.5)                    h_lumi_3GeV->Fill(lumi);
-          if(coll)                                                  h_lumi->Fill(lumi);
+          if(coll && hf_double_energy_max > 1.5)                    h_hf_hits_coll_lumi->Fill(event->lumiNb,hf_double_energy_max);
+          if(coll && hf_double_energy_max > 1.5)                    h_hf_hits_minus_lumi->Fill(event->lumiNb,hf_m_energy_max);
+          if(coll && hf_double_energy_max > 1.5)                    h_hf_hits_plus_lumi->Fill(event->lumiNb,hf_p_energy_max);
+          if((noise || beam_gas))                                   h_hf_hits_noise_lumi->Fill(event->lumiNb,hf_double_energy_max);
+          if(coll && hf_double_energy_max > 1.5)                    h_hf_totE_coll_lumi->Fill(event->lumiNb,hf_pm_energy);
+          if(coll && hf_double_energy_max > 1.5)                    h_hf_totE_minus_lumi->Fill(event->lumiNb,hf_m_energy);
+          if(coll && hf_double_energy_max > 1.5)                    h_hf_totE_plus_lumi->Fill(event->lumiNb,hf_p_energy);
+          if((noise || beam_gas))                                   h_hf_totE_noise_lumi->Fill(event->lumiNb,hf_pm_energy);
+          if(coll && hf_double_energy_max > 1.5)                    h_lumi_3GeV->Fill(event->lumiNb);
+          if(coll)                                                  h_lumi->Fill(event->lumiNb);
 
           if(coll && hf_single_energy_max > 3)                      h_perf_hf_rechits_single_3gev->Fill(hf_n);
           if(coll && hf_double_energy_max > 1.5)                    h_perf_hf_rechits_double_1dot5gev->Fill(hf_n);
@@ -375,16 +320,16 @@ void csana()
           if(coll && hf_single_energy_max > 3)                      h_perf_hf_totE_single_3gev->Fill(hf_pm_energy);
           if(coll && hf_double_energy_max > 1.5)                    h_perf_hf_totE_double_1dot5gev->Fill(hf_pm_energy);
 
-          for(int ch_hf=0; ch_hf<hf_n; ch_hf++)
+          for (vector<TowerHF>::const_iterator it = event->HFtowers.begin(); it < event->HFtowers.end(); ++it)
             {
               if(coll && hf_double_energy_max > 1.5)
-                h_perf_hf_totE_eta_double_1dot5gev->Fill(hf_eta[ch_hf],hf_e[ch_hf]);
+                h_perf_hf_totE_eta_double_1dot5gev->Fill(it->Eta,it->Energy);
               if(coll && hf_single_energy_max > 3)
-                h_perf_hf_totE_eta_single_3gev->Fill(hf_eta[ch_hf],hf_e[ch_hf]);
+                h_perf_hf_totE_eta_single_3gev->Fill(it->Eta,it->Energy);
             }
-          
+
         }
-  
+
       //******************************************AFTER EVENT LOOP*******************************************
       double integ_lumi = 1854.344875;// nb^-1
       double n_total = double(tree->GetEntries());
@@ -394,11 +339,13 @@ void csana()
       cout << endl << "Cross section ZB: " << n_zb/integ_lumi << " --- cross section MB: " << n_mb/integ_lumi << endl;
       h_perf_hf_totE_eta_double_1dot5gev->Scale(1./double(MAXEVT>0?MAXEVT:n_total));
       h_perf_hf_totE_eta_single_3gev->Scale(1./double(MAXEVT>0?MAXEVT:n_total));
-  
+
     }
 
   //********************************************AFTER FILE LOOP************************************************
 
   out_file->Write();
   out_file->Save();
+
+  return 0;
 }

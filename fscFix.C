@@ -87,6 +87,6 @@ void fscFix()
       //cout << i << " : " << event1 << " " << event2 << " " << fsc_sum_minus << " " << fsc_sum_plus << " " << it->second << endl;
       treeout->Fill();
     }
-  treeout->Write();
- 
+  treeout->Write("fsctree");
+  fileout->Close();
 }
