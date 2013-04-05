@@ -1,29 +1,32 @@
-void Show(TH1D* a,TH1D* b,TH1D* c,TH1D* d, TH1D* e);
+void Show(TH1D* a,TH1D* b,TH1D* c,TH1D* d, TH1D* e, TH1D* f);
 
 void makePlots()
 {
   gROOT->ProcessLine(" .L style.cc+");
   style();
 
-  TFile* file = TFile::Open("histos.root");
-  TH1D* a=file->Get("data/data_h_hf_cut_single");
-  TH1D* a2=file->Get("data/data_h_hf_cut_single_noise");
+  TFile* file = TFile::Open("histos_mc.root");
+  TFile* file2 = TFile::Open("histos_old.root");
+  TH1D* a=file2->Get("data/data_h_hf_cut_single");
+  TH1D* a2=file2->Get("data/data_h_hf_cut_single_noise");
   TH1D* b=file->Get("Hijing/Hijing_h_hf_cut_single");
   TH1D* c=file->Get("Epos/Epos_h_hf_cut_single");
-  TH1D* d=file->Get("Epos/Epos_h_hf_cut_single");//QGSJetII/QGSJetII_h_hf_cut_single");
+  TH1D* d=file->Get("QGSJetII/QGSJetII_h_hf_cut_single");
+  TH1D* e=file->Get("Starlight_DPMJet/Starlight_DPMJet_h_hf_cut_single");
 
-  Show(a,a2,b,c,d);
+  Show(a,a2,b,c,d,e);
 
-  TH1D* aa=file->Get("data/data_h_hf_cut_double");
-  TH1D* aa2=file->Get("data/data_h_hf_cut_double_noise");
+  TH1D* aa=file2->Get("data/data_h_hf_cut_double");
+  TH1D* aa2=file2->Get("data/data_h_hf_cut_double_noise");
   TH1D* bb=file->Get("Hijing/Hijing_h_hf_cut_double");
   TH1D* cc=file->Get("Epos/Epos_h_hf_cut_double");
-  TH1D* dd=file->Get("Epos/Epos_h_hf_cut_double");//QGSJetII/QGSJetII_h_hf_cut_double");
+  TH1D* dd=file->Get("QGSJetII/QGSJetII_h_hf_cut_double");
+  TH1D* ee=file->Get("Starlight_DPMJet/Starlight_DPMJet_h_hf_cut_double");
 
-  Show(aa,aa2,bb,cc,dd);
+  Show(aa,aa2,bb,cc,dd,ee);
 }
 
-void Show(TH1D* a,TH1D* a2,TH1D* b,TH1D* c, TH1D* d)
+void Show(TH1D* a,TH1D* a2,TH1D* b,TH1D* c, TH1D* d, TH1D* e)
 {
 
   a->Scale(1./double(a->GetBinContent(1)));
@@ -31,24 +34,28 @@ void Show(TH1D* a,TH1D* a2,TH1D* b,TH1D* c, TH1D* d)
   b->Scale(1./double(b->GetBinContent(1)));
   c->Scale(1./double(c->GetBinContent(1)));
   d->Scale(1./double(d->GetBinContent(1)));
+  e->Scale(1./double(e->GetBinContent(1)));
 
   a->SetLineWidth(2);
   a2->SetLineWidth(2);
   b->SetLineWidth(2);
   c->SetLineWidth(2);
   d->SetLineWidth(2);
+  e->SetLineWidth(2);
   a2->SetLineColor(kCyan-2);
   b->SetLineColor(kRed);
   c->SetLineColor(kBlue);
   d->SetLineColor(kGreen+2);
+  e->SetLineColor(kMagenta+2);
 
   a->SetTitle("zero bias");
   a2->SetTitle("noise");
   b->SetTitle("HIJING");
   c->SetTitle("EPOS");
   d->SetTitle("QGSJetII");
+  e->SetTitle("SL+DPMJet");
 
-  b->GetYaxis()->SetRangeUser(0.9,1.01);
+  b->GetYaxis()->SetRangeUser(0.9,1.001);
   b->GetXaxis()->SetTitle("cut value / GeV");
   b->GetYaxis()->SetTitle("efficiency #epsilon");
 
@@ -58,6 +65,10 @@ void Show(TH1D* a,TH1D* a2,TH1D* b,TH1D* c, TH1D* d)
   d->Draw("HIST L SAME");
   TLegend* leg = c1->BuildLegend();
   leg->SetFillColor(kWhite);
+  leg->SetX1(0.3);
+  leg->SetX2(0.5);
+  leg->SetY1(0.3);
+  leg->SetY2(0.5);
   leg->Draw();
   
   a->GetYaxis()->SetRangeUser(0,1.01);
@@ -100,7 +111,12 @@ void Show(TH1D* a,TH1D* a2,TH1D* b,TH1D* c, TH1D* d)
   a->Draw("HIST l");
   a1->Draw("HIST l SAME");
   a2->Draw("HIST l SAME");
+  e->Draw("HIST l SAME");
   TLegend* leg2 = c2->BuildLegend();
+  leg2->SetX1(0.45);
+  leg2->SetX2(0.80);
+  leg2->SetY1(0.65);
+  leg2->SetY2(0.85);
   leg2->SetFillColor(kWhite);
   leg2->Draw();
 
