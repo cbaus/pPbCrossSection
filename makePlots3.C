@@ -3,7 +3,7 @@
   style();
 
   TFile* file2 = TFile::Open("histos_old.root");
-  TFile* file = TFile::Open("histos_mc.root");
+  TFile* file = TFile::Open("histos_old.root");
   TH1D* a=file2->Get("data/data_h_hf_hits_coll");
   TH1D* a2=file2->Get("data/data_h_hf_hits_noise");
   TH1D* b=file->Get("Hijing/Hijing_h_hf_hits_coll");
@@ -12,14 +12,15 @@
   TH1D* e=file->Get("Starlight_DPMJet/Starlight_DPMJet_h_hf_hits_coll");
 
   const int normbin = a->FindBin(20);
+  double eposscale=double(c->GetEntries())/double(e->GetEntries());
   a->Scale(1./double(a->GetEntries()));
   a2->Scale(1./double(a2->GetEntries()));
   b->Scale(a->GetBinContent(normbin)/b->GetBinContent(normbin));
-  c->Scale(a->GetBinContent(normbin)/c->GetBinContent(normbin));
+  double eposnorm=a->GetBinContent(normbin)/c->GetBinContent(normbin);
+  c->Scale(eposnorm);
   d->Scale(a->GetBinContent(normbin)/d->GetBinContent(normbin));
-  double eposscale=double(c->GetEntries())/double(e->GetEntries());
-  e->Scale(eposscale*195./2100.*a->GetBinContent(normbin)/c->GetBinContent(normbin));
-  cout << " ada ds asd asd asd !!!! " << c->GetEntries() << " " << e->GetEntries() << " " << eposscale*195./2100. << endl;
+  e->Scale(eposscale*195./2100.*eposnorm);
+  cout << " ada ds asd asd asd !!!! " << c->GetEntries() << " " << e->GetEntries() << " " << eposscale*195./2100. <<  "" << eposscale*eposnorm << endl;
 
   a->SetMarkerSize(1.2);
   a->SetLineWidth(2.5);

@@ -359,8 +359,9 @@ class AnalysisEvent {
 
   // --------- Luminosity ------------
   float instLuminosity;
+  float instLuminosityCorr;
   
-  ClassDef(AnalysisEvent, 7);
+  ClassDef(AnalysisEvent, 8);
 };
 
 //}

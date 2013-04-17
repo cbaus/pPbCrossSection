@@ -271,7 +271,9 @@ AnalysisEvent::AnalysisEvent()
   vertexZ(0),
   isMC(0),
   genImpactParameter(0),
-  genNpart(0)
+  genNpart(0),
+  instLuminosity(0),
+  instLuminosityCorr(0)
 {
   for (int i=0; i<200; ++i) {
     hltAccept[i] = 0;

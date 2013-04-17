@@ -1,4 +1,4 @@
-#define MAXEVT -100
+#define MAXEVT -10000
 
 #include "TChain.h"
 #include "TFile.h"
@@ -40,11 +40,12 @@ int main()
   //style();
 
   //*************************************************************INPUT***********************************************************
-  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Data2/*_1*_1_*.root"); sample_name.push_back("data"); sample_type.push_back(DATA);
-  //sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Epos/*_1_*.root"); sample_name.push_back("Epos"); sample_type.push_back(MC);
-  //sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Hijing/*_1_*.root"); sample_name.push_back("Hijing"); sample_type.push_back(MC);
-  //sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/QGSJetII/reeMC.root"); sample_name.push_back("QGSJetII"); sample_type.push_back(MC);
-  //sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/StarlighDPMjet/treeMC.root"); sample_name.push_back("Starlight_DPMJet");  sample_type.push_back(MC);
+  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Data210614/*_*.root"); sample_name.push_back("data"); sample_type.push_back(DATA);
+  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Data210885/*_*.root"); sample_name.push_back("data2"); sample_type.push_back(DATA);
+  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Epos/*_1_*.root"); sample_name.push_back("Epos"); sample_type.push_back(MC);
+  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Hijing/*_1_*.root"); sample_name.push_back("Hijing"); sample_type.push_back(MC);
+  sample_fname.push_back("/afs/cern.ch/work/c/cbaus/private/trees/treeMC.root"); sample_name.push_back("QGSJetII"); sample_type.push_back(MC);
+  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/StarlighDPMjet/treeMC.root"); sample_name.push_back("Starlight_DPMJet");  sample_type.push_back(MC);
 
   //**************************************************************OUTPUT*********************************************************
 
@@ -66,6 +67,8 @@ int main()
 
   TH2D* h_hf_fsc_p;
   TH2D* h_hf_fsc_m;
+  
+  TH2D* h_random_trig_tracks_hf;
 
   TH1D* h_hf_cut_single;
   TH1D* h_hf_cut_single_noise;
@@ -80,6 +83,7 @@ int main()
   TProfile* h_hf_totE_plus_lumi;
   TProfile* h_hf_totE_minus_lumi;
   TProfile* h_hf_totE_noise_lumi;
+
   TH1D* h_lumi;
   TH1D* h_lumi_3GeV;
 
@@ -117,20 +121,21 @@ int main()
 
       //________________________________________________________________________________
 
-      //tree->SetBranchStatus("*", 0);
-      tree->SetBranchStatus("event", 1);
-      //tree->SetBranchStatus("genProcessID", 1);
-      //tree->SetBranchStatus("GEN*", 1);
-      tree->SetBranchStatus("*HFtowers*", 1);
-      //tree->SetBranchStatus("CASTOR*", 1);
-      tree->SetBranchStatus("*lumi*", 1);
+      tree->SetBranchStatus("*", 1);
+//       tree->SetBranchStatus("event", 1);
+//       tree->SetBranchStatus("genProcessID", 1);
+//       tree->SetBranchStatus("GEN*", 1);
+//       tree->SetBranchStatus("*HFtowers*", 1);
+//       tree->SetBranchStatus("CASTOR*", 1);
+//       tree->SetBranchStatus("*lumi*", 1);
+//       tree->SetBranchStatus("*Lumi*", 1);
 
-      tree->SetBranchStatus("HLT_PAZeroBias_v1",1);
-      tree->SetBranchStatus("HLT_PAL1Tech53_MB_SingleTrack_v1",1);
-      tree->SetBranchStatus("HLT_PARandom_v1",1);
-      tree->SetBranchStatus("L1Tech_BPTX_plus_AND_minus.v0_DecisionBeforeMask",1);
-      tree->SetBranchStatus("L1Tech_BPTX_plus_AND_NOT_minus.v0_DecisionBeforeMask",1);
-      tree->SetBranchStatus("L1Tech_BPTX_minus_AND_not_plus.v0_DecisionBeforeMask",1);
+//       tree->SetBranchStatus("HLT_PAZeroBias_v1",1);
+//       tree->SetBranchStatus("HLT_PAL1Tech53_MB_SingleTrack_v1",1);
+//       tree->SetBranchStatus("HLT_PARandom_v1",1);
+//       tree->SetBranchStatus("L1Tech_BPTX_plus_AND_minus.v0_DecisionBeforeMask",1);
+//       tree->SetBranchStatus("L1Tech_BPTX_plus_AND_NOT_minus.v0_DecisionBeforeMask",1);
+//       tree->SetBranchStatus("L1Tech_BPTX_minus_AND_not_plus.v0_DecisionBeforeMask",1);
 
       //________________________________________________________________________________
 
@@ -138,15 +143,19 @@ int main()
       AnalysisEvent* event = 0;
       tree->SetBranchAddress("event", &event);
 
-      float fsc_sum_minus;
-      float fsc_sum_plus;
+      float fsc_sum_minus = 0;
+      float fsc_sum_plus = 0;
 
       int zero_bias;
+      int zero_bias_prescale_L1;
+      int zero_bias_prescale_HLT;
       int min_bias;
       int random;
       int bptx_p_m;
       int bptx_p_nm;
       int bptx_np_m;
+      tree->SetBranchAddress("L1_ZeroBias_algPrescale",&zero_bias_prescale_L1);
+      tree->SetBranchAddress("HLT_PAZeroBias_v1_Prescl",&zero_bias_prescale_HLT);
       tree->SetBranchAddress("HLT_PAZeroBias_v1",&zero_bias);
       tree->SetBranchAddress("HLT_PAL1Tech53_MB_SingleTrack_v1",&min_bias);
       tree->SetBranchAddress("HLT_PARandom_v1",&random);
@@ -173,13 +182,15 @@ int main()
       h_castor_nogap_hf         = new TH1D((add + string("_h_castor_nogap_hf")).c_str(),"",100,0,50);
       h_eff                     = new TH1D((add + string("_h_eff")).c_str(),"",9,-0.5,8.5);
 
-      h_hf_cut_single           = new TH1D((add + string("_h_hf_cut_single")).c_str(),"",21,-0.125,5.125);
-      h_hf_cut_single_noise     = new TH1D((add + string("_h_hf_cut_single_noise")).c_str(),"",21,-0.125,5.125);
-      h_hf_cut_double           = new TH1D((add + string("_h_hf_cut_double")).c_str(),"",21,-0.125,5.125);
-      h_hf_cut_double_noise     = new TH1D((add + string("_h_hf_cut_double_noise")).c_str(),"",21,-0.125,5.125);
+      h_hf_cut_single           = new TH1D((add + string("_h_hf_cut_single")).c_str(),"",51,-0.05,5.05);
+      h_hf_cut_single_noise     = new TH1D((add + string("_h_hf_cut_single_noise")).c_str(),"",51,-0.05,5.05);
+      h_hf_cut_double           = new TH1D((add + string("_h_hf_cut_double")).c_str(),"",51,-0.05,5.05);
+      h_hf_cut_double_noise     = new TH1D((add + string("_h_hf_cut_double_noise")).c_str(),"",51,-0.05,5.05);
 
       h_hf_fsc_p                = new TH2D((add + string("_h_hf_fsc_p")).c_str(),"",200,0,200,200,0,80000);
       h_hf_fsc_m                = new TH2D((add + string("_h_hf_fsc_m")).c_str(),"",200,0,200,200,0,80000);
+
+      h_random_trig_tracks_hf   = new TH2D((add + string("_h_random_trig_tracks_hf")).c_str(),"",200,0,20,20,0,20);
 
       h_hf_hits_coll_lumi       = new TProfile((add + string("_h_hf_hits_coll_lumi")).c_str(),"",2000,0,2000);
       h_hf_hits_minus_lumi      = new TProfile((add + string("_h_hf+_hits_lumi")).c_str(),"",2000,0,2000);
@@ -223,13 +234,14 @@ int main()
           if(iEvent==MAXEVT) break;
           if(iEvent % 10000 == 0) cout << sample+1 << "/" << sample_name.size() << " -- " << sample_name[sample].c_str() << " -- Entry: " << iEvent << " / " << (MAXEVT>0?MAXEVT:tree->GetEntries()) << endl;
           tree->GetEntry(iEvent);
-          if(event->runNb != 210885)
-            continue;
+          //          if(event->runNb != 210885)
+          //continue;
+
           bool coll=0, noise=0, beam_gas=0;
 
           coll          = zero_bias && bptx_p_m; //double beam
           beam_gas      = (bptx_np_m || bptx_p_nm); // only single beam
-          noise         = !bptx_p_m && !bptx_np_m && !bptx_p_nm; //not both and not single beam
+          noise         = !bptx_p_m;// && !bptx_np_m && !bptx_p_nm; //not both and not single beam
 
           if(sample_type[sample] == MC)
             {
@@ -373,16 +385,26 @@ int main()
               //cout << "----------- !! M_X=" << m_x << "    M_Y=" << m_y << endl;
             }
 
+          //Counting events
+          const int prescale      = zero_bias_prescale_L1*zero_bias_prescale_HLT;
+          const double lumiPerLS     = event->instLuminosity * event->instLuminosityCorr * 1e6;
+          const double evtWeight  = lumiPerLS?double(prescale) / lumiPerLS:0.;
+
+          //cout << prescale << " " << event->instLuminosity << " " <<  event->instLuminosityCorr << endl;
 
           //Booking run histograms
 
           ostringstream run_str;
           run_str << event->runNb;
-          TH1D* h_run_events = NULL;
-          h_run_events = (TH1D*)(out_file->Get((add+string("/")+add+run_str.str()+string("_h_run_events")).c_str()));
-          if(h_run_events == NULL)
-            h_run_events = new TH1D((add+run_str.str()+string("_h_run_events")).c_str(),run_str.str().c_str(),100,0,2000);
-
+          TH1D* h_run_events_single = NULL;
+          TH1D* h_run_events_double = NULL;
+          h_run_events_single = (TH1D*)(out_file->Get((add+string("/")+add+run_str.str()+string("_h_run_events_single_")).c_str()));
+          h_run_events_double = (TH1D*)(out_file->Get((add+string("/")+add+run_str.str()+string("_h_run_events_double_")).c_str()));
+          if(h_run_events_single == NULL)
+            {
+              h_run_events_single = new TH1D((add+run_str.str()+string("_h_run_events_single_")).c_str(),run_str.str().c_str(),2000,0,2000);
+              h_run_events_double = new TH1D((add+run_str.str()+string("_h_run_events_double_")).c_str(),run_str.str().c_str(),2000,0,2000);
+            }
 
 
           //---------------------------------------------Filling HISTOS
@@ -412,7 +434,7 @@ int main()
           if((noise || beam_gas) && hf_double_energy_max > 2)       h_eff->Fill(7);
           if((noise || beam_gas) && hf_double_energy_max > 3)       h_eff->Fill(8);
 
-          for (double cut=0; cut < 5.5; cut+=0.25)
+          for (double cut=0; cut <= 5; cut+=0.1)
             {
               if(coll && hf_double_energy_max > cut)                h_hf_cut_double->Fill(cut);
               if((noise || beam_gas) && hf_double_energy_max > cut) h_hf_cut_double_noise->Fill(cut);
@@ -456,15 +478,18 @@ int main()
           if(coll && ND)                                            h_mc_diffraction_ND->Fill(log10(xi_x));
           if(coll)                                                  h_mc_diffraction_all->Fill(log10(xi_x));
 
-          if(coll && hf_single_energy_max > 3)                      h_run_events->Fill(event->lumiNb,1./event->instLuminosity);
+          if(coll && hf_single_energy_max > 3)                      h_run_events_single->Fill(event->lumiNb,evtWeight);
+          if(coll && hf_double_energy_max > 1.5)                    h_run_events_double->Fill(event->lumiNb,evtWeight);
+
+          if(noise)                                                 h_random_trig_tracks_hf->Fill(hf_single_energy_max,event->Tracks.size());
 
         }
 
       //******************************************AFTER EVENT LOOP*******************************************
       double integ_lumi = 1854.344875;// nb^-1
       double n_total = double(tree->GetEntries());
-      double n_zb = h_eff->GetBinContent(1) * (MAXEVT>0?n_total/double(MAXEVT):1.) * 40.;
-      double n_mb = h_eff->GetBinContent(4) * (MAXEVT>0?n_total/double(MAXEVT):1.) * 40.;
+      double n_zb = h_eff->GetBinContent(1) * (MAXEVT>0?n_total/double(MAXEVT):1.);
+      double n_mb = h_eff->GetBinContent(4) * (MAXEVT>0?n_total/double(MAXEVT):1.);
 
       cout << endl << "Cross section ZB: " << n_zb/integ_lumi << " --- cross section MB: " << n_mb/integ_lumi << endl;
       h_perf_hf_totE_eta_double_1dot5gev->Scale(1./double(MAXEVT>0?MAXEVT:n_total));

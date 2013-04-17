@@ -5,7 +5,7 @@ void makePlots()
   gROOT->ProcessLine(" .L style.cc+");
   style();
 
-  TFile* file = TFile::Open("histos_mc.root");
+  TFile* file = TFile::Open("histos_old.root");
   TFile* file2 = TFile::Open("histos_old.root");
   TH1D* a=file2->Get("data/data_h_hf_cut_single");
   TH1D* a2=file2->Get("data/data_h_hf_cut_single_noise");
@@ -80,31 +80,33 @@ void Show(TH1D* a,TH1D* a2,TH1D* b,TH1D* c, TH1D* d, TH1D* e)
   TH1D* a1 = copy;
   a1->SetMarkerColor(kRed);
   a1->SetName("data_copy");
-  a1->SetTitle("data (corrected by Epos eff.)");
-  for(int i=2; i<=a1->GetNbinsX(); i++)
+  a1->SetTitle("data (corrected MC/noise/em)");
+  int startPlot=0;
+  for(int i=1; i<=a1->GetNbinsX(); i++)
     {
+      const double f_em = e->GetBinContent(i)/e->GetBinContent(1) / 2100. * 195.;
       const double f_noise = a2->GetBinContent(i)/a2->GetBinContent(1);
-      const double f_zb = a->GetBinContent(i)/a->GetBinContent(1);
-      const double f_mc = b->GetBinContent(i)/b->GetBinContent(1);
-      double tmp;
-      if(f_zb-f_mc==0)
-        tmp = 1e9;
+      const double f_mc = (b->GetBinContent(i)/b->GetBinContent(1) + c->GetBinContent(i)/c->GetBinContent(1) + d->GetBinContent(i)/d->GetBinContent(1))/3.;
+      const double n_sel_zb = a->GetBinContent(i);
+      const double n_zb = 1;
+      
+      double n_inel = 0;
+      if(f_noise<1) //if eff can be calculated
+        n_inel=(n_sel_zb/f_mc-n_zb*f_noise)/(1-f_noise) * (1.-f_em);
       else
-        tmp=(f_noise-f_zb)/(f_zb-f_mc);
-      const double f_prime = tmp;
-      const double y = a2->GetBinContent(1);
-      const double x_plus_y = a->GetBinContent(1);
-      a1->SetBinContent(i,f_prime/(f_prime+1.)*x_plus_y);
+        startPlot = i+1;
+    
+      a1->SetBinContent(i,n_inel);
 
       cout 
-        << endl << i
+        << endl << i << "(" << a1->GetBinCenter(i) << ")"
         << endl << "f_mc= " << f_mc
-        << endl << "f_zb= " << f_zb
+        << endl << "f_em= " << f_em
         << endl << "f_noise= " << f_noise
-        << endl << "f_prime*y= " << f_prime*y
-        << endl << "f_prime/(f_prime+1)*x_plus_y= " << f_prime/(f_prime+1.)*x_plus_y << endl << endl;
+        << endl << "n_sel_zb= " << n_sel_zb
+        << endl << "n_inel= " << n_inel << endl << endl;
     }
-  a1->GetXaxis()->SetRange(4,a1->GetNbinsX());
+  a1->GetXaxis()->SetRange(startPlot,a1->GetNbinsX());
   a1->SetLineColor(kRed);
 
   TCanvas* c2 = new TCanvas;
