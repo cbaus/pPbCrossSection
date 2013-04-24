@@ -1,0 +1,142 @@
+void Show(TH1D* a,TH1D* b,TH1D* c,TH1D* d,TH1D* e,TH1D* f,TH1D* g);
+
+void makePlots7()
+{
+  gROOT->ProcessLine(" .L style.cc+");
+  style();
+
+  vector<string> list;
+  list.push_back(string("Epos"));
+  list.push_back(string("Hijing"));
+  list.push_back(string("QGSJetII"));
+
+  int i=0;
+  
+  TFile* file = TFile::Open("histos_old.root");
+  cout << string(list[i]+string("/")+list[i]+string("_h_mc_diffraction_single")) << endl;
+  TH1D* a=file->Get(string(list[i]+string("/")+list[i]+string("_h_mc_diffraction_single")).c_str());
+  TH1D* b=file->Get(string(list[i]+string("/")+list[i]+string("_h_mc_diffraction_double")).c_str());
+  TH1D* c=file->Get(string(list[i]+string("/")+list[i]+string("_h_mc_diffraction_SD")).c_str());
+  TH1D* d=file->Get(string(list[i]+string("/")+list[i]+string("_h_mc_diffraction_DD")).c_str());
+  TH1D* e=file->Get(string(list[i]+string("/")+list[i]+string("_h_mc_diffraction_CD")).c_str());
+  TH1D* f=file->Get(string(list[i]+string("/")+list[i]+string("_h_mc_diffraction_ND")).c_str());
+  TH1D* g=file->Get(string(list[i]+string("/")+list[i]+string("_h_mc_diffraction_all")).c_str());
+
+
+  a->Scale(1./double(g->GetEntries()));
+  b->Scale(1./double(g->GetEntries()));
+  c->Scale(1./double(g->GetEntries()));
+  d->Scale(1./double(g->GetEntries()));
+  e->Scale(1./double(g->GetEntries()));
+  f->Scale(1./double(g->GetEntries()));
+  g->Scale(1./double(g->GetEntries()));
+
+  a->SetMarkerSize(1.2);
+  b->SetMarkerSize(1.2);
+  a->SetLineWidth(2.5);
+  b->SetLineWidth(2.5);
+  c->SetLineWidth(2.5);
+  d->SetLineWidth(2.5);
+  e->SetLineWidth(2.5);
+  f->SetLineWidth(2.5);
+  g->SetLineWidth(2.5);
+
+
+  a->SetMarkerColor(kBlue);
+  b->SetMarkerColor(kRed);
+  c->SetMarkerColor(kBlue);
+  d->SetMarkerColor(kRed);
+  e->SetMarkerColor(kGreen+2);
+  f->SetMarkerColor(kBlack);
+
+  a->SetLineColor(kBlue);
+  b->SetLineColor(kRed);
+  c->SetLineColor(kBlue);
+  d->SetLineColor(kRed);
+  e->SetLineColor(kGreen+2);
+  f->SetLineColor(kBlack);
+
+  a->SetFillColor(kBlue);
+  b->SetFillColor(kRed);
+  c->SetFillColor(kBlue);
+  d->SetFillColor(kRed);
+  e->SetFillColor(kGreen+2);
+  f->SetFillColor(kBlack);
+
+  a->SetTitle("single arm > 3 GeV");
+  b->SetTitle("double arm > 1.5 GeV");
+  c->SetTitle("SD");
+  d->SetTitle("DD");
+  e->SetTitle("CD");
+  f->SetTitle("ND");
+  g->SetTitle("all");
+
+  g->GetYaxis()->SetRangeUser(0.0001,0.03);
+
+  TCanvas* c1 = new TCanvas;
+  THStack* hs = new THStack("hs","EPOS");
+  hs->Add(c);
+  hs->Add(d);
+  hs->Add(e);
+  hs->Add(f);
+  hs->Draw("HIST");
+  c1->SetLogy();
+  hs->GetYaxis()->SetRangeUser(0.0001,0.03);
+  hs->SetTitle(";log(#xi);events (normalised)");
+  TLegend* leg = c1->BuildLegend(0.25,0.65,0.45,0.85);
+  leg->SetFillColor(kWhite);
+  leg->Draw();
+
+
+  TCanvas* c2 = new TCanvas;
+  THStack* hs2 = new THStack("hs","EPOS");
+  hs2->Add(c);
+  hs2->Add(d);
+  hs2->Add(e);
+  hs2->Add(f);
+  hs2->Draw("HIST");
+  hs2->SetTitle(";log(#xi);events (normalised)");
+  leg->Draw();
+
+
+  TCanvas* c3 = new TCanvas;
+  g->Draw("HIST LF2");
+  a->Draw("HIST P SAME");
+  b->Draw("HIST P SAME");
+  c3->SetLogy();
+  g->GetYaxis()->SetRangeUser(0.0001,0.03);
+  g->SetTitle("Inelastic events;log(#xi);events (normalised)");
+  TLegend* leg = c3->BuildLegend(0.25,0.65,0.65,0.85);
+  leg->SetFillColor(kWhite);
+  leg->Draw();
+
+
+  TCanvas* c4 = new TCanvas;
+  TH1D* single2 = a->Clone("single2");
+  TH1D* double2 = b->Clone("double2");
+
+  single2->SetTitle("eff;log(#xi);#epsilon");
+
+  for(int i=0; i<=single2->GetNbinsX(); i++)
+    {
+      double ys = single2->GetBinContent(i);
+      double yd = double2->GetBinContent(i);
+      double y = g->GetBinContent(i);
+      if(y)
+        {
+          single2->SetBinContent(i,ys/y);
+          double2->SetBinContent(i,yd/y);
+        }
+      else
+        {
+          single2->SetBinContent(i,0);
+          double2->SetBinContent(i,0);
+        }
+    }
+  single2->Draw();
+  double2->Draw("SAME");
+  TLegend* leg = c4->BuildLegend(0.25,0.65,0.65,0.85);
+  leg->SetFillColor(kWhite);
+  leg->Draw();
+  
+}
