@@ -3,7 +3,7 @@ CXXFLAGS += $(shell root-config --cflags) -ggdb3 -I.
 CXXFLAGS += -Wextra
 
 DEP_OBJ=CastorTreeVariables.o CastorTreeVariablesDict.o ParticleInfo.o
-EXE=csana2
+EXE=csana2 noiseana
 
 all: $(EXE)
 

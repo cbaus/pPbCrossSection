@@ -6,9 +6,9 @@ void makePlots()
   style();
 
   TFile* file = TFile::Open("histos_old.root");
-  TFile* file2 = TFile::Open("histos_old.root");
-  TH1D* a=file2->Get("data/data_h_hf_cut_single");
-  TH1D* a2=file2->Get("data/data_h_hf_cut_single_noise");
+  TFile* file2 = TFile::Open("histos.root");
+  TH1D* a=file->Get("data/data_h_hf_cut_single");
+  TH1D* a2=file->Get("data/data_h_hf_cut_single_noise");
   TH1D* b=file->Get("Hijing/Hijing_h_hf_cut_single");
   TH1D* c=file->Get("Epos/Epos_h_hf_cut_single");
   TH1D* d=file->Get("QGSJetII/QGSJetII_h_hf_cut_single");
@@ -16,14 +16,14 @@ void makePlots()
 
   Show(a,a2,b,c,d,e);
 
-  TH1D* aa=file2->Get("data/data_h_hf_cut_double");
-  TH1D* aa2=file2->Get("data/data_h_hf_cut_double_noise");
+  TH1D* aa=file->Get("data/data_h_hf_cut_double");
+  TH1D* aa2=file->Get("data/data_h_hf_cut_double_noise");
   TH1D* bb=file->Get("Hijing/Hijing_h_hf_cut_double");
   TH1D* cc=file->Get("Epos/Epos_h_hf_cut_double");
   TH1D* dd=file->Get("QGSJetII/QGSJetII_h_hf_cut_double");
   TH1D* ee=file->Get("Starlight_DPMJet/Starlight_DPMJet_h_hf_cut_double");
 
-  Show(aa,aa2,bb,cc,dd,ee);
+  Show(aaa,aaa2,bbb,bbb,ccc,ee);
 }
 
 void Show(TH1D* a,TH1D* a2,TH1D* b,TH1D* c, TH1D* d, TH1D* e)
@@ -47,6 +47,7 @@ void Show(TH1D* a,TH1D* a2,TH1D* b,TH1D* c, TH1D* d, TH1D* e)
   c->SetLineColor(kBlue);
   d->SetLineColor(kGreen+2);
   e->SetLineColor(kMagenta+2);
+  b->SetLineStyle(9);
 
   a->SetTitle("zero bias");
   a2->SetTitle("noise");
@@ -73,14 +74,21 @@ void Show(TH1D* a,TH1D* a2,TH1D* b,TH1D* c, TH1D* d, TH1D* e)
   
   a->GetYaxis()->SetRangeUser(0,1.01);
   a->GetXaxis()->SetTitle("cut value / GeV");
-  a->GetYaxis()->SetTitle("efficiency #epsilon");
+  a->GetYaxis()->SetTitle("event fraction");
 
   TH1D* copy = new TH1D;
   a->Copy(*copy);
   TH1D* a1 = copy;
   a1->SetMarkerColor(kRed);
   a1->SetName("data_copy");
-  a1->SetTitle("data (corrected MC/noise/em)");
+  a1->SetTitle("corrected data");
+
+  TH1D* copy2 = new TH1D;
+  a->Copy(*copy2);
+  TH1D* h_corr = copy2;
+  h_corr->SetName("correctionfactor");
+  h_corr->SetTitle("correction factor;cut value / GeV;correction factor");
+
   int startPlot=0;
   for(int i=1; i<=a1->GetNbinsX(); i++)
     {
@@ -91,12 +99,18 @@ void Show(TH1D* a,TH1D* a2,TH1D* b,TH1D* c, TH1D* d, TH1D* e)
       const double n_zb = 1;
       
       double n_inel = 0;
+      double corr = -1;
       if(f_noise<1) //if eff can be calculated
-        n_inel=(n_sel_zb/f_mc-n_zb*f_noise)/(1-f_noise) * (1.-f_em);
+        {
+          n_inel=(n_sel_zb/f_mc-n_zb*f_noise)/(1-f_noise) * (1.-f_em);
+          if(n_inel)
+            corr=n_sel_zb/n_inel;
+          a1->SetBinContent(i,n_inel);
+          h_corr->SetBinContent(i,corr);
+        }
       else
         startPlot = i+1;
     
-      a1->SetBinContent(i,n_inel);
 
       cout 
         << endl << i << "(" << a1->GetBinCenter(i) << ")"
@@ -104,9 +118,11 @@ void Show(TH1D* a,TH1D* a2,TH1D* b,TH1D* c, TH1D* d, TH1D* e)
         << endl << "f_em= " << f_em
         << endl << "f_noise= " << f_noise
         << endl << "n_sel_zb= " << n_sel_zb
-        << endl << "n_inel= " << n_inel << endl << endl;
+        << endl << "n_inel= " << n_inel
+        << endl << "corr factor=" << corr << endl << endl;
     }
   a1->GetXaxis()->SetRange(startPlot,a1->GetNbinsX());
+  h_corr->GetXaxis()->SetRange(startPlot,h_corr->GetNbinsX());
   a1->SetLineColor(kRed);
 
   TCanvas* c2 = new TCanvas;
@@ -121,5 +137,11 @@ void Show(TH1D* a,TH1D* a2,TH1D* b,TH1D* c, TH1D* d, TH1D* e)
   leg2->SetY2(0.85);
   leg2->SetFillColor(kWhite);
   leg2->Draw();
+
+  TCanvas* c3 = new TCanvas;
+  h_corr->GetYaxis()->SetRangeUser(0.5,3.);
+  h_corr->Draw();
+  TF1* line = new TF1("line","1",0,5);
+  line->Draw("SAME");
 
 }

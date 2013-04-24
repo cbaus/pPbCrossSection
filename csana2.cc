@@ -1,4 +1,4 @@
-#define MAXEVT -10000
+#define MAXEVT 500000
 
 #include "TChain.h"
 #include "TFile.h"
@@ -41,15 +41,16 @@ int main()
 
   //*************************************************************INPUT***********************************************************
   sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Data210614/*_*.root"); sample_name.push_back("data"); sample_type.push_back(DATA);
-  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Data210885/*_*.root"); sample_name.push_back("data2"); sample_type.push_back(DATA);
+  //sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Data210885/*_*.root"); sample_name.push_back("data2"); sample_type.push_back(DATA);
   sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Epos/*_1_*.root"); sample_name.push_back("Epos"); sample_type.push_back(MC);
+  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Epos_SL/*.root"); sample_name.push_back("Epos_SL"); sample_type.push_back(MC);
   sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Hijing/*_1_*.root"); sample_name.push_back("Hijing"); sample_type.push_back(MC);
   sample_fname.push_back("/afs/cern.ch/work/c/cbaus/private/trees/treeMC.root"); sample_name.push_back("QGSJetII"); sample_type.push_back(MC);
   sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/StarlighDPMjet/treeMC.root"); sample_name.push_back("Starlight_DPMJet");  sample_type.push_back(MC);
 
   //**************************************************************OUTPUT*********************************************************
 
-  TFile* out_file = new TFile("histos.root","RECREATE");
+  TFile* out_file = new TFile("histos_rechits.root","RECREATE");
 
   TH1D* h_zero_count_zb_coll;
   TH1D* h_zero_count_zb_no_coll;
@@ -72,8 +73,10 @@ int main()
 
   TH1D* h_hf_cut_single;
   TH1D* h_hf_cut_single_noise;
+  TH1D* h_hf_cut_single_beamgas;
   TH1D* h_hf_cut_double;
   TH1D* h_hf_cut_double_noise;
+  TH1D* h_hf_cut_double_beamgas;
 
   TProfile* h_hf_hits_coll_lumi;
   TProfile* h_hf_hits_plus_lumi;
@@ -154,6 +157,7 @@ int main()
       int bptx_p_m;
       int bptx_p_nm;
       int bptx_np_m;
+      int bptx_quiet;
       tree->SetBranchAddress("L1_ZeroBias_algPrescale",&zero_bias_prescale_L1);
       tree->SetBranchAddress("HLT_PAZeroBias_v1_Prescl",&zero_bias_prescale_HLT);
       tree->SetBranchAddress("HLT_PAZeroBias_v1",&zero_bias);
@@ -162,6 +166,7 @@ int main()
       tree->SetBranchAddress("L1Tech_BPTX_plus_AND_minus.v0_DecisionBeforeMask",&bptx_p_m);
       tree->SetBranchAddress("L1Tech_BPTX_plus_AND_NOT_minus.v0_DecisionBeforeMask",&bptx_p_nm);
       tree->SetBranchAddress("L1Tech_BPTX_minus_AND_not_plus.v0_DecisionBeforeMask",&bptx_np_m);
+      tree->SetBranchAddress("L1Tech_BPTX_quiet.v0_DecisionBeforeMask",&bptx_quiet);
 
       //________________________________________________________________________________
 
@@ -173,8 +178,8 @@ int main()
       h_hf_hits_coll            = new TH1D((add + string("_h_hf_hits_coll")).c_str(),"",200,0,200);
       h_hf_hits_plus            = new TH1D((add + string("_h_hf+_hits_min")).c_str(),"",200,0,200);
       h_hf_hits_minus           = new TH1D((add + string("_h_hf-_hits_min")).c_str(),"",200,0,200);
-      h_hf_hits_noise           = new TH1D((add + string("_h_hf_hits_noise")).c_str(),"",200,0,200);
-      h_hf_hits_beam_gas        = new TH1D((add + string("_h_hf_hits_beam_gas")).c_str(),"",200,0,200);
+      h_hf_hits_noise           = new TH1D((add + string("_h_hf_hits_noise")).c_str(),"",200,0,20);
+      h_hf_hits_beam_gas        = new TH1D((add + string("_h_hf_hits_beam_gas")).c_str(),"",200,0,20);
       h_castor_hf_diff_3        = new TH1D((add + string("_h_castor_hf_diff_3")).c_str(),"",100,0,10000);
       h_castor_hf_diff_5        = new TH1D((add + string("_h_castor_hf_diff_5")).c_str(),"",100,0,10000);
       h_castor_hf_diff_10       = new TH1D((add + string("_h_castor_hf_diff_10")).c_str(),"",100,0,10000);
@@ -184,8 +189,11 @@ int main()
 
       h_hf_cut_single           = new TH1D((add + string("_h_hf_cut_single")).c_str(),"",51,-0.05,5.05);
       h_hf_cut_single_noise     = new TH1D((add + string("_h_hf_cut_single_noise")).c_str(),"",51,-0.05,5.05);
+      h_hf_cut_single_beamgas   = new TH1D((add + string("_h_hf_cut_single_beamgas")).c_str(),"",51,-0.05,5.05);
       h_hf_cut_double           = new TH1D((add + string("_h_hf_cut_double")).c_str(),"",51,-0.05,5.05);
       h_hf_cut_double_noise     = new TH1D((add + string("_h_hf_cut_double_noise")).c_str(),"",51,-0.05,5.05);
+      h_hf_cut_double_beamgas   = new TH1D((add + string("_h_hf_cut_double_beamgas")).c_str(),"",51,-0.05,5.05);
+
 
       h_hf_fsc_p                = new TH2D((add + string("_h_hf_fsc_p")).c_str(),"",200,0,200,200,0,80000);
       h_hf_fsc_m                = new TH2D((add + string("_h_hf_fsc_m")).c_str(),"",200,0,200,200,0,80000);
@@ -228,6 +236,91 @@ int main()
       h_eff->GetXaxis()->SetBinLabel(8,"HF double >2GeV (noise or bg)");
       h_eff->GetXaxis()->SetBinLabel(9,"HF double >3GeV (noise or bg)");
 
+      set<int> unpaired;
+      unpaired.insert(465);
+      unpaired.insert(473);
+      unpaired.insert(479);
+      unpaired.insert(482);
+      unpaired.insert(487);
+      unpaired.insert(490);
+      unpaired.insert(496);
+      unpaired.insert(499);
+      unpaired.insert(504);
+      unpaired.insert(507);
+      unpaired.insert(513);
+      unpaired.insert(516);
+      unpaired.insert(521);
+      unpaired.insert(524);
+      unpaired.insert(530);
+      unpaired.insert(533);
+      unpaired.insert(538);
+      unpaired.insert(541);
+      unpaired.insert(547);
+      unpaired.insert(550);
+      unpaired.insert(555);
+      unpaired.insert(558);
+      unpaired.insert(564);
+      unpaired.insert(567);
+      unpaired.insert(572);
+      unpaired.insert(575);
+      unpaired.insert(581);
+      unpaired.insert(584);
+      unpaired.insert(589);
+      unpaired.insert(592);
+      unpaired.insert(598);
+      unpaired.insert(601);
+      unpaired.insert(606);
+      unpaired.insert(609);
+      unpaired.insert(615);
+      unpaired.insert(618);
+      unpaired.insert(623);
+      unpaired.insert(626);
+      unpaired.insert(632);
+      unpaired.insert(635);
+      unpaired.insert(640);
+      unpaired.insert(643);
+      unpaired.insert(649);
+      unpaired.insert(652);
+      unpaired.insert(657);
+      unpaired.insert(660);
+      unpaired.insert(666);
+      unpaired.insert(674);
+      unpaired.insert(697);
+      unpaired.insert(705);
+      unpaired.insert(711);
+      unpaired.insert(714);
+      unpaired.insert(719);
+      unpaired.insert(722);
+      unpaired.insert(728);
+      unpaired.insert(731);
+      unpaired.insert(736);
+      unpaired.insert(739);
+      unpaired.insert(745);
+      unpaired.insert(748);
+      unpaired.insert(753);
+      unpaired.insert(756);
+      unpaired.insert(762);
+      unpaired.insert(765);
+      unpaired.insert(770);
+      unpaired.insert(773);
+      unpaired.insert(779);
+      unpaired.insert(782);
+      unpaired.insert(787);
+      unpaired.insert(790);
+      unpaired.insert(796);
+      unpaired.insert(799);
+      unpaired.insert(804);
+      unpaired.insert(807);
+      unpaired.insert(813);
+      unpaired.insert(816);
+      unpaired.insert(821);
+      unpaired.insert(824);
+      unpaired.insert(830);
+      unpaired.insert(833);
+      unpaired.insert(838);
+      unpaired.insert(841);
+      unpaired.insert(847);
+      unpaired.insert(855);
 
       for(int iEvent=0; iEvent<tree->GetEntries(); iEvent++)
         {
@@ -241,7 +334,7 @@ int main()
 
           coll          = zero_bias && bptx_p_m; //double beam
           beam_gas      = (bptx_np_m || bptx_p_nm); // only single beam
-          noise         = !bptx_p_m;// && !bptx_np_m && !bptx_p_nm; //not both and not single beam
+          noise         = bptx_quiet;// && !bptx_np_m && !bptx_p_nm; //not both and not single beam
 
           if(sample_type[sample] == MC)
             {
@@ -249,6 +342,12 @@ int main()
               noise = 0;
               coll = 1;
               min_bias = 1;
+            }
+
+          if(!coll && unpaired.count(event->bxNb))
+            {
+              noise = 0;
+              beam_gas = 1;
             }
 
           if(!coll && !noise && !beam_gas && !min_bias) //not intersted
@@ -274,7 +373,7 @@ int main()
 
 
           //---------------------------------------------HF
-          int hf_n = event->HFtowers.size();
+          int hf_n = event->HF.size();
           int hf_zero_count = ForwardRecord::nMaxHFMRecHits - hf_n;
           double hf_double_energy_max = -1;
           double hf_single_energy_max = -1;
@@ -282,7 +381,7 @@ int main()
           double hf_p_energy_max = -1;
           double hf_p_energy = 0;
           double hf_m_energy = 0;
-          for (vector<TowerHF>::const_iterator it = event->HFtowers.begin(); it < event->HFtowers.end(); ++it)
+          for (vector<RecHitHF>::const_iterator it = event->HF.begin(); it < event->HF.end(); ++it)
             {
               //cout << it->Eta << " " << it->Energy << endl;
               if(it->Eta > 0. && it->Energy > hf_p_energy_max)
@@ -301,8 +400,6 @@ int main()
 
           hf_double_energy_max = TMath::Min(hf_m_energy_max,hf_p_energy_max);
           hf_single_energy_max = TMath::Max(hf_m_energy_max,hf_p_energy_max);
-
-
 
 
           //---------------------------------------------GEN Particles
@@ -438,8 +535,10 @@ int main()
             {
               if(coll && hf_double_energy_max > cut)                h_hf_cut_double->Fill(cut);
               if((noise || beam_gas) && hf_double_energy_max > cut) h_hf_cut_double_noise->Fill(cut);
+              if((beam_gas || beam_gas) && hf_double_energy_max > cut) h_hf_cut_double_beamgas->Fill(cut);
               if(coll && hf_single_energy_max > cut)                h_hf_cut_single->Fill(cut);
               if((noise || beam_gas) && hf_single_energy_max > cut) h_hf_cut_single_noise->Fill(cut);
+              if((beam_gas || beam_gas) && hf_single_energy_max > cut) h_hf_cut_single_beamgas->Fill(cut);
             }
 
           if(coll)                                                  h_hf_fsc_p->Fill(hf_p_energy_max,fsc_sum_plus);
@@ -462,7 +561,7 @@ int main()
           if(coll && hf_single_energy_max > 3)                      h_perf_hf_totE_single_3gev->Fill(hf_pm_energy);
           if(coll && hf_double_energy_max > 1.5)                    h_perf_hf_totE_double_1dot5gev->Fill(hf_pm_energy);
 
-          for (vector<TowerHF>::const_iterator it = event->HFtowers.begin(); it < event->HFtowers.end(); ++it)
+          for (vector<RecHitHF>::const_iterator it = event->HF.begin(); it < event->HF.end(); ++it)
             {
               if(coll && hf_double_energy_max > 1.5)
                 h_perf_hf_totE_eta_double_1dot5gev->Fill(it->Eta,it->Energy);
