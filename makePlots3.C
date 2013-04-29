@@ -2,14 +2,14 @@
   gROOT->ProcessLine(" .L style.cc+");
   style();
 
+  TFile* file = TFile::Open("histos.root");
   TFile* file2 = TFile::Open("histos_old.root");
-  TFile* file = TFile::Open("histos_old.root");
-  TH1D* a=file2->Get("data/data_h_hf_hits_coll");
+  TH1D* a=file2->Get("data/data_h_hf-_hits_min");
   TH1D* a2=file2->Get("data/data_h_hf_hits_noise");
-  TH1D* b=file->Get("Hijing/Hijing_h_hf_hits_coll");
-  TH1D* c=file->Get("Epos/Epos_h_hf_hits_coll");
-  TH1D* d=file->Get("QGSJetII/QGSJetII_h_hf_hits_coll");
-  TH1D* e=file->Get("Starlight_DPMJet/Starlight_DPMJet_h_hf_hits_coll");
+  TH1D* b=file2->Get("Hijing/Hijing_h_hf-_hits_min");
+  TH1D* c=file2->Get("Epos/Epos_h_hf-_hits_min");
+  TH1D* d=file2->Get("QGSJetII/QGSJetII_h_hf-_hits_min");
+  TH1D* e=file2->Get("Starlight_DPMJet/Starlight_DPMJet_h_hf-_hits_min");
 
   const int normbin = a->FindBin(10);
   const int normendbin = a->GetNbinsX();

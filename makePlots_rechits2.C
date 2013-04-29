@@ -52,7 +52,7 @@
   e->SetTitle("SL+DPMJet");
 
   a->GetYaxis()->SetRangeUser(1e-7,1.01);
-  a->GetXaxis()->SetTitle("hottest HF tower E / GeV");
+  a->GetXaxis()->SetTitle("hottest HF rec hit E / GeV");
   a->GetYaxis()->SetTitle("events (normalised)");
 
 //   double fac = 1.25;

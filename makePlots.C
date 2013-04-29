@@ -23,7 +23,7 @@ void makePlots()
   TH1D* dd=file->Get("QGSJetII/QGSJetII_h_hf_cut_double");
   TH1D* ee=file->Get("Starlight_DPMJet/Starlight_DPMJet_h_hf_cut_double");
 
-  Show(aaa,aaa2,bbb,bbb,ccc,ee);
+  Show(aa,aa2,bb,cc,dd,ee);
 }
 
 void Show(TH1D* a,TH1D* a2,TH1D* b,TH1D* c, TH1D* d, TH1D* e)

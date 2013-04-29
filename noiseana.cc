@@ -1,4 +1,4 @@
-#define MAXEVT 100000
+#define MAXEVT -100000
 
 #include "TChain.h"
 #include "TFile.h"
@@ -40,7 +40,7 @@ int main()
   //style();
 
   //*************************************************************INPUT***********************************************************
-  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/DataNoise/*9_*.root"); sample_name.push_back("noise"); sample_type.push_back(DATA);
+  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/DataNoise/*.root"); sample_name.push_back("noise"); sample_type.push_back(DATA);
 
   //**************************************************************OUTPUT*********************************************************
 
