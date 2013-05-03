@@ -1,4 +1,4 @@
-void Show(TH1D* a,TH1D* b,TH1D* c,TH1D* d, TH1D* e, TH1D* f);
+void Show(TH1D* a,TH1D* b,TH1D* c,TH1D* d, TH1D* e, TH1D* f, string type);
 
 void makePlots()
 {
@@ -14,7 +14,7 @@ void makePlots()
   TH1D* d=file->Get("QGSJetII/QGSJetII_h_hf_cut_single");
   TH1D* e=file->Get("Starlight_DPMJet/Starlight_DPMJet_h_hf_cut_single");
 
-  Show(a,a2,b,c,d,e);
+  Show(a,a2,b,c,d,e,string("single"));
 
   TH1D* aa=file->Get("data/data_h_hf_cut_double");
   TH1D* aa2=file->Get("data/data_h_hf_cut_double_noise");
@@ -23,10 +23,10 @@ void makePlots()
   TH1D* dd=file->Get("QGSJetII/QGSJetII_h_hf_cut_double");
   TH1D* ee=file->Get("Starlight_DPMJet/Starlight_DPMJet_h_hf_cut_double");
 
-  Show(aa,aa2,bb,cc,dd,ee);
+  Show(aa,aa2,bb,cc,dd,ee,string("double"));
 }
 
-void Show(TH1D* a,TH1D* a2,TH1D* b,TH1D* c, TH1D* d, TH1D* e)
+void Show(TH1D* a,TH1D* a2,TH1D* b,TH1D* c, TH1D* d, TH1D* e, string type)
 {
 
   a->Scale(1./double(a->GetBinContent(1)));
@@ -124,6 +124,9 @@ void Show(TH1D* a,TH1D* a2,TH1D* b,TH1D* c, TH1D* d, TH1D* e)
   a1->GetXaxis()->SetRange(startPlot,a1->GetNbinsX());
   h_corr->GetXaxis()->SetRange(startPlot,h_corr->GetNbinsX());
   a1->SetLineColor(kRed);
+  c1->SaveAs((string("plots/full_p_space_eff_")+type+string(".eps")).c_str());
+  c1->SaveAs((string("plots/full_p_space_eff_")+type+string(".pdf")).c_str());
+  c1->SaveAs((string("plots/full_p_space_eff_")+type+string(".png")).c_str());
 
   TCanvas* c2 = new TCanvas;
   a->Draw("HIST l");
@@ -137,11 +140,17 @@ void Show(TH1D* a,TH1D* a2,TH1D* b,TH1D* c, TH1D* d, TH1D* e)
   leg2->SetY2(0.85);
   leg2->SetFillColor(kWhite);
   leg2->Draw();
+  c2->SaveAs((string("plots/data_eff_")+type+string(".eps")).c_str());
+  c2->SaveAs((string("plots/data_eff_")+type+string(".pdf")).c_str());
+  c2->SaveAs((string("plots/data_eff_")+type+string(".png")).c_str());
 
   TCanvas* c3 = new TCanvas;
   h_corr->GetYaxis()->SetRangeUser(0.5,3.);
   h_corr->Draw();
   TF1* line = new TF1("line","1",0,5);
   line->Draw("SAME");
+  c3->SaveAs((string("plots/corr_factor_")+type+string(".eps")).c_str());
+  c3->SaveAs((string("plots/corr_factor_")+type+string(".pdf")).c_str());
+  c3->SaveAs((string("plots/corr_factor_")+type+string(".png")).c_str());
 
 }

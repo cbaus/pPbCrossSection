@@ -16,7 +16,6 @@ void makePlots_eff()
       cout << i << " " << int(list.size()) << endl;
       TFile* file = TFile::Open("histos.root");
 
-      cout << string(list[i]+string("/")+list[i]) << endl;
       TH1D* a=file->Get(string(list[i]+string("/")+list[i]+string("_h_mc_eff")).c_str());
 
 
@@ -28,6 +27,8 @@ void makePlots_eff()
       a->GetYaxis()->SetRangeUser(0.9,1.01);
 
       a->SetTitle(";;selection efficiency");
+      a->GetXaxis()->SetBinLabel(7,"nTrack #geq 1");
+      cerr << "remove bin label" << endl;
 
       TCanvas* c1 = new TCanvas;
       a->Draw("HIST P");

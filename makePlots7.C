@@ -11,10 +11,10 @@ void makePlots7()
   list.push_back(string("QGSJetII"));
 
   
-  for(int i=0; i<int(list.size()); i++)
+  for(int i=1; i<int(list.size()); i++)
     {
       cout << i << " " << int(list.size()) << endl;
-      TFile* file = TFile::Open("histos.root");
+      TFile* file = TFile::Open("histos_mc.root");
 
       cout << string(list[i]+string("/")+list[i]+string("_h_mc_diffraction_single")) << endl;
       TH1D* a=file->Get(string(list[i]+string("/")+list[i]+string("_h_mc_diffraction_single")).c_str());
@@ -45,25 +45,25 @@ void makePlots7()
       g->SetLineWidth(2.5);
 
 
-      a->SetMarkerColor(kBlue);
-      b->SetMarkerColor(kRed);
-      c->SetMarkerColor(kBlue);
-      d->SetMarkerColor(kRed);
-      e->SetMarkerColor(kGreen+2);
+      a->SetMarkerColor(kBlue+2);
+      b->SetMarkerColor(kRed+2);
+      c->SetMarkerColor(kBlue+2);
+      d->SetMarkerColor(kRed+2);
+      e->SetMarkerColor(kGreen+3);
       f->SetMarkerColor(kBlack);
 
-      a->SetLineColor(kBlue);
-      b->SetLineColor(kRed);
-      c->SetLineColor(kBlue);
-      d->SetLineColor(kRed);
-      e->SetLineColor(kGreen+2);
+      a->SetLineColor(kBlue+2);
+      b->SetLineColor(kRed+2);
+      c->SetLineColor(kBlue+2);
+      d->SetLineColor(kRed+2);
+      e->SetLineColor(kGreen+3);
       f->SetLineColor(kBlack);
 
-      a->SetFillColor(kBlue);
-      b->SetFillColor(kRed);
-      c->SetFillColor(kBlue);
-      d->SetFillColor(kRed);
-      e->SetFillColor(kGreen+2);
+      a->SetFillColor(kBlue+2);
+      b->SetFillColor(kRed+2);
+      c->SetFillColor(kBlue+2);
+      d->SetFillColor(kRed+2);
+      e->SetFillColor(kGreen+3);
       f->SetFillColor(kBlack);
 
       a->SetTitle("single arm > 3 GeV");
@@ -85,10 +85,12 @@ void makePlots7()
       hs->Draw("HIST");
       c1->SetLogy();
       hs->GetYaxis()->SetRangeUser(0.0001,0.03);
-      hs->SetTitle(";log(#xi);events (normalised)");
+      hs->SetTitle(";lg(#xi);events (normalised)");
       TLegend* leg = c1->BuildLegend(0.25,0.65,0.45,0.85);
       leg->SetFillColor(kWhite);
       leg->Draw();
+      c1->SaveAs((string("plots/diff_1_")+list[i]+string(".eps")).c_str());
+      c1->SaveAs((string("plots/diff_1_")+list[i]+string(".pdf")).c_str());
       c1->SaveAs((string("plots/diff_1_")+list[i]+string(".png")).c_str());
   
 
@@ -99,8 +101,10 @@ void makePlots7()
       hs2->Add(e);
       hs2->Add(f);
       hs2->Draw("HIST");
-      hs2->SetTitle(";log(#xi);events (normalised)");
+      hs2->SetTitle(";lg(#xi);events (normalised)");
       leg->Draw();
+      c2->SaveAs((string("plots/diff_2_")+list[i]+string(".eps")).c_str());
+      c2->SaveAs((string("plots/diff_2_")+list[i]+string(".pdf")).c_str());
       c2->SaveAs((string("plots/diff_2_")+list[i]+string(".png")).c_str());
 
 
@@ -110,10 +114,12 @@ void makePlots7()
       b->Draw("HIST P SAME");
       c3->SetLogy();
       g->GetYaxis()->SetRangeUser(0.0001,0.03);
-      g->SetTitle("Inelastic events;log(#xi);events (normalised)");
+      g->SetTitle("Inelastic events;lg(#xi);events (normalised)");
       TLegend* leg = c3->BuildLegend(0.25,0.65,0.65,0.85);
       leg->SetFillColor(kWhite);
       leg->Draw();
+      c3->SaveAs((string("plots/diff_3_")+list[i]+string(".eps")).c_str());
+      c3->SaveAs((string("plots/diff_3_")+list[i]+string(".pdf")).c_str());
       c3->SaveAs((string("plots/diff_3_")+list[i]+string(".png")).c_str());
 
 
@@ -121,8 +127,8 @@ void makePlots7()
       TH1D* single2 = a->Clone("single2");
       TH1D* double2 = b->Clone("double2");
 
-      single2->SetTitle("single-arm > 3 GeV;log(#xi);efficiency #epsilon");
-      double2->SetTitle("double-arm > 3 GeV;log(#xi);efficiency #epsilon");
+      single2->SetTitle("single-arm > 3 GeV;lg(#xi);efficiency #epsilon");
+      double2->SetTitle("double-arm > 3 GeV;lg(#xi);efficiency #epsilon");
 
       for(int n=0; n<=single2->GetNbinsX(); n++)
         {
@@ -145,7 +151,8 @@ void makePlots7()
       TLegend* leg = c4->BuildLegend(0.22,0.65,0.5,0.85);
       leg->SetFillColor(kWhite);
       leg->Draw();
+      c4->SaveAs((string("plots/diff_4_")+list[i]+string(".eps")).c_str());
+      c4->SaveAs((string("plots/diff_4_")+list[i]+string(".pdf")).c_str());
       c4->SaveAs((string("plots/diff_4_")+list[i]+string(".png")).c_str());
-      //gSystem->cd("..")
     }
 }

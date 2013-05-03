@@ -144,7 +144,7 @@ int main()
           ostringstream hf_str, hf_cut_str;
           hf_str  << add << "h_hf_rings_single_" << i;
           hf_cut_str  << add << "h_hf_rings_cut_single_" << i;
-          TH1D* h_hf_rings_single = new TH1D(hf_str.str().c_str(),hf_str.str().c_str(),2000,0,2000);
+          TH1D* h_hf_rings_single = new TH1D(hf_str.str().c_str(),hf_str.str().c_str(),2000,0,200);
           TH1D* h_hf_rings_cut_single = new TH1D(hf_cut_str.str().c_str(),hf_cut_str.str().c_str(),51,-0.05,5.05);
         }
       for (int i=30; i<=41; i++)
@@ -152,7 +152,7 @@ int main()
           ostringstream hf_str, hf_cut_str;
           hf_str  << add << "h_hf_rings_single_" << i;
           hf_cut_str  << add << "h_hf_rings_cut_single_" << i;
-          TH1D* h_hf_rings_single = new TH1D(hf_str.str().c_str(),hf_str.str().c_str(),2000,0,2000);
+          TH1D* h_hf_rings_single = new TH1D(hf_str.str().c_str(),hf_str.str().c_str(),2000,0,200);
           TH1D* h_hf_rings_cut_single = new TH1D(hf_cut_str.str().c_str(),hf_cut_str.str().c_str(),51,-0.05,5.05);
         }
 

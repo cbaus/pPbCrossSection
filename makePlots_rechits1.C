@@ -69,6 +69,9 @@ void Show(TH1D* a,TH1D* a2,TH1D* b,TH1D* b2, TH1D* c, TH1D* c2)
   a->GetYaxis()->SetRangeUser(0,1.01);
   a->GetXaxis()->SetTitle("cut value / GeV");
   a->GetYaxis()->SetTitle("event fraction");
+  can1->SaveAs((string("plots/rechits_1")+string(".eps")).c_str());
+  can1->SaveAs((string("plots/rechits_1")+string(".pdf")).c_str());
+  can1->SaveAs((string("plots/rechits_1")+string(".png")).c_str());
 
 
   TCanvas* can2 = new TCanvas;
@@ -83,5 +86,8 @@ void Show(TH1D* a,TH1D* a2,TH1D* b,TH1D* b2, TH1D* c, TH1D* c2)
   leg2->SetY2(0.85);
   leg2->SetFillColor(kWhite);
   leg2->Draw();
+  can2->SaveAs((string("plots/rechits_2")+string(".pdf")).c_str());
+  can2->SaveAs((string("plots/rechits_2")+string(".png")).c_str());
+  can2->SaveAs((string("plots/rechits_2")+string(".eps")).c_str());
 
 }

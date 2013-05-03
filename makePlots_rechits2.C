@@ -74,6 +74,9 @@
   leg->SetFillColor(kWhite);
   leg->Draw();
   c1->SetLogy();
+  c1->SaveAs((string("plots/rechits_3")+string(".eps")).c_str());
+  c1->SaveAs((string("plots/rechits_3")+string(".pdf")).c_str());
+  c1->SaveAs((string("plots/rechits_3")+string(".png")).c_str());
 
   TCanvas* c2 = new TCanvas;
   TH1D* acopy = a.Clone("acopy");
@@ -88,5 +91,8 @@
   leg->SetFillColor(kWhite);
   leg->Draw();
   c2->SetLogy();
+  c2->SaveAs((string("plots/rechits_4")+string(".pdf")).c_str());
+  c2->SaveAs((string("plots/rechits_4")+string(".png")).c_str());
+  c2->SaveAs((string("plots/rechits_4")+string(".eps")).c_str());
   
 }

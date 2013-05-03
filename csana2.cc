@@ -232,7 +232,7 @@ int main()
       h_mc_eff->GetXaxis()->SetBinLabel(4,"HF single > 5 GeV");
       h_mc_eff->GetXaxis()->SetBinLabel(5,"HF double > 1.5 GeV");
       h_mc_eff->GetXaxis()->SetBinLabel(6,"HF double > 3 GeV");
-      h_mc_eff->GetXaxis()->SetBinLabel(7,"nTrack #ge 1");
+      h_mc_eff->GetXaxis()->SetBinLabel(7,"nTrack #geq 1");
       h_mc_eff->GetXaxis()->SetBinLabel(8,"CASTOR E_{tot} > 12.5 GeV");
 
       for(int iEvent=0; iEvent<tree->GetEntries(); iEvent++)

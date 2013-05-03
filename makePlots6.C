@@ -1,28 +1,28 @@
-void Show(TH1D* a,TH1D* b,TH1D* c,TH1D* d);
+void Show(TH1D* a,TH1D* b,TH1D* c,TH1D* d, string type);
 
 void makePlots6()
 {
   gROOT->ProcessLine(" .L style.cc+");
   style();
 
-  TFile* file = TFile::Open("histos.root");
+  TFile* file = TFile::Open("histos_old.root");
   TH1D* a=file->Get("data/data_h_perf_hf_totE_single_3gev");
   TH1D* b=file->Get("Hijing/Hijing_h_perf_hf_totE_single_3gev");
   TH1D* c=file->Get("Epos/Epos_h_perf_hf_totE_single_3gev");
-  TH1D* d=c;//file->Get("QGSJetII/QGSJetII_h_perf_hf_totE_single_3gev");
+  TH1D* d=file->Get("QGSJetII/QGSJetII_h_perf_hf_totE_single_3gev");
 
-  Show(a,b,c,d);
+  Show(a,b,c,d,"single");
 
-  TFile* file = TFile::Open("histos.root");
+  TFile* file = TFile::Open("histos_old.root");
   TH1D* e=file->Get("data/data_h_perf_hf_totE_double_1dot5gev");
   TH1D* f=file->Get("Hijing/Hijing_h_perf_hf_totE_double_1dot5gev");
   TH1D* g=file->Get("Epos/Epos_h_perf_hf_totE_double_1dot5gev");
-  TH1D* h=g;//file->Get("QGSJetII/QGSJetII_h_perf_hf_totE_double_1dot5gev");
+  TH1D* h=file->Get("QGSJetII/QGSJetII_h_perf_hf_totE_double_1dot5gev");
 
-  Show(e,f,g,h);
+  Show(e,f,g,h,"double");
 }
 
-void Show(TH1D* a,TH1D* b,TH1D* c,TH1D* d)
+void Show(TH1D* a,TH1D* b,TH1D* c,TH1D* d, string type)
 {
   const int normbin1 = a->FindBin(1000);
   const int normbin2 = a->FindBin(1500);
@@ -54,7 +54,7 @@ void Show(TH1D* a,TH1D* b,TH1D* c,TH1D* d)
   d->SetTitle("QGSJetII");
 
   a->GetXaxis()->SetRangeUser(0,5000);
-  a->GetXaxis()->SetTitle("total HF recHit E / GeV");
+  a->GetXaxis()->SetTitle("total HF E (towers) / GeV");
   a->GetYaxis()->SetTitle("events (normalised)");
 
   TCanvas* c1 = new TCanvas;
@@ -66,5 +66,8 @@ void Show(TH1D* a,TH1D* b,TH1D* c,TH1D* d)
   leg->SetFillColor(kWhite);
   leg->Draw();
 
-  c1->SetLogy();  
+  c1->SetLogy();
+  c1->SaveAs((string("plots/hf_perf_3_")+type+string(".eps")).c_str());
+  c1->SaveAs((string("plots/hf_perf_3_")+type+string(".pdf")).c_str());
+  c1->SaveAs((string("plots/hf_perf_3_")+type+string(".png")).c_str());  
 }
