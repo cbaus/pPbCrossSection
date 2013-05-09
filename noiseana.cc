@@ -1,4 +1,4 @@
-#define MAXEVT -100000
+#define MAXEVT -500000
 
 #include "TChain.h"
 #include "TFile.h"
@@ -352,13 +352,13 @@ int main()
                   return 1;
                 }
               h_hf_rings_single->Fill(it->second);
-              ++it;
               
               for (double cut=0; cut <= 5; cut+=0.1)
                 {
                   if(it->second > cut)                h_hf_rings_cut_single->Fill(cut);
                 }
-              
+
+              ++it;              
             }
           
 

@@ -1,4 +1,4 @@
-#define MAXEVT 50000
+#define MAXEVT -50000
 
 #include "TChain.h"
 #include "TFile.h"
@@ -40,13 +40,17 @@ int main()
   //style();
 
   //*************************************************************INPUT***********************************************************
-  //sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Data210614/*_*.root"); sample_name.push_back("data"); sample_type.push_back(DATA);
-  //sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Data210885/*_*.root"); sample_name.push_back("data2"); sample_type.push_back(DATA);
+  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Data210614/*_*.root"); sample_name.push_back("data210614"); sample_type.push_back(DATA);
+  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Data210837/*_*.root"); sample_name.push_back("data210837"); sample_type.push_back(DATA);
+  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Data210885/*_*.root"); sample_name.push_back("data210885"); sample_type.push_back(DATA);
+  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Data211607/*_*.root"); sample_name.push_back("data211607"); sample_type.push_back(DATA);
   sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Epos/*.root"); sample_name.push_back("Epos"); sample_type.push_back(MC);
-  //sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Epos_SL/*.root"); sample_name.push_back("Epos_SL"); sample_type.push_back(MC);
-  //sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Hijing/*.root"); sample_name.push_back("Hijing"); sample_type.push_back(MC);
-  //sample_fname.push_back("/afs/cern.ch/work/c/cbaus/private/trees/treeMC.root"); sample_name.push_back("QGSJetII"); sample_type.push_back(MC);
-  //sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/StarlighDPMjet/treeMC.root"); sample_name.push_back("Starlight_DPMJet");  sample_type.push_back(MC);
+  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Epos_SL/*.root"); sample_name.push_back("Epos_SL"); sample_type.push_back(MC);
+  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Hijing/*.root"); sample_name.push_back("Hijing"); sample_type.push_back(MC);
+  sample_fname.push_back("/afs/cern.ch/work/c/cbaus/private/trees/treeMC.root"); sample_name.push_back("QGSJetII"); sample_type.push_back(MC);
+  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/StarlightDPMjet_v2/treeMC.root"); sample_name.push_back("Starlight_DPMJet");  sample_type.push_back(MC);
+  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/StarlighDPMjet/treeMC.root"); sample_name.push_back("Starlight_DPMJet_Old");  sample_type.push_back(MC);
+  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/StarlightPythia/treeMC.root"); sample_name.push_back("Starlight_Pythia");  sample_type.push_back(MC);
 
   //**************************************************************OUTPUT*********************************************************
 
@@ -64,6 +68,8 @@ int main()
   TH1D* h_castor_hf_diff_10;
   TH1D* h_castor_gap_hf;
   TH1D* h_castor_nogap_hf;
+  TH1D* h_mc_rapidity;
+  TH1D* h_mc_eta_e;
   TH1D* h_mc_eff;
 
   TH2D* h_hf_fsc_p;
@@ -225,6 +231,8 @@ int main()
       h_mc_diffraction_ND     = new TH1D((add + string("_h_mc_diffraction_ND")).c_str(),"",100,-9,0);
       h_mc_diffraction_all    = new TH1D((add + string("_h_mc_diffraction_all")).c_str(),"",100,-9,0);
 
+      h_mc_rapidity           = new TH1D((add + string("_h_mc_rapidity")).c_str(),"",100,-12,12);
+      h_mc_eta_e         = new TH1D((add + string("_h_mc_eta_e")).c_str(),"",100,-12,12);
       h_mc_eff                = new TH1D((add + string("_h_mc_eff")).c_str(),"",9,-0.5,8.5);
       h_mc_eff->GetXaxis()->SetBinLabel(1,"All");
       h_mc_eff->GetXaxis()->SetBinLabel(2,"HF single > 3 GeV");
@@ -235,10 +243,13 @@ int main()
       h_mc_eff->GetXaxis()->SetBinLabel(7,"nTrack #geq 1");
       h_mc_eff->GetXaxis()->SetBinLabel(8,"CASTOR E_{tot} > 12.5 GeV");
 
-      for(int iEvent=0; iEvent<tree->GetEntries(); iEvent++)
+      double n_total = double(tree->GetEntries());
+      if(MAXEVT<n_total && MAXEVT>0)
+        n_total = double(MAXEVT);
+
+      for(int iEvent=0; iEvent<n_total; iEvent++)
         {
-          if(iEvent==MAXEVT) break;
-          if(iEvent % 10000 == 0) cout << sample+1 << "/" << sample_name.size() << " -- " << sample_name[sample].c_str() << " -- Entry: " << iEvent << " / " << (MAXEVT>0?MAXEVT:tree->GetEntries()) << endl;
+          if(iEvent % 10000 == 0) cout << sample+1 << "/" << sample_name.size() << " -- " << sample_name[sample].c_str() << " -- Entry: " << iEvent << " / " << n_total << endl;
           tree->GetEntry(iEvent);
           //          if(event->runNb != 210885)
           //continue;
@@ -309,7 +320,7 @@ int main()
 
           hf_double_energy_max = TMath::Min(hf_m_energy_max,hf_p_energy_max);
           hf_single_energy_max = TMath::Max(hf_m_energy_max,hf_p_energy_max);
-          bool hf_double_tag = (castor_tag || hf_m_energy_max > 1.5) && hf_p_energy_max > 1.5;
+          bool hf_double_tag = (hf_m_energy_max > 1.5) && hf_p_energy_max > 1.5;
 
           //---------------------------------------------GEN Particles
           const double s = 5020*5020;
@@ -337,6 +348,8 @@ int main()
                   if (it->Id > 1e9) //skip fragments
                     continue;
                   double Rapidity= it->GetRapidity();
+                  h_mc_rapidity->Fill(Rapidity);
+                  h_mc_eta_e->Fill(it->GetEta(),it->GetEnergy());
                   rapidityMassMap.insert(pair<double,GenParticle*>(it->GetRapidity(),&(*it)));
                 }
               map<double,GenParticle*>::const_iterator thisIsIt; //start of m_x
@@ -396,6 +409,7 @@ int main()
           const double lumiPerLS     = event->instLuminosity * event->instLuminosityCorr * 1e6;
           const double evtWeight  = lumiPerLS?double(prescale) / lumiPerLS:0.;
 
+
           //cout << prescale << " " << event->instLuminosity << " " <<  event->instLuminosityCorr << endl;
 
           //Booking run histograms
@@ -404,12 +418,15 @@ int main()
           run_str << event->runNb;
           TH1D* h_run_events_single = NULL;
           TH1D* h_run_events_double = NULL;
+          TH1D* h_run_events_lumi = NULL;
           h_run_events_single = (TH1D*)(out_file->Get((add+string("/")+add+run_str.str()+string("_h_run_events_single_")).c_str()));
           h_run_events_double = (TH1D*)(out_file->Get((add+string("/")+add+run_str.str()+string("_h_run_events_double_")).c_str()));
+          h_run_events_lumi = (TProfile*)(out_file->Get((add+string("/")+add+run_str.str()+string("_h_run_events_lumi_")).c_str()));
           if(h_run_events_single == NULL)
             {
               h_run_events_single = new TH1D((add+run_str.str()+string("_h_run_events_single_")).c_str(),run_str.str().c_str(),2000,0,2000);
               h_run_events_double = new TH1D((add+run_str.str()+string("_h_run_events_double_")).c_str(),run_str.str().c_str(),2000,0,2000);
+              h_run_events_lumi = new TProfile((add+run_str.str()+string("_h_run_events_lumi_")).c_str(),run_str.str().c_str(),2000,0,2000);
             }
 
 
@@ -477,8 +494,8 @@ int main()
                 h_perf_hf_totE_eta_single_3gev->Fill(it->Eta,it->Energy);
             }
 
-          if(coll && hf_single_energy_max > 3 || castor_tag)                      h_mc_diffraction_single->Fill(log10(xi_x));
-          if(coll && hf_double_tag)                    h_mc_diffraction_double->Fill(log10(xi_x));
+          if(coll && hf_single_energy_max > 3)                      h_mc_diffraction_single->Fill(log10(xi_x));
+          if(coll && hf_double_tag)                                 h_mc_diffraction_double->Fill(log10(xi_x));
           if(coll && SD)                                            h_mc_diffraction_SD->Fill(log10(xi_x));
           if(coll && DD)                                            h_mc_diffraction_DD->Fill(log10(xi_x));
           if(coll && CD)                                            h_mc_diffraction_CD->Fill(log10(xi_x));
@@ -487,6 +504,7 @@ int main()
 
           if(coll && hf_single_energy_max > 3)                      h_run_events_single->Fill(event->lumiNb,evtWeight);
           if(coll && hf_double_energy_max > 1.5)                    h_run_events_double->Fill(event->lumiNb,evtWeight);
+                                                                    h_run_events_lumi->Fill(event->lumiNb,lumiPerLS);
 
           if(noise)                                                 h_random_trig_tracks_hf->Fill(hf_single_energy_max,event->Tracks.size());
 
@@ -494,17 +512,19 @@ int main()
 
       //******************************************AFTER EVENT LOOP*******************************************
       double integ_lumi = 1854.344875;// nb^-1
-      double n_total = double(tree->GetEntries());
-      double n_zb = h_mc_eff->GetBinContent(1) * (MAXEVT>0?n_total/double(MAXEVT):1.);
-      double n_mb = h_mc_eff->GetBinContent(4) * (MAXEVT>0?n_total/double(MAXEVT):1.);
+      double n_zb = h_mc_eff->GetBinContent(1) * n_total;
+      double n_mb = h_mc_eff->GetBinContent(4) * n_total;
 
       cout << endl << "Cross section ZB: " << n_zb/integ_lumi << " --- cross section MB: " << n_mb/integ_lumi << endl;
-      h_perf_hf_totE_eta_double_1dot5gev->Scale(1./double(MAXEVT>0?MAXEVT:n_total));
-      h_perf_hf_totE_eta_single_3gev->Scale(1./double(MAXEVT>0?MAXEVT:n_total));
+      h_perf_hf_totE_eta_double_1dot5gev->Scale(1./n_total);
+      h_perf_hf_totE_eta_single_3gev->Scale(1./n_total);
+
+      h_mc_rapidity->Scale(1./n_total/h_mc_rapidity->GetBinWidth(1));
+      h_mc_eta_e   ->Scale(1./n_total/h_mc_eta_e->GetBinWidth(1));
 
     }
 
-  //********************************************AFTER FILE LOOP************************************************
+  //********************************************AFTER SAMPLE LOOP************************************************
 
   out_file->Write();
   out_file->Save();
