@@ -1,4 +1,4 @@
-#define MAXEVT -500000
+#define MAXEVT 100000
 
 #include "TChain.h"
 #include "TFile.h"
@@ -131,10 +131,10 @@ int main()
       h_hf_hits_noise           = new TH1D((add + string("_h_hf_hits_noise")).c_str(),"",200,0,20);
       h_hf_hits_beamgas        = new TH1D((add + string("_h_hf_hits_beamgas")).c_str(),"",200,0,20);
 
-      h_hf_cut_single_noise     = new TH1D((add + string("_h_hf_cut_single_noise")).c_str(),"",51,-0.05,5.05);
-      h_hf_cut_single_beamgas   = new TH1D((add + string("_h_hf_cut_single_beamgas")).c_str(),"",51,-0.05,5.05);
-      h_hf_cut_double_noise     = new TH1D((add + string("_h_hf_cut_double_noise")).c_str(),"",51,-0.05,5.05);
-      h_hf_cut_double_beamgas   = new TH1D((add + string("_h_hf_cut_double_beamgas")).c_str(),"",51,-0.05,5.05);
+      h_hf_cut_single_noise     = new TH1D((add + string("_h_hf_cut_single_noise")).c_str(),"",101,-0.05,10.05);
+      h_hf_cut_single_beamgas   = new TH1D((add + string("_h_hf_cut_single_beamgas")).c_str(),"",101,-0.05,10.05);
+      h_hf_cut_double_noise     = new TH1D((add + string("_h_hf_cut_double_noise")).c_str(),"",101,-0.05,10.05);
+      h_hf_cut_double_beamgas   = new TH1D((add + string("_h_hf_cut_double_beamgas")).c_str(),"",101,-0.05,10.05);
 
       h_noise_tracks_hf   = new TH2D((add + string("_h_noise_tracks_hf")).c_str(),"",200,0,20,20,0,20);
       h_beamgas_tracks_hf   = new TH2D((add + string("_h_beamgas_tracks_hf")).c_str(),"",200,0,20,20,0,20);
@@ -145,7 +145,7 @@ int main()
           hf_str  << add << "h_hf_rings_single_" << i;
           hf_cut_str  << add << "h_hf_rings_cut_single_" << i;
           TH1D* h_hf_rings_single = new TH1D(hf_str.str().c_str(),hf_str.str().c_str(),2000,0,200);
-          TH1D* h_hf_rings_cut_single = new TH1D(hf_cut_str.str().c_str(),hf_cut_str.str().c_str(),51,-0.05,5.05);
+          TH1D* h_hf_rings_cut_single = new TH1D(hf_cut_str.str().c_str(),hf_cut_str.str().c_str(),101,-0.05,10.05);
         }
       for (int i=30; i<=41; i++)
         {
@@ -153,7 +153,7 @@ int main()
           hf_str  << add << "h_hf_rings_single_" << i;
           hf_cut_str  << add << "h_hf_rings_cut_single_" << i;
           TH1D* h_hf_rings_single = new TH1D(hf_str.str().c_str(),hf_str.str().c_str(),2000,0,200);
-          TH1D* h_hf_rings_cut_single = new TH1D(hf_cut_str.str().c_str(),hf_cut_str.str().c_str(),51,-0.05,5.05);
+          TH1D* h_hf_rings_cut_single = new TH1D(hf_cut_str.str().c_str(),hf_cut_str.str().c_str(),101,-0.05,10.05);
         }
 
       set<int> unpaired;
@@ -286,21 +286,21 @@ int main()
           //---------------------------------------------HF
           int hf_n = event->HFtowers.size();
           int hf_zero_count = ForwardRecord::nMaxHFMRecHits - hf_n;
-          double hf_double_energy_max = -1;
-          double hf_single_energy_max = -1;
-          double hf_m_energy_max = -1;
-          double hf_p_energy_max = -1;
+          double hf_double_energy_max = 0;
+          double hf_single_energy_max = 0;
+          double hf_m_energy_max = 0;
+          double hf_p_energy_max = 0;
           double hf_p_energy = 0;
           double hf_m_energy = 0;
           map<int,double> hf_ring_map_single_max;
           for (vector<TowerHF>::const_iterator it = event->HFtowers.begin(); it < event->HFtowers.end(); ++it)
             {
-              int Ieta = it->Eta > 0?it->IetaAbs:-it->IetaAbs;
+              const int Ieta = it->Eta > 0?it->IetaAbs:-it->IetaAbs;
               if(hf_ring_map_single_max.count(Ieta) == 0)
                 hf_ring_map_single_max.insert(pair<int,double>(Ieta,it->Energy));
               else if (hf_ring_map_single_max[Ieta] < it->Energy)
                 hf_ring_map_single_max[Ieta]=it->Energy;
-              
+
 
               //cout << it->Eta << " " << it->Energy << endl;
               if(it->Eta > 0. && it->Energy > hf_p_energy_max)
@@ -334,44 +334,52 @@ int main()
               h_run_events_single = new TH1D((add+run_str.str()+string("_h_run_events_single_")).c_str(),run_str.str().c_str(),2000,0,2000);
               h_run_events_double = new TH1D((add+run_str.str()+string("_h_run_events_double_")).c_str(),run_str.str().c_str(),2000,0,2000);
             }
-          
+
           //HF Rings
-          map<int,double>::const_iterator it = hf_ring_map_single_max.begin();
-          while(noise && it != hf_ring_map_single_max.end())
+
+          int ieta = -41;
+          for (int i=0; i<24; i++)
             {
+
+              double hot = hf_ring_map_single_max.count(ieta) ? hf_ring_map_single_max[ieta] : 0;
+
+              //map<int,double>::const_iterator it = hf_ring_map_single_max.begin();
+              //while(noise && it != hf_ring_map_single_max.end())
               ostringstream hf_str, hf_cut_str;
-              hf_str  << add << "h_hf_rings_single_" << it->first;
-              hf_cut_str  << add << "h_hf_rings_cut_single_" << it->first;
+              hf_str  << add << "h_hf_rings_single_" << ieta;
+              hf_cut_str  << add << "h_hf_rings_cut_single_" << ieta;
               TH1D* h_hf_rings_single = NULL;
               TH1D* h_hf_rings_cut_single = NULL;
               h_hf_rings_single = (TH1D*)(out_file->Get((add+string("/")+hf_str.str()).c_str()));
               h_hf_rings_cut_single = (TH1D*)(out_file->Get((add+string("/")+hf_cut_str.str()).c_str()));
               if(h_hf_rings_single == NULL || h_hf_rings_cut_single == NULL)
                 {
-                  cerr << "no histo" << endl;
+                  cerr << "no histo " << ieta << endl;
                   return 1;
                 }
-              h_hf_rings_single->Fill(it->second);
-              
-              for (double cut=0; cut <= 5; cut+=0.1)
+              h_hf_rings_single->Fill(hot);
+
+              for (double cut=0; cut <= 10; cut+=0.1)
                 {
-                  if(it->second > cut)                h_hf_rings_cut_single->Fill(cut);
+                  if(hot >= cut) h_hf_rings_cut_single->Fill(cut);
                 }
 
-              ++it;              
+              //++it;
+              if(ieta==-30) ieta=30;
+              else ieta++;
             }
-          
+
 
           //---------------------------------------------Filling HISTOS
           if(noise)                                                h_hf_hits_noise->Fill(hf_double_energy_max);
           if(beamgas)                                              h_hf_hits_beamgas->Fill(hf_double_energy_max);
 
-          for (double cut=0; cut <= 5; cut+=0.1)
+          for (double cut=0; cut <= 10; cut+=0.1)
             {
-              if((noise || beamgas) && hf_double_energy_max > cut) h_hf_cut_double_noise->Fill(cut);
-              if((beamgas || beamgas) && hf_double_energy_max > cut) h_hf_cut_double_beamgas->Fill(cut);
-              if((noise || beamgas) && hf_single_energy_max > cut) h_hf_cut_single_noise->Fill(cut);
-              if((beamgas || beamgas) && hf_single_energy_max > cut) h_hf_cut_single_beamgas->Fill(cut);
+              if((noise || beamgas) && hf_double_energy_max >= cut) h_hf_cut_double_noise->Fill(cut);
+              if((beamgas || beamgas) && hf_double_energy_max >= cut) h_hf_cut_double_beamgas->Fill(cut);
+              if((noise || beamgas) && hf_single_energy_max >= cut) h_hf_cut_single_noise->Fill(cut);
+              if((beamgas || beamgas) && hf_single_energy_max >= cut) h_hf_cut_single_beamgas->Fill(cut);
             }
 
           if(noise)                                                 h_noise_tracks_hf->Fill(hf_single_energy_max,event->Tracks.size());

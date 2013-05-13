@@ -9,25 +9,25 @@ void makePlots()
 {
   gROOT->ProcessLine(" .L style.cc+");
   style();
-  
+
 
   TFile* file2 = TFile::Open("histos.root"); cout << "warn histos.root" << endl;
   TFile* file = TFile::Open("histos_old.root");
-  TH1D* a=file->Get("data/data_h_hf_cut_single");
-  TH1D* a2=file->Get("data2/data2_h_hf_cut_single_noise");
-  TH1D* b=file->Get("Hijing/Hijing_h_hf_cut_single");
-  TH1D* c=file->Get("Epos/Epos_h_hf_cut_single");
-  TH1D* d=file->Get("QGSJetII/QGSJetII_h_hf_cut_single");
+  TH1D* a=file2->Get("data210885/data210885_h_hf_cut_single");
+  TH1D* a2=file2->Get("data210885/data210885_h_hf_cut_single_noise");
+  TH1D* b=file2->Get("Hijing/Hijing_h_hf_cut_single");
+  TH1D* c=file2->Get("Epos/Epos_h_hf_cut_single");
+  TH1D* d=file2->Get("QGSJetII/QGSJetII_h_hf_cut_single");
   TH1D* e=file2->Get("Starlight_DPMJet/Starlight_DPMJet_h_hf_cut_single");
   TH1D* f=file2->Get("Starlight_Pythia/Starlight_Pythia_h_hf_cut_single");
 
   Show(a,a2,b,c,d,e,f,string("single"));
 
-  TH1D* aa=file->Get("data/data_h_hf_cut_double");
-  TH1D* aa2=file->Get("data2/data2_h_hf_cut_double_noise");
-  TH1D* bb=file->Get("Hijing/Hijing_h_hf_cut_double");
-  TH1D* cc=file->Get("Epos/Epos_h_hf_cut_double");
-  TH1D* dd=file->Get("QGSJetII/QGSJetII_h_hf_cut_double");
+  TH1D* aa=file2->Get("data210885/data210885_h_hf_cut_double");
+  TH1D* aa2=file2->Get("data210885/data210885_h_hf_cut_double_noise");
+  TH1D* bb=file2->Get("Hijing/Hijing_h_hf_cut_double");
+  TH1D* cc=file2->Get("Epos/Epos_h_hf_cut_double");
+  TH1D* dd=file2->Get("QGSJetII/QGSJetII_h_hf_cut_double");
   TH1D* ee=file2->Get("Starlight_DPMJet/Starlight_DPMJet_h_hf_cut_double");
   TH1D* ff=file2->Get("Starlight_Pythia/Starlight_Pythia_h_hf_cut_double");
 
@@ -49,8 +49,8 @@ void Show(TH1D* a,TH1D* a2,TH1D* b,TH1D* c, TH1D* d, TH1D* e, TH1D* f, string ty
   b->Scale(1./double(b->GetBinContent(1)));
   c->Scale(1./double(c->GetBinContent(1)));
   d->Scale(1./double(d->GetBinContent(1)));
-  e->Scale(1./double(e->GetBinContent(1)));
-  f->Scale(1./double(e->GetBinContent(1)));
+  e->Scale(1./double(e->GetBinContent(1))/ 2100. * 195.);
+  f->Scale(1./double(f->GetBinContent(1))/ 2100. * 122.);
 
   a->SetLineWidth(2);
   a2->SetLineWidth(2);
@@ -90,7 +90,7 @@ void Show(TH1D* a,TH1D* a2,TH1D* b,TH1D* c, TH1D* d, TH1D* e, TH1D* f, string ty
   leg->SetY1(0.3);
   leg->SetY2(0.5);
   leg->Draw();
-  
+
   a->GetYaxis()->SetRangeUser(0,1.01);
   a->GetXaxis()->SetTitle("cut value / GeV");
   a->GetYaxis()->SetTitle("event fraction");
@@ -111,12 +111,12 @@ void Show(TH1D* a,TH1D* a2,TH1D* b,TH1D* c, TH1D* d, TH1D* e, TH1D* f, string ty
   int startPlot=0;
   for(int i=1; i<=a1->GetNbinsX(); i++)
     {
-      const double f_em = 0.5* ((e->GetBinContent(i)/e->GetBinContent(1) / 2100. * 195.) + (f->GetBinContent(i)/f->GetBinContent(1) / 2100. * 122.));
+      const double f_em = 0.5* (e->GetBinContent(i) + f->GetBinContent(i));
       const double f_noise = a2->GetBinContent(i)/a2->GetBinContent(1);
       const double f_mc = (c->GetBinContent(i)/c->GetBinContent(1) + d->GetBinContent(i)/d->GetBinContent(1))/2.;
       const double n_sel_zb = a->GetBinContent(i);
       const double n_zb = 1;
-      
+
       double n_inel = 0;
       double corr = -1;
       if(f_noise<1) //if eff can be calculated
@@ -129,9 +129,9 @@ void Show(TH1D* a,TH1D* a2,TH1D* b,TH1D* c, TH1D* d, TH1D* e, TH1D* f, string ty
         }
       else
         startPlot = i+1;
-    
 
-      cout 
+
+      cout
         << endl << i << "(" << a1->GetBinCenter(i) << ")"
         << endl << "f_mc= " << f_mc
         << endl << "f_em= " << f_em
@@ -163,10 +163,10 @@ void Show(TH1D* a,TH1D* a2,TH1D* b,TH1D* c, TH1D* d, TH1D* e, TH1D* f, string ty
   c1->SaveAs((string("plots/full_p_space_eff_")+type+string(".png")).c_str());
 
   TCanvas* c2 = new TCanvas;
-//   a->Draw("HIST l");
-//   a1->Draw("HIST l SAME");
-//   a2->Draw("HIST l SAME");
-//   e->Draw("HIST l SAME");
+  a->Draw("HIST l");
+  a1->Draw("HIST l SAME");
+  a2->Draw("HIST l SAME");
+  e->Draw("HIST l SAME");
   f->Draw("HIST l SAME");
   TLegend* leg2 = c2->BuildLegend();
   leg2->SetX1(0.45);

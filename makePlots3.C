@@ -1,17 +1,37 @@
+void Show(TH1D* a,TH1D* a2,TH1D* b,TH1D* c,TH1D* d,TH1D* e,TH1D* f);
+
+void makePlots3()
 {
   gROOT->ProcessLine(" .L style.cc+");
   style();
 
+  {
   TFile* file2 = TFile::Open("histos.root");
   TFile* file = TFile::Open("histos_old.root");
-  TH1D* a=file->Get("data/data_h_hf-_hits_min");
-  TH1D* a2=file->Get("data/data_h_hf_hits_noise");
-  TH1D* b=file->Get("Hijing/Hijing_h_hf-_hits_min");
-  TH1D* c=file->Get("Epos/Epos_h_hf-_hits_min");
-  TH1D* d=file->Get("QGSJetII/QGSJetII_h_hf-_hits_min");
+  TH1D* a=file2->Get("data210885/data210885_h_hfm_hits_coll");
+  TH1D* a2=file2->Get("data210885/data210885_h_hf_hits_noise");
+  TH1D* b=file2->Get("Hijing/Hijing_h_hfm_hits_coll");
+  TH1D* c=file2->Get("Epos/Epos_h_hfm_hits_coll");
+  TH1D* d=file2->Get("QGSJetII/QGSJetII_h_hfm_hits_coll");
   TH1D* e=file2->Get("Starlight_DPMJet/Starlight_DPMJet_h_hfm_hits_coll");
   TH1D* f=file2->Get("Starlight_Pythia/Starlight_Pythia_h_hfm_hits_coll");
-
+  Show(a,a2,b,c,d,e,f);
+  }
+  {
+  TFile* file = TFile::Open("histos.root");
+  file->ls();
+  TH1D* aa=file->Get("data210885/data210885_h_hfp_hits_coll");
+  TH1D* aa2=file->Get("data210885/data210885_h_hf_hits_noise");
+  TH1D* bb=file->Get("Hijing/Hijing_h_hfp_hits_coll");
+  TH1D* cc=file->Get("Epos/Epos_h_hfp_hits_coll");
+  TH1D* dd=file->Get("QGSJetII/QGSJetII_h_hfp_hits_coll");
+  TH1D* ee=file->Get("Starlight_DPMJet/Starlight_DPMJet_h_hfp_hits_coll");
+  TH1D* ff=file->Get("Starlight_Pythia/Starlight_Pythia_h_hfp_hits_coll");
+  Show(aa,aa2,bb,cc,dd,ee,ff);
+  }
+}
+void Show(TH1D* a,TH1D* a2,TH1D* b,TH1D* c,TH1D* d,TH1D* e,TH1D* f)
+  {
   const int normbin = a->FindBin(10);
   const int normendbin = a->GetNbinsX();
   double eposscale=double(c->GetEntries())/double(e->GetEntries());
@@ -40,7 +60,7 @@
   b->SetMarkerColor(kRed);
   c->SetMarkerColor(kBlue);
   d->SetMarkerColor(kGreen+2);
-  e->SetMarkerColor(kMagenta+4);
+  e->SetMarkerColor(kMagenta+3);
   f->SetMarkerColor(kMagenta-5);
 
   b->SetMarkerStyle(4);
@@ -54,7 +74,7 @@
   b->SetLineColor(kRed);
   c->SetLineColor(kBlue);
   d->SetLineColor(kGreen+2);
-  e->SetLineColor(kMagenta+4);
+  e->SetLineColor(kMagenta+3);
   f->SetLineColor(kMagenta-5);
 
   a->SetTitle("zero bias");
@@ -91,7 +111,7 @@
   c1->SetLogy();
 
   TCanvas* c2 = new TCanvas;
-  TH1D* acopy = a.Clone("acopy");
+  TH1D* acopy = a->Clone("acopy");
   acopy->GetXaxis()->SetRangeUser(0,10);
   acopy->Draw("P");
   a2->Draw("L SAME");
@@ -104,5 +124,5 @@
   leg->SetFillColor(kWhite);
   leg->Draw();
   c2->SetLogy();
-  
+
 }
