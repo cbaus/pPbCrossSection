@@ -1,4 +1,4 @@
-#define MAXEVT -50000
+#define MAXEVT -5000
 
 #include "TChain.h"
 #include "TFile.h"
@@ -45,13 +45,20 @@ int main()
 
   //*************************************************************INPUT***********************************************************
   sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Data210614/*_*.root"); sample_name.push_back("data210614"); sample_type.push_back(DATA);
-  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Data210837/*_*.root"); sample_name.push_back("data210837"); sample_type.push_back(DATA);
   sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Data210885/*_*.root"); sample_name.push_back("data210885"); sample_type.push_back(DATA);
+  sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211000/*.root"); sample_name.push_back("data211000"); sample_type.push_back(DATA);
+  sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211001/*.root"); sample_name.push_back("data211001"); sample_type.push_back(DATA);
+  sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211032/*.root"); sample_name.push_back("data211032"); sample_type.push_back(DATA);
+  sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211256/*.root"); sample_name.push_back("data211256"); sample_type.push_back(DATA);
+  sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211371/*.root"); sample_name.push_back("data211371"); sample_type.push_back(DATA);
+  sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211390/*.root"); sample_name.push_back("data211390"); sample_type.push_back(DATA);
+  sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211532/*.root"); sample_name.push_back("data211532"); sample_type.push_back(DATA);
+  sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211538/*.root"); sample_name.push_back("data211538"); sample_type.push_back(DATA);
   sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Data211607/*_*.root"); sample_name.push_back("data211607"); sample_type.push_back(DATA);
   sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Epos/*.root"); sample_name.push_back("Epos"); sample_type.push_back(MC);
   sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Epos_SL/*.root"); sample_name.push_back("Epos_SL"); sample_type.push_back(MC);
   sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Hijing/*.root"); sample_name.push_back("Hijing"); sample_type.push_back(MC);
-  sample_fname.push_back("/afs/cern.ch/work/c/cbaus/private/trees/treeMC.root"); sample_name.push_back("QGSJetII"); sample_type.push_back(MC);
+  sample_fname.push_back("/afs/cern.ch/work/c/cbaus/public/castortree/pPb_QGSJetII/treeMC.root"); sample_name.push_back("QGSJetII"); sample_type.push_back(MC);
   sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/StarlightDPMjet_v2/treeMC.root"); sample_name.push_back("Starlight_DPMJet");  sample_type.push_back(MC);
   sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/StarlighDPMjet/treeMC.root"); sample_name.push_back("Starlight_DPMJet_Old");  sample_type.push_back(MC);
   sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/StarlightPythia/treeMC.root"); sample_name.push_back("Starlight_Pythia");  sample_type.push_back(MC);
@@ -75,7 +82,7 @@ int main()
 
   //**************************************************************OUTPUT*********************************************************
 
-  TFile* out_file = new TFile("histos.root","RECREATE");
+  TFile* out_file = new TFile("histos_old.root","RECREATE");
 
   TH1D* h_zero_count_zb_coll;
   TH1D* h_zero_count_zb_no_coll;
@@ -151,7 +158,7 @@ int main()
 
       //________________________________________________________________________________
 
-      tree->SetBranchStatus("*", 1);
+//       tree->SetBranchStatus("*", 1);
 //       tree->SetBranchStatus("event", 1);
 //       tree->SetBranchStatus("genProcessID", 1);
 //       tree->SetBranchStatus("GEN*", 1);
@@ -274,11 +281,13 @@ int main()
 
           bool coll=0, noise=0, beam_gas=0;
 
-          coll          = zero_bias && bptx_p_m; //double beam
-          beam_gas      = (bptx_np_m || bptx_p_nm); // only single beam
-          noise         = bptx_quiet;// && !bptx_np_m && !bptx_p_nm; //not both and not single beam
-
-          if(sample_type[sample] == MC)
+          if(sample_type[sample] == DATA)
+            {
+              coll          = zero_bias && bptx_p_m; //double beam
+              beam_gas      = (bptx_np_m || bptx_p_nm); // only single beam
+              noise         = bptx_quiet;// && !bptx_np_m && !bptx_p_nm; //not both and not single beam
+            }
+          else if(sample_type[sample] == MC)
             {
               beam_gas = 0;
               noise = 0;
@@ -369,15 +378,23 @@ int main()
           bool SD2 = event->genProcessID == 104;
           bool DD = event->genProcessID == 105;
           bool CD = event->genProcessID == 102;
-          bool ND = !SD && !DD && !CD;
+          bool ND = !SD1 && !SD2 && !DD && !CD;
           if(sample_type[sample] == MC)
             {
-              map<double,GenParticle*> rapidityMassMap;
+              multimap<double,GenParticle*> rapidityMassMap;
               if(event->GEN.size() == 0)
                 {
                   cerr << endl << " Empty event... skipping. (" << iEvent<< ")" << endl;
                   continue;
                 }
+              GenParticle* beam0 = new GenParticle(2212,1,0,0,-4000);
+              GenParticle* beam1 = new GenParticle(2212,1,0,0,1580);
+
+              
+              cout << "beam 0 " << beam0.GetRapdidity() << " " << beam0.GetMass() << endl;
+              cout << "beam 1 " << beam1.GetRapdidity() << " " << beam1.GetMass() << endl;
+
+              rapidityMassMap.insert(pair<double,GenParticle*>(beam0.GetRapdity(),beam0);//add fake particle at beginning and end
               for (vector<GenParticle>::iterator it = event->GEN.begin(); it < event->GEN.end(); ++it)
                 {
                   //cout << distance(event->GEN.begin(),it) << " " << it->Id << " " << it->GetEnergy() << endl;
@@ -391,15 +408,17 @@ int main()
                   h_mc_eta_e->Fill(it->GetEta(),it->GetEnergy());
                   rapidityMassMap.insert(pair<double,GenParticle*>(it->GetRapidity(),&(*it)));
                 }
-              map<double,GenParticle*>::const_iterator thisIsIt; //start of m_x
-              for (map<double,GenParticle*>::const_iterator it = rapidityMassMap.begin(); it != rapidityMassMap.end(); ++it)
+              rapidityMassMap.insert(pair<double,GenParticle*>(beam1.GetRapdity(),beam1);//add fake particle at beginning and end
+
+              multimap<double,GenParticle*>::const_iterator thisIsIt; //start of m_x
+              for (multimap<double,GenParticle*>::const_iterator it = rapidityMassMap.begin(); it != rapidityMassMap.end(); ++it)
                 {
-                  if (it ==  rapidityMassMap.begin())
+                  if (it == rapidityMassMap.begin())
                     continue;
-                  map<double,GenParticle*>::const_iterator it1=--it;
+                  multimap<double,GenParticle*>::const_iterator it1=--it;
                   ++it;
                   double thisRapGap = fabs(it->second->GetRapidity() - it1->second->GetRapidity());
-                  //cout << it->second->GetRapidity() << " " <<  it1->second->GetRapidity();
+                  //cout << it->second->GetRapidity() << " " << it1->second->GetRapidity();
                   if(!TMath::Finite(thisRapGap) || TMath::IsNaN(thisRapGap))
                     continue;
                     //cerr << "   !!! ! PARTICLES WITH INFINITE RAP DETECTED " << distance(event->GEN.begin(),it) << " " << it->GetRapidity() << " " << it->Id << endl;
@@ -413,7 +432,7 @@ int main()
                   //cout << endl;
                 }
 
-              map<double,GenParticle*>::const_iterator it = rapidityMassMap.begin();
+              multimap<double,GenParticle*>::const_iterator it = rapidityMassMap.begin();
               TLorentzVector vecX(it->second->Px,it->second->Py,it->second->Pz,it->second->GetEnergy());
               ++it;
               for (; it != thisIsIt; ++it)
@@ -423,7 +442,7 @@ int main()
                 }
               m_x = vecX.M();
 
-              map<double,GenParticle*>::const_iterator it2 = thisIsIt;
+              multimap<double,GenParticle*>::const_iterator it2 = thisIsIt;
               TLorentzVector vecY(it2->second->Px,it2->second->Py,it2->second->Pz,it2->second->GetEnergy());
               ++it2;
               for (; it2 != rapidityMassMap.end(); ++it2)
@@ -453,21 +472,24 @@ int main()
 
           //Booking run histograms
 
-          ostringstream run_str;
-          run_str << event->runNb;
+
           TH1D* h_run_events_single = NULL;
           TH1D* h_run_events_double = NULL;
           TH1D* h_run_events_lumi = NULL;
-          h_run_events_single = (TH1D*)(out_file->Get((add+string("/")+add+run_str.str()+string("_h_run_events_single_")).c_str()));
-          h_run_events_double = (TH1D*)(out_file->Get((add+string("/")+add+run_str.str()+string("_h_run_events_double_")).c_str()));
-          h_run_events_lumi = (TProfile*)(out_file->Get((add+string("/")+add+run_str.str()+string("_h_run_events_lumi_")).c_str()));
-          if(h_run_events_single == NULL)
+          if(sample_type[sample] == DATA)
             {
-              h_run_events_single = new TH1D((add+run_str.str()+string("_h_run_events_single_")).c_str(),run_str.str().c_str(),2000,0,2000);
-              h_run_events_double = new TH1D((add+run_str.str()+string("_h_run_events_double_")).c_str(),run_str.str().c_str(),2000,0,2000);
-              h_run_events_lumi = new TProfile((add+run_str.str()+string("_h_run_events_lumi_")).c_str(),run_str.str().c_str(),2000,0,2000);
+              ostringstream run_str;
+              run_str << event->runNb;
+              h_run_events_single = (TH1D*)(out_file->Get((add+string("/")+add++string("_h_run_events_single_")).c_str()));
+              h_run_events_double = (TH1D*)(out_file->Get((add+string("/")+add+string("_h_run_events_double_")).c_str()));
+              h_run_events_lumi = (TProfile*)(out_file->Get((add+string("/")+add+string("_h_run_events_lumi_")).c_str()));
+              if(h_run_events_single == NULL)
+                {
+                  h_run_events_single = new TH1D((add+string("_h_run_events_single_")).c_str(),run_str.str().c_str(),2000,0,2000);
+                  h_run_events_double = new TH1D((add+string("_h_run_events_double_")).c_str(),run_str.str().c_str(),2000,0,2000);
+                  h_run_events_lumi = new TProfile((add+string("_h_run_events_lumi_")).c_str(),run_str.str().c_str(),2000,0,2000);
+                }
             }
-
 
           //---------------------------------------------Filling HISTOS
           if(coll)                                                  h_zero_count_zb_coll->Fill(hf_zero_count);
@@ -548,9 +570,12 @@ int main()
           if(coll && ND)                                            h_mc_diffraction_ND->Fill(log10(xi_x));
           if(coll)                                                  h_mc_diffraction_all->Fill(log10(xi_x));
 
-          if(coll && hf_single_energy_max > 3)                      h_run_events_single->Fill(event->lumiNb,evtWeight);
-          if(coll && hf_double_energy_max > 1.5)                    h_run_events_double->Fill(event->lumiNb,evtWeight);
-                                                                    h_run_events_lumi->Fill(event->lumiNb,lumiPerLS);
+          if(sample_type[sample]==DATA)
+            {
+              if(coll && hf_single_energy_max > 3)                      h_run_events_single->Fill(event->lumiNb,evtWeight);
+              if(coll && hf_double_energy_max > 1.5)                    h_run_events_double->Fill(event->lumiNb,evtWeight);
+                                                                        h_run_events_lumi->Fill(event->lumiNb,lumiPerLS);
+            }
 
           if(noise)                                                 h_random_trig_tracks_hf->Fill(hf_single_energy_max,event->Tracks.size());
 
@@ -581,7 +606,7 @@ int main()
 int IetaToRing(int ring)
 {
   if(ring < 0)
-    return ring + 29;
+    return ring + 41;
   else
-    return ring - 29;
+    return ring - 30;
 }

@@ -6,20 +6,21 @@ void makePlots7()
   style();
 
   vector<string> list;
-  list.push_back(string("Epos"));
-  list.push_back(string("Hijing"));
+  //list.push_back(string("Epos"));
+  //list.push_back(string("Hijing"));
   list.push_back(string("QGSJetII"));
 
   
-  for(int i=1; i<int(list.size()); i++)
+  for(int i=0; i<int(list.size()); i++)
     {
       cout << i << " " << int(list.size()) << endl;
-      TFile* file = TFile::Open("histos_mc.root");
+      TFile* file = TFile::Open("histos.root");
 
       cout << string(list[i]+string("/")+list[i]+string("_h_mc_diffraction_single")) << endl;
       TH1D* a=file->Get(string(list[i]+string("/")+list[i]+string("_h_mc_diffraction_single")).c_str());
       TH1D* b=file->Get(string(list[i]+string("/")+list[i]+string("_h_mc_diffraction_double")).c_str());
-      TH1D* c=file->Get(string(list[i]+string("/")+list[i]+string("_h_mc_diffraction_SD")).c_str());
+      TH1D* c1=file->Get(string(list[i]+string("/")+list[i]+string("_h_mc_diffraction_SD1")).c_str());
+      TH1D* c2=file->Get(string(list[i]+string("/")+list[i]+string("_h_mc_diffraction_SD2")).c_str());
       TH1D* d=file->Get(string(list[i]+string("/")+list[i]+string("_h_mc_diffraction_DD")).c_str());
       TH1D* e=file->Get(string(list[i]+string("/")+list[i]+string("_h_mc_diffraction_CD")).c_str());
       TH1D* f=file->Get(string(list[i]+string("/")+list[i]+string("_h_mc_diffraction_ND")).c_str());
@@ -28,7 +29,8 @@ void makePlots7()
 
       a->Scale(1./double(g->GetEntries()));
       b->Scale(1./double(g->GetEntries()));
-      c->Scale(1./double(g->GetEntries()));
+      c1->Scale(1./double(g->GetEntries()));
+      c2->Scale(1./double(g->GetEntries()));
       d->Scale(1./double(g->GetEntries()));
       e->Scale(1./double(g->GetEntries()));
       f->Scale(1./double(g->GetEntries()));
@@ -38,7 +40,8 @@ void makePlots7()
       b->SetMarkerSize(1.2);
       a->SetLineWidth(2.5);
       b->SetLineWidth(2.5);
-      c->SetLineWidth(2.5);
+      c1->SetLineWidth(2.5);
+      c2->SetLineWidth(2.5);
       d->SetLineWidth(2.5);
       e->SetLineWidth(2.5);
       f->SetLineWidth(2.5);
@@ -47,28 +50,32 @@ void makePlots7()
 
       a->SetMarkerColor(kBlue+2);
       b->SetMarkerColor(kRed+2);
-      c->SetMarkerColor(kBlue+2);
+      c1->SetMarkerColor(kBlue+3);
+      c2->SetMarkerColor(kBlue+1);
       d->SetMarkerColor(kRed+2);
       e->SetMarkerColor(kGreen+3);
       f->SetMarkerColor(kBlack);
 
       a->SetLineColor(kBlue+2);
       b->SetLineColor(kRed+2);
-      c->SetLineColor(kBlue+2);
+      c1->SetLineColor(kBlue+3);
+      c2->SetLineColor(kBlue+1);
       d->SetLineColor(kRed+2);
       e->SetLineColor(kGreen+3);
       f->SetLineColor(kBlack);
 
       a->SetFillColor(kBlue+2);
       b->SetFillColor(kRed+2);
-      c->SetFillColor(kBlue+2);
+      c1->SetFillColor(kBlue+3);
+      c2->SetFillColor(kBlue+1);
       d->SetFillColor(kRed+2);
       e->SetFillColor(kGreen+3);
       f->SetFillColor(kBlack);
 
       a->SetTitle("single arm > 3 GeV");
       b->SetTitle("double arm > 1.5 GeV");
-      c->SetTitle("SD");
+      c1->SetTitle("SD1");
+      c2->SetTitle("SD2");
       d->SetTitle("DD");
       e->SetTitle("CD");
       f->SetTitle("ND");
@@ -76,36 +83,38 @@ void makePlots7()
 
       g->GetYaxis()->SetRangeUser(0.0001,0.03);
 
-      TCanvas* c1 = new TCanvas;
+      TCanvas* can1 = new TCanvas;
       THStack* hs = new THStack("hs","EPOS");
-      hs->Add(c);
+      hs->Add(c1);
+      hs->Add(c2);
       hs->Add(d);
       hs->Add(e);
       hs->Add(f);
       hs->Draw("HIST");
-      c1->SetLogy();
+      can1->SetLogy();
       hs->GetYaxis()->SetRangeUser(0.0001,0.03);
       hs->SetTitle(";lg(#xi);events (normalised)");
-      TLegend* leg = c1->BuildLegend(0.25,0.65,0.45,0.85);
+      TLegend* leg = can1->BuildLegend(0.25,0.65,0.45,0.85);
       leg->SetFillColor(kWhite);
       leg->Draw();
-      c1->SaveAs((string("plots/diff_1_")+list[i]+string(".eps")).c_str());
-      c1->SaveAs((string("plots/diff_1_")+list[i]+string(".pdf")).c_str());
-      c1->SaveAs((string("plots/diff_1_")+list[i]+string(".png")).c_str());
+      can1->SaveAs((string("plots/diff_1_")+list[i]+string(".eps")).c_str());
+      can1->SaveAs((string("plots/diff_1_")+list[i]+string(".pdf")).c_str());
+      can1->SaveAs((string("plots/diff_1_")+list[i]+string(".png")).c_str());
   
 
-      TCanvas* c2 = new TCanvas;
+      TCanvas* can2 = new TCanvas;
       THStack* hs2 = new THStack("hs","EPOS");
-      hs2->Add(c);
+      hs2->Add(c1);
+      hs2->Add(c2);
       hs2->Add(d);
       hs2->Add(e);
       hs2->Add(f);
       hs2->Draw("HIST");
       hs2->SetTitle(";lg(#xi);events (normalised)");
       leg->Draw();
-      c2->SaveAs((string("plots/diff_2_")+list[i]+string(".eps")).c_str());
-      c2->SaveAs((string("plots/diff_2_")+list[i]+string(".pdf")).c_str());
-      c2->SaveAs((string("plots/diff_2_")+list[i]+string(".png")).c_str());
+      can2->SaveAs((string("plots/diff_2_")+list[i]+string(".eps")).c_str());
+      can2->SaveAs((string("plots/diff_2_")+list[i]+string(".pdf")).c_str());
+      can2->SaveAs((string("plots/diff_2_")+list[i]+string(".png")).c_str());
 
 
       TCanvas* c3 = new TCanvas;

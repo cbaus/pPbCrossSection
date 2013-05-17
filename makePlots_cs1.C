@@ -1,17 +1,27 @@
+
 void makePlots_cs1()
 {
   gROOT->ProcessLine(" .L style.cc+");
   style();
 
-  vector<int> run_num;
-  run_num.push_back(210614);
-  run_num.push_back(210837);
+  vector<int> run_num,run_num2;
+  //run_num.push_back(210614);
   run_num.push_back(210885);
+  run_num.push_back(2111000);
+  run_num.push_back(2111256);
+  run_num.push_back(2111390);
   run_num.push_back(211607);
 
+  //run_num2.push_back(210614);
+  run_num2.push_back(210885);
+  run_num2.push_back(211000);
+  run_num2.push_back(211256);
+  run_num2.push_back(211390);
+  run_num2.push_back(211607);
+
   //Histogram with all runs
-  TGraphErrors* h_run_single = new TGraphErrors(run_num.size()); h_run_single.SetName("h_run_single");
-  TGraphErrors* h_run_double = new TGraphErrors(run_num.size()); h_run_single.SetName("h_run_double");
+  TGraphErrors* h_run_single = new TGraphErrors(run_num.size()); h_run_single->SetName("h_run_single");
+  TGraphErrors* h_run_double = new TGraphErrors(run_num.size()); h_run_single->SetName("h_run_double");
 
   for (int run=0; run<int(run_num.size()); run++)
     {
@@ -20,12 +30,15 @@ void makePlots_cs1()
       ostringstream runname_ss;
       runname_ss << run_num[run];
       string runname = runname_ss.str();
+      ostringstream runname_ss2;
+      runname_ss2 << run_num2[run];
+      string runname2 = runname_ss2.str();
       ostringstream filename_ss;
-      filename_ss.str(""); filename_ss << "data" << runname << "/data" << runname << runname << "_h_run_events_single_";
+      filename_ss.str(""); filename_ss << "data" << runname << "/data" << runname << runname2 << "_h_run_events_single_";
       TH1D* a=file->Get(filename_ss.str().c_str());
-      filename_ss.str(""); filename_ss << "data" << runname << "/data" << runname << runname << "_h_run_events_double_";
+      filename_ss.str(""); filename_ss << "data" << runname << "/data" << runname << runname2 << "_h_run_events_double_";
       TH1D* a2=file->Get(filename_ss.str().c_str());
-      filename_ss.str(""); filename_ss << "data" << runname << "/data" << runname << runname << "_h_run_events_lumi_";
+      filename_ss.str(""); filename_ss << "data" << runname << "/data" << runname << runname2 << "_h_run_events_lumi_";
       TH1D* alumi=file->Get(filename_ss.str().c_str());
 
       TFile f("plots/corr_factors.root");
@@ -60,6 +73,16 @@ void makePlots_cs1()
         }
       a->Scale(1./(*corr_fac_all)[0]);
       a2->Scale(1./(*corr_fac_all)[1]);
+      
+//       int rebin = 50;
+//       a->Rebin(rebin);
+//       a->Scale(1./double(rebin));
+      
+//       a2->Rebin(rebin);
+//       a2->Scale(1./double(rebin));
+
+      a->GetXaxis()->SetRangeUser(0,1200);
+      a2->GetXaxis()->SetRangeUser(0,1200);
 
       a->SetLineWidth(2);
       a2->SetLineWidth(2);
@@ -70,15 +93,16 @@ void makePlots_cs1()
       TCanvas* c1 = new TCanvas;
       a->Draw();
       TFitResultPtr fit_single = a->Fit("pol0","QS");
-      h_run_single->SetPoint(run,run_num[run],fit_single->Parameter(0));
+      h_run_single->SetPoint(run,run,fit_single->Parameter(0));
       h_run_single->SetPointError(run,0,fit_single->ParError(0));
 
       TCanvas* c2 = new TCanvas;
       a2->Draw("");
       TFitResultPtr fit_double = a2->Fit("pol0","QS");
-      h_run_double->SetPoint(run,run_num[run],fit_double->Parameter(0));
+      h_run_double->SetPoint(run,run,fit_double->Parameter(0));
       h_run_double->SetPointError(run,0,fit_double->ParError(0));
-      file->Close();
+      //file->Close();
+      cout << "Single: " << fit_single->Parameter(0) << " --- Double: " << fit_double->Parameter(0) << endl;
     }
   h_run_double->SetLineColor(kRed);
   h_run_double->SetMarkerColor(kRed);

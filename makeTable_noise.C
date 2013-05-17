@@ -1,3 +1,5 @@
+#include <iomanip>
+
 void makeTable_noise()
 {
   TFile f("plots/hf_cuts_noise.root");

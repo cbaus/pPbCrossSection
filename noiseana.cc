@@ -1,4 +1,4 @@
-#define MAXEVT 100000
+#define MAXEVT -1000000
 
 #include "TChain.h"
 #include "TFile.h"
@@ -109,6 +109,7 @@ int main()
       int zero_bias_prescale_HLT;
       int min_bias;
       int random;
+      int random_prescale_HLT;
       int bptx_p_m;
       int bptx_p_nm;
       int bptx_np_m;
@@ -118,6 +119,7 @@ int main()
       tree->SetBranchAddress("HLT_PAZeroBias_v1",&zero_bias);
       tree->SetBranchAddress("HLT_PAL1Tech53_MB_SingleTrack_v1",&min_bias);
       tree->SetBranchAddress("HLT_PARandom_v1",&random);
+      tree->SetBranchAddress("HLT_PARandom_v1_Prescl",&random_prescale_HLT);
       tree->SetBranchAddress("L1Tech_BPTX_plus_AND_minus.v0_DecisionBeforeMask",&bptx_p_m);
       tree->SetBranchAddress("L1Tech_BPTX_plus_AND_NOT_minus.v0_DecisionBeforeMask",&bptx_p_nm);
       tree->SetBranchAddress("L1Tech_BPTX_minus_AND_not_plus.v0_DecisionBeforeMask",&bptx_np_m);
@@ -265,6 +267,10 @@ int main()
             continue;
 
 
+          const int prescale      = random_prescale_HLT;
+          const double lumiPerLS     = event->instLuminosity * event->instLuminosityCorr * 1e6;
+          const double lumiPerTime     = lumiPerLS / 23.31;
+          const double evtWeight  = lumiPerTime?double(prescale) / lumiPerTime:0.;
 
           //---------------------------------------------CASTOR
           double sum_cas_e_em = 0;
@@ -327,12 +333,15 @@ int main()
           run_str << event->runNb;
           TH1D* h_run_events_single = NULL;
           TH1D* h_run_events_double = NULL;
-          h_run_events_single = (TH1D*)(out_file->Get((add+string("/")+add+run_str.str()+string("_h_run_events_single_")).c_str()));
-          h_run_events_double = (TH1D*)(out_file->Get((add+string("/")+add+run_str.str()+string("_h_run_events_double_")).c_str()));
+          TH1D* h_run_events = NULL;
+          h_run_events_single = (TH1D*)(out_file->Get((add+string("/")+add+run_str.str()+string("_h_run_events_single")).c_str()));
+          h_run_events_double = (TH1D*)(out_file->Get((add+string("/")+add+run_str.str()+string("_h_run_events_double")).c_str()));
+          h_run_events = (TH1D*)(out_file->Get((add+string("/")+add+run_str.str()+string("_h_run_events")).c_str()));
           if(h_run_events_single == NULL)
             {
-              h_run_events_single = new TH1D((add+run_str.str()+string("_h_run_events_single_")).c_str(),run_str.str().c_str(),2000,0,2000);
-              h_run_events_double = new TH1D((add+run_str.str()+string("_h_run_events_double_")).c_str(),run_str.str().c_str(),2000,0,2000);
+              h_run_events_single = new TH1D((add+run_str.str()+string("_h_run_events_single")).c_str(),run_str.str().c_str(),2000,0,2e5);
+              h_run_events_double = new TH1D((add+run_str.str()+string("_h_run_events_double")).c_str(),run_str.str().c_str(),2000,0,2e5);
+              h_run_events = new TH1D((add+run_str.str()+string("_h_run_events")).c_str(),run_str.str().c_str(),2000,0,2e5);
             }
 
           //HF Rings
@@ -384,6 +393,11 @@ int main()
 
           if(noise)                                                 h_noise_tracks_hf->Fill(hf_single_energy_max,event->Tracks.size());
           if(beamgas)                                               h_beamgas_tracks_hf->Fill(hf_single_energy_max,event->Tracks.size());
+
+          if((noise || beamgas) && hf_single_energy_max > 3)        h_run_events_single->Fill(lumiPerTime,evtWeight);
+          if((noise || beamgas) && hf_double_energy_max > 1.5)      h_run_events_double->Fill(lumiPerTime,evtWeight);
+          if((noise || beamgas) )                                   h_run_events->Fill(lumiPerTime,evtWeight);
+                                                                        
 
         }
 

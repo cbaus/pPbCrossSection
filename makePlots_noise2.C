@@ -4,6 +4,8 @@ TVectorD hf_m_cuts_medium_noise(12);
 TVectorD hf_p_cuts_medium_noise(12);
 TVectorD hf_m_cuts_heavy_noise(12);
 TVectorD hf_p_cuts_heavy_noise(12);
+TVectorD hf_cuts_equivalent(3);
+
 
 void makePlots_noise2()
 {
@@ -13,7 +15,7 @@ void makePlots_noise2()
   TFile* file = TFile::Open("histos_noise.root");
   TCanvas* c1 = new TCanvas;
   TCanvas* c0;
-  c1->Divide(6,4);
+  c1->Divide(3,4);
 
   vector<double> x;
   vector<double> xerr;
@@ -38,9 +40,12 @@ void makePlots_noise2()
 
           TVectorD* tvecp;
           TVectorD* tvecm;
-          double cut_light_value = 1.-pow(1.-0.06,1./24.);
-          double cut_medium_value = 1.-pow(1.-0.03,1./24.);
-          double cut_heavy_value = 1.-pow(1.-0.01,1./24.);
+          //1-(1-x)^i for each ring the probability adds up
+          //No sassumptions since noise every time the same
+          double cuts[3] = {0.06,0.03,0.01};
+          double cut_light_value = 1.-pow(1.-cuts[0],1./24.);
+          double cut_medium_value = 1.-pow(1.-cuts[1],1./24.);
+          double cut_heavy_value = 1.-pow(1.-cuts[2],1./24.);
           double cut_value;
           for(int n=0; n<3; n++)
             {
@@ -122,6 +127,25 @@ void makePlots_noise2()
   hf_m_cuts_heavy_noise.Write("hf_m_cuts_heavy_noise");
   hf_p_cuts_heavy_noise.Write("hf_p_cuts_heavy_noise");
 
+  TH1D* h_hf_cut_single = NULL;
+  h_hf_cut_single_noise = (TH1D*)(file->Get((add+string("/")+add+string("_h_hf_cut_single_noise")).c_str()));
+  TH1D* h_hf_cut_double = NULL;
+  h_hf_cut_double_noise = (TH1D*)(file->Get((add+string("/")+add+string("_h_hf_cut_double_noise")).c_str()));
+
+  h_hf_cut_single_noise->Scale(1./double(h_hf_cut_single_noise->GetBinContent(1)));
+  h_hf_cut_double_noise->Scale(1./double(h_hf_cut_double_noise->GetBinContent(1)));
+  
+  for(int j=0; j<3; j++)
+    {
+      double xvalue=0;
+      double step = 0.01;
+      while(h_hf_cut_single_noise->Interpolate(xvalue)>cuts[j])
+        {
+          xvalue+=step;
+        }
+      hf_cuts_equivalent[j]=xvalue+step/2.;
+    }
+  hf_cuts_equivalent.Write("hf_cuts_equivalent");
   f.Close();
 
 }
