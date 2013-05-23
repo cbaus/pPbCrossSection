@@ -3,6 +3,8 @@
 #include <TGaxis.h>
 #include <TStyle.h>
 #include <TROOT.h>
+#include <TLatex.h>
+#include <TPaveText.h>
 
 void style() {
 
@@ -37,3 +39,32 @@ void style() {
   TGaxis::SetMaxDigits(3);
 }
 
+// ########################################################
+void CMSPreliminary() {
+  TLatex* txt = new TLatex();
+  txt->SetNDC();
+  txt->SetTextFont(62);
+  txt->SetTextColor(kGray+1);
+  txt->SetTextSize(0.05);
+  txt->SetTextAlign(32);
+  txt->DrawLatex(1-gStyle->GetPadRightMargin(), 0.95, "CMS PRELIMINARY");
+}
+// #################################################################################
+// helper function to specify that lead lead data is used
+void DataText(const bool left, const bool top, const std::string str) {
+  const double marg = 0.005, margY = 0.03;
+  TPaveText* txt 
+    = new TPaveText(left ? gStyle->GetPadLeftMargin()+marg : 1-gStyle->GetPadRightMargin()-marg-0.30, 
+                    top ? 1-gStyle->GetPadTopMargin()-margY-0.04 : gStyle->GetPadBottomMargin() + margY, 
+                    left ? gStyle->GetPadLeftMargin()+marg+0.30 : 1-gStyle->GetPadRightMargin()-marg, 
+                    top ? 1-gStyle->GetPadTopMargin()-margY : gStyle->GetPadBottomMargin() + margY + 0.04,
+                    "NDC b t l");
+    txt->SetTextAlign(10*(left ? 1 : 3) + (top ? 1 : 3));
+    txt->SetTextFont(42);
+    txt->SetFillStyle(0);
+    txt->SetTextColor(kBlack);
+    txt->SetTextSize(0.033);
+    txt->SetBorderSize(0);
+    txt->AddText(str.c_str());
+    txt->Draw();
+}

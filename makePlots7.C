@@ -14,7 +14,7 @@ void makePlots7()
   for(int i=0; i<int(list.size()); i++)
     {
       cout << i << " " << int(list.size()) << endl;
-      TFile* file = TFile::Open("histos.root");
+      TFile* file = TFile::Open("histos_mc.root");
 
       cout << string(list[i]+string("/")+list[i]+string("_h_mc_diffraction_single")) << endl;
       TH1D* a=file->Get(string(list[i]+string("/")+list[i]+string("_h_mc_diffraction_single")).c_str());

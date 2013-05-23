@@ -68,6 +68,10 @@ void makePlots_noise1()
         i++;
     }
   }
+  c0->cd();
+  CMSPreliminary();
+  c1->cd();
+  CMSPreliminary();
   c0->SaveAs((string("plots/hf_m_noise_")+string(".eps")).c_str());
   c0->SaveAs((string("plots/hf_m_noise_")+string(".pdf")).c_str());
   c0->SaveAs((string("plots/hf_m_noise_")+string(".png")).c_str());
@@ -82,6 +86,7 @@ void makePlots_noise1()
   graph->SetName("noisepertower");
   graph->SetTitle(";ieta;<HF tower E>_{Noise} / GeV");
   graph->Draw("AP");
+  CMSPreliminary();
   c2->SaveAs((string("plots/hf_meannoise_")+string(".eps")).c_str());
   c2->SaveAs((string("plots/hf_meannoise_")+string(".png")).c_str());
   c2->SaveAs((string("plots/hf_meannoise_")+string(".pdf")).c_str());
@@ -90,9 +95,11 @@ void makePlots_noise1()
   
   TCanvas* c3 = new TCanvas;
   TGraph* graph2 = new TGraph(x.size(),&x.front(),&yeff.front());
+  graph2->GetYaxis()->SetRangeUser(0,0.015);
   graph2->SetName("noiseeffpertower");
   graph2->SetTitle(";ieta;event fraction (3 GeV cut)");
   graph2->Draw("AP");
+  CMSPreliminary();
   c3->SaveAs((string("plots/hf_noisecut_")+string(".eps")).c_str());
   c3->SaveAs((string("plots/hf_noisecut_")+string(".pdf")).c_str());
   c3->SaveAs((string("plots/hf_noisecut_")+string(".png")).c_str());

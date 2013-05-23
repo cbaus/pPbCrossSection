@@ -5,6 +5,9 @@ TVectorD corr_fac_noise(2);
 TVectorD corr_fac_mc(2);
 TVectorD corr_fac_all(2);
 
+const double cut_value_single = 6.6.;
+const double cut_value_double = 2.2.;
+
 void makePlots()
 {
   gROOT->ProcessLine(" .L style.cc+");
@@ -15,20 +18,20 @@ void makePlots()
   for(int n=0; n<int(type.size()); n++)
     {
 
-  TFile* file2 = TFile::Open("histos.root");
-  TFile* file = TFile::Open("histos_old.root");
+  TFile* file = TFile::Open("histos_error_p.root");
+  TFile* file2 = TFile::Open("histos_mc.root");
   TFile* file3 = TFile::Open("plots/hf_cuts_noise.root");
 
-  TH1D* a=(TH1D*)file2->Get((string("data210885/data210885_h_hf_cut_") + type[n]).c_str());
-  TH1D* a2=(TH1D*)file2->Get((string("data210885/data210885_h_hf_cut_") + type[n] + string("_noise")).c_str());
-  TH1D* b=(TH1D*)file2->Get((string("Hijing/Hijing_h_hf_cut_") + type[n]).c_str());
-  TH1D* b2=(TH1D*)file2->Get((string("Hijing/Hijing_h_hf_new_cut_")+ type[n]).c_str());
-  TH1D* c=(TH1D*)file2->Get((string("Epos/Epos_h_hf_cut_")+ type[n]).c_str());
-  TH1D* c2=(TH1D*)file2->Get((string("Epos/Epos_h_hf_new_cut_")+ type[n]).c_str());
-  TH1D* d=(TH1D*)file2->Get((string("QGSJetII/QGSJetII_h_hf_cut_") + type[n]).c_str());
-  TH1D* d2=(TH1D*)file2->Get((string("QGSJetII/QGSJetII_h_hf_new_cut_")+ type[n]).c_str());
-  TH1D* e=(TH1D*)file2->Get((string("Starlight_DPMJet/Starlight_DPMJet_h_hf_cut_") + type[n]).c_str());
-  TH1D* f=(TH1D*)file2->Get((string("Starlight_Pythia/Starlight_Pythia_h_hf_cut_") + type[n]).c_str());
+  TH1D* a=(TH1D*)file->Get((string("data210885/data210885_h_hf_cut_") + type[n]).c_str());
+  TH1D* a2=(TH1D*)file->Get((string("data210885/data210885_h_hf_cut_") + type[n] + string("_noise")).c_str());
+  TH1D* b=(TH1D*)file->Get((string("Hijing/Hijing_h_hf_cut_") + type[n]).c_str());
+  TH1D* b2=(TH1D*)file->Get((string("Hijing/Hijing_h_hf_new_cut_")+ type[n]).c_str());
+  TH1D* c=(TH1D*)file->Get((string("Epos/Epos_h_hf_cut_")+ type[n]).c_str());
+  TH1D* c2=(TH1D*)file->Get((string("Epos/Epos_h_hf_new_cut_")+ type[n]).c_str());
+  TH1D* d=(TH1D*)file->Get((string("QGSJetII/QGSJetII_h_hf_cut_") + type[n]).c_str());
+  TH1D* d2=(TH1D*)file->Get((string("QGSJetII/QGSJetII_h_hf_new_cut_")+ type[n]).c_str());
+  TH1D* e=(TH1D*)file->Get((string("Starlight_DPMJet/Starlight_DPMJet_h_hf_cut_") + type[n]).c_str());
+  TH1D* f=(TH1D*)file->Get((string("Starlight_Pythia/Starlight_Pythia_h_hf_cut_") + type[n]).c_str());
   TVectorD* hf_cuts_equivalent = (TVectorD*)file3->Get("hf_cuts_equivalent");
 
   a->Scale(1./double(a->GetBinContent(1)));
@@ -44,18 +47,18 @@ void makePlots()
 //   e->Scale(1./double(e->GetBinContent(1))/ 2100. * 195.);
   f->Scale(1./double(f->GetBinContent(1))/ 195. * 122.);
 
-  a->SetLineWidth(2);
-  a2->SetLineWidth(2);
-  b->SetLineWidth(2);
-  c->SetLineWidth(2);
-  d->SetLineWidth(2);
-  e->SetLineWidth(2);
-  f->SetLineWidth(2);
+  a->SetLineWidth(3);
+  a2->SetLineWidth(3);
+  b->SetLineWidth(3);
+  c->SetLineWidth(3);
+  d->SetLineWidth(3);
+  e->SetLineWidth(3);
+  f->SetLineWidth(3);
   a2->SetLineColor(kCyan-2);
   b->SetLineColor(kRed);
   c->SetLineColor(kBlue);
   d->SetLineColor(kGreen+2);
-  e->SetLineColor(kMagenta+4);
+  e->SetLineColor(kMagenta+2);
   f->SetLineColor(kMagenta-5);
   b->SetLineStyle(9);
 
@@ -81,23 +84,26 @@ void makePlots()
       c3->SetPoint(j,(*hf_cuts_equivalent)[j],c2->GetBinContent(j+2));
       d3->SetPoint(j,(*hf_cuts_equivalent)[j],d2->GetBinContent(j+2));
     }
-  b3->SetMarkerColor(b->GetMarkerColor());
-  c3->SetMarkerColor(c->GetMarkerColor());
-  d3->SetMarkerColor(d->GetMarkerColor());
+  b3->SetMarkerColor(b->GetLineColor());
+  c3->SetMarkerColor(c->GetLineColor());
+  d3->SetMarkerColor(d->GetLineColor());
+  b3->SetMarkerSize(1.5);
+  c3->SetMarkerSize(1.5);
+  d3->SetMarkerSize(1.5);
 
   TCanvas* can1 = new TCanvas;
   b->Draw("HIST L");
   c->Draw("HIST L SAME");
   d->Draw("HIST L SAME");
+  TLegend* leg = can1->BuildLegend();
   b3->Draw("P");
   c3->Draw("P");
   d3->Draw("P");
-  TLegend* leg = can1->BuildLegend();
   leg->SetFillColor(kWhite);
-  leg->SetX1(0.3);
-  leg->SetX2(0.5);
-  leg->SetY1(0.3);
-  leg->SetY2(0.5);
+  leg->SetX1(0.65);
+  leg->SetX2(0.85);
+  leg->SetY1(0.2);
+  leg->SetY2(0.4);
   leg->Draw();
 
   a->GetYaxis()->SetRangeUser(0,1.01);
@@ -105,8 +111,7 @@ void makePlots()
   a->GetYaxis()->SetTitle("event fraction");
 
   TH1D* copy = new TH1D;
-  a->Copy(*copy);
-  TH1D* a1 = copy;
+  a->Copy(*copy);  TH1D* a1 = copy;
   a1->SetMarkerColor(kRed);
   a1->SetName("data_copy");
   a1->SetTitle("corrected data");
@@ -150,14 +155,14 @@ void makePlots()
         << endl << "n_inel= " << n_inel
         << endl << "corr factor=" << corr << endl << endl;
 
-      if(i==31 && type[n]==string("single"))
+      if(i==a->FindBin(cut_value_single) && type[n]==string("single"))
         {
           corr_fac_em[0] = f_em;
           corr_fac_mc[0] = f_mc;
           corr_fac_noise[0] = f_noise;
           corr_fac_all[0] = corr;
         }
-      if(i==16 && type[n]==string("double"))
+      if(i==a->FindBin(cut_value_double) && type[n]==string("double"))
         {
           corr_fac_em[1] = f_em;
           corr_fac_mc[1] = f_mc;
@@ -168,12 +173,13 @@ void makePlots()
   a1->GetXaxis()->SetRange(startPlot,a1->GetNbinsX());
   h_corr->GetXaxis()->SetRange(startPlot,h_corr->GetNbinsX());
   a1->SetLineColor(kRed);
+  CMSPreliminary();
   can1->SaveAs((string("plots/full_p_space_eff_")+type[n]+string(".eps")).c_str());
   can1->SaveAs((string("plots/full_p_space_eff_")+type[n]+string(".pdf")).c_str());
   can1->SaveAs((string("plots/full_p_space_eff_")+type[n]+string(".png")).c_str());
 
   TCanvas* can2 = new TCanvas;
-  a->Draw("HIST l");
+  a2->Draw("HIST l");
   //a1->Draw("HIST l SAME");
   //a2->Draw("HIST l SAME");
   e->Draw("HIST l SAME");
@@ -185,18 +191,17 @@ void makePlots()
   leg2->SetY2(0.85);
   leg2->SetFillColor(kWhite);
   leg2->Draw();
-  can2->SaveAs((string("plots/data_eff_")+type[n]+string(".eps")).c_str());
-  can2->SaveAs((string("plots/data_eff_")+type[n]+string(".pdf")).c_str());
-  can2->SaveAs((string("plots/data_eff_")+type[n]+string(".png")).c_str());
+  CMSPreliminary();
+  can2->SaveAs((string("plots/starlight_eff_")+type[n]+string(".eps")).c_str());
+  can2->SaveAs((string("plots/starlight_eff_")+type[n]+string(".pdf")).c_str());
+  can2->SaveAs((string("plots/starlight_eff_")+type[n]+string(".png")).c_str());
 
-  TCanvas* can3 = new TCanvas;
-  h_corr->GetYaxis()->SetRangeUser(0.5,3.);
-  h_corr->Draw();
-  TF1* line = new TF1("line","1",0,10);
-  line->Draw("SAME");
-  can3->SaveAs((string("plots/corr_factor_")+type[n]+string(".eps")).c_str());
-  can3->SaveAs((string("plots/corr_factor_")+type[n]+string(".pdf")).c_str());
-  can3->SaveAs((string("plots/corr_factor_")+type[n]+string(".png")).c_str());
+//   TCanvas* can3 = new TCanvas;
+//   h_corr->GetYaxis()->SetRangeUser(0.5,3.);
+//   h_corr->Draw();
+//   TF1* line = new TF1("line","1",0,10);
+//   line->Draw("SAME");
+//   CMSPreliminary();
 
   //file->Close();
   //file2->Close();

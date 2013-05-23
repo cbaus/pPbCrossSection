@@ -292,16 +292,18 @@ int main()
           //---------------------------------------------HF
           int hf_n = event->HFtowers.size();
           int hf_zero_count = ForwardRecord::nMaxHFMRecHits - hf_n;
-          double hf_double_energy_max = 0;
+          double hf_double_energy_max = 0; // if no tower it is 0 for cut later
           double hf_single_energy_max = 0;
           double hf_m_energy_max = 0;
           double hf_p_energy_max = 0;
           double hf_p_energy = 0;
           double hf_m_energy = 0;
           map<int,double> hf_ring_map_single_max;
+          //Tower loop
           for (vector<TowerHF>::const_iterator it = event->HFtowers.begin(); it < event->HFtowers.end(); ++it)
             {
               const int Ieta = it->Eta > 0?it->IetaAbs:-it->IetaAbs;
+              //make new entry or if exists and new is larger overwrite
               if(hf_ring_map_single_max.count(Ieta) == 0)
                 hf_ring_map_single_max.insert(pair<int,double>(Ieta,it->Energy));
               else if (hf_ring_map_single_max[Ieta] < it->Energy)

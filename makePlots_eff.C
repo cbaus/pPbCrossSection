@@ -27,11 +27,10 @@ void makePlots_eff()
       a->GetYaxis()->SetRangeUser(0.9,1.01);
 
       a->SetTitle(";;selection efficiency");
-      a->GetXaxis()->SetBinLabel(7,"nTrack #geq 1");
-      cerr << "remove bin label" << endl;
 
       TCanvas* c1 = new TCanvas;
       a->Draw("HIST P");
+      CMSPreliminary();
       c1->SaveAs((string("plots/mc_eff_")+list[i]+string(".png")).c_str());
       c1->SaveAs((string("plots/mc_eff_")+list[i]+string(".eps")).c_str());
       c1->SaveAs((string("plots/mc_eff_")+list[i]+string(".pdf")).c_str());
