@@ -1,6 +1,6 @@
-
-const double cut_value_single = 6.6.;
-const double cut_value_double = 2.2.;
+const double fac_error = 1.0; 
+const double cut_value_single = 6.*fac_error;
+const double cut_value_double = 2.*fac_error;
 
 void makePlots_cs1()
 {
@@ -23,13 +23,15 @@ void makePlots_cs1()
   //Histogram with all runs
   TH1D* h_run_single = new TH1D("h_run_single","",run_num.size(),-0.5,run_num.size()-0.5);// h_run_single->SetName("h_run_single");
   TH1D* h_run_double = new TH1D("h_run_double","",run_num.size(),-0.5,run_num.size()-0.5);// h_run_single->SetName("h_run_double");
+  TH1D* h_run_single_pPb = new TH1D("h_run_single_pPb","",run_num.size(),-0.5,run_num.size()-0.5);// h_run_single->SetName("h_run_single");
+  TH1D* h_run_double_pPb = new TH1D("h_run_double_pPb","",run_num.size(),-0.5,run_num.size()-0.5);// h_run_single->SetName("h_run_double");
   TH1D* h_run_single_Pbp = new TH1D("h_run_single_Pbp","",run_num.size(),-0.5,run_num.size()-0.5);// h_run_single->SetName("h_run_single");
   TH1D* h_run_double_Pbp = new TH1D("h_run_double_Pbp","",run_num.size(),-0.5,run_num.size()-0.5);// h_run_single->SetName("h_run_double");
 
   for (int run=0; run<int(run_num.size()); run++)
     {
       cout << endl << " Processing ... run: " << run_num[run] << endl << endl;
-      TFile* file = TFile::Open("histos_error_p.root");
+      TFile* file = TFile::Open("histos_old.root");
       ostringstream runname_ss;
       runname_ss << run_num[run];
       string runname = runname_ss.str();
@@ -91,6 +93,7 @@ void makePlots_cs1()
 //           f_noise_double = h_hf_noise_selected_double_lumi->GetBinContent(h_hf_noise_selected_double_lumi->FindBin(h_lumi->GetBinCenter(i)));
       //PILEUP!!
           const double lumiPerLS=h_lumi->GetBinContent(i);
+          const double lumiPerLS_error=h_lumi->GetBinError(i);
           const double lambda = lumiPerLS*2.1/11246./23.31/296.;
           const double p1_single = (*f_mc)[0];
           const double p1_double = (*f_mc)[1];
@@ -126,8 +129,12 @@ void makePlots_cs1()
             }
           if( ((1./f_pileup_double) - f_noise_double) != 0 && ((1./f_pileup_single) - f_noise_single) != 0)
             {
-              h_single->SetBinContent(i, (n_cut_single/(*f_mc)[0]) - n_noise_single - n_em_single) / ((1./f_pileup_single) - f_noise_single);
-              h_double->SetBinContent(i, (n_cut_double/(*f_mc)[1]) - n_noise_double - n_em_double) / ((1./f_pileup_double) - f_noise_double);
+              double n_single = ((n_cut_single/(*f_mc)[0]) - n_noise_single - n_em_single) / ((1./f_pileup_single) - f_noise_single);
+              double n_double = ((n_cut_double/(*f_mc)[1]) - n_noise_double - n_em_double) / ((1./f_pileup_double) - f_noise_double);
+              h_single->SetBinContent(i, n_single);
+              h_double->SetBinContent(i, n_double);
+              double error_single = sqrt( 1./4.*pow(n_single,2)/pow(lumiPerLS,4)*pow(lumiPerLS_error,2) + 1./pow(lumiPerLS,2)*pow(h_single->GetBinError(i),2));
+              double error_double = sqrt( 1./4.*pow(n_single,2)/pow(lumiPerLS,4)*pow(lumiPerLS_error,2) + 1./pow(lumiPerLS,2)*pow(h_single->GetBinError(i),2));
               h_single->SetBinError(i, h_single->GetBinError(i) / lumiPerLS);
               h_double->SetBinError(i, h_double->GetBinError(i) / lumiPerLS);
             }
@@ -135,7 +142,7 @@ void makePlots_cs1()
             }
           else if (lumiPerLS<0.) cerr << "lumi neg: " << i << endl;
         }
-
+      
 
       
       //h_single->Scale(1./(*f_all)[0]);
@@ -181,13 +188,19 @@ void makePlots_cs1()
           c1->SaveAs((string("plots/CS_run")+string(".png")).c_str());
         }
 
+      h_run_single->SetBinContent(run+1,run,fit_single->Parameter(0));
+      h_run_single->SetBinError(run+1,0,fit_single->ParError(0));
+          
+      h_run_double->SetBinContent(run+1,run,fit_double->Parameter(0));
+      h_run_double->SetBinError(run+1,0,fit_double->ParError(0));
+
       if(run_num[run] <= 211256) //pPb or Pbp?
         {
-          h_run_single->SetBinContent(run+1,run,fit_single->Parameter(0));
-          h_run_single->SetBinError(run+1,0,fit_single->ParError(0));
+          h_run_single_pPb->SetBinContent(run+1,run,fit_single->Parameter(0));
+          h_run_single_pPb->SetBinError(run+1,0,fit_single->ParError(0));
           
-          h_run_double->SetBinContent(run+1,run,fit_double->Parameter(0));
-          h_run_double->SetBinError(run+1,0,fit_double->ParError(0));
+          h_run_double_pPb->SetBinContent(run+1,run,fit_double->Parameter(0));
+          h_run_double_pPb->SetBinError(run+1,0,fit_double->ParError(0));
         }
       else
         {
@@ -203,15 +216,15 @@ void makePlots_cs1()
       if(run_num[run] == 210885)
         c1 = new TCanvas; //please use a new one to paint your fit crap
     }
-  h_run_double->GetYaxis()->SetRangeUser(1.8,2.5);
-  h_run_double->SetLineColor(kRed);
-  h_run_double->SetMarkerColor(kRed);
-  h_run_double->SetTitle("double-arm (pPb);run number;#sigma_{inel} / b");
+  h_run_double_pPb->GetYaxis()->SetRangeUser(1.8,2.5);
+  h_run_double_pPb->SetLineColor(kRed);
+  h_run_double_pPb->SetMarkerColor(kRed);
+  h_run_double_pPb->SetTitle("double-arm (pPb);run number;#sigma_{inel} / b");
 
-  h_run_single->SetLineColor(kRed-1);
-  h_run_single->SetMarkerColor(kRed-1);
-  h_run_single->SetMarkerStyle(34);
-  h_run_single->SetTitle("single-arm (pPb)");
+  h_run_single_pPb->SetLineColor(kRed-1);
+  h_run_single_pPb->SetMarkerColor(kRed-1);
+  h_run_single_pPb->SetMarkerStyle(34);
+  h_run_single_pPb->SetTitle("single-arm (pPb)");
 
   h_run_double_Pbp->SetLineColor(kBlue);
   h_run_double_Pbp->SetMarkerColor(kBlue);
@@ -225,8 +238,8 @@ void makePlots_cs1()
 
 
   TCanvas* can3 = new TCanvas;
-  h_run_double->Draw("P");
-  h_run_single->Draw("PSAME");
+  h_run_double_pPb->Draw("P");
+  h_run_single_pPb->Draw("PSAME");
   h_run_double_Pbp->Draw("PSAME");
   h_run_single_Pbp->Draw("PSAME");
   TLegend* leg3 = can3->BuildLegend(0.6,0.7,0.85,0.9);
@@ -250,5 +263,6 @@ void makePlots_cs1()
   can4->SaveAs((string("plots/CS_runs_pas")+string(".pdf")).c_str());
   can4->SaveAs((string("plots/CS_runs_pas")+string(".png")).c_str());
 
+  h_run_double->Fit(pol0,"S");
 
 }
