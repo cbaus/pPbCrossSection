@@ -124,19 +124,20 @@ void makePlots_cs1()
           
           if(i<200)
             {
-              cout << n_cut_single<< " " << n_cut_single/(*f_mc)[0]<< " " << n_noise_single<< " " << n_em_single<< " " << ((1./f_pileup_single) - f_noise_single) << " " << f_pileup_single << endl;
+              //cout << n_cut_single<< " " << n_cut_single/(*f_mc)[0]<< " " << n_noise_single<< " " << n_em_single<< " " << ((1./f_pileup_single) - f_noise_single) << " " << f_pileup_single << endl;
               //cout << n_zb_double << " " << n_cut_double<< " " << n_cut_double/(*f_mc)[1]<< " " << n_noise_double<< " " << n_em_double<< " " << ((1./f_pileup_double) - f_noise_double) << endl;
             }
           if( ((1./f_pileup_double) - f_noise_double) != 0 && ((1./f_pileup_single) - f_noise_single) != 0)
             {
               double n_single = ((n_cut_single/(*f_mc)[0]) - n_noise_single - n_em_single) / ((1./f_pileup_single) - f_noise_single);
               double n_double = ((n_cut_double/(*f_mc)[1]) - n_noise_double - n_em_double) / ((1./f_pileup_double) - f_noise_double);
+              double error_single = sqrt( pow(h_single->GetBinContent(i),2)/pow(lumiPerLS,4)*pow(lumiPerLS_error,2) + 1./pow(lumiPerLS,2)*pow(h_single->GetBinError(i),2));
+              double error_double = sqrt( pow(h_double->GetBinContent(i),2)/pow(lumiPerLS,4)*pow(lumiPerLS_error,2) + 1./pow(lumiPerLS,2)*pow(h_double->GetBinError(i),2));
               h_single->SetBinContent(i, n_single);
               h_double->SetBinContent(i, n_double);
-              double error_single = sqrt( 1./4.*pow(n_single,2)/pow(lumiPerLS,4)*pow(lumiPerLS_error,2) + 1./pow(lumiPerLS,2)*pow(h_single->GetBinError(i),2));
-              double error_double = sqrt( 1./4.*pow(n_single,2)/pow(lumiPerLS,4)*pow(lumiPerLS_error,2) + 1./pow(lumiPerLS,2)*pow(h_single->GetBinError(i),2));
-              h_single->SetBinError(i, h_single->GetBinError(i) / lumiPerLS);
-              h_double->SetBinError(i, h_double->GetBinError(i) / lumiPerLS);
+              h_single->SetBinError(i, error_single);
+              h_double->SetBinError(i, error_double);
+              //cout << "pileuperror (" << f_pileup_double-1 << ")= " << sqrt(pow(((n_cut_double/(*f_mc)[0]) - n_noise_double - n_em_double)/pow(f_pileup_double,2),2) * pow(0.2*(f_pileup_double-1),2))/2.42*100 << "%" << endl;
             }
           else cerr << "div 0 in bin: " << i << endl;
             }
@@ -162,15 +163,15 @@ void makePlots_cs1()
       if(run_num[run] == 210885)
         TCanvas* c1 = new TCanvas;
 
-      TFitResultPtr fit_single = h_single->Fit("pol1","QS");
-      TFitResultPtr fit_double = h_double->Fit("pol1","QS");
+      TFitResultPtr fit_single = h_single->Fit("pol0","QS");
+      TFitResultPtr fit_double = h_double->Fit("pol0","QS");
 
-//       int rebin = 1;
-//       h_single->Rebin(rebin);
-//       h_single->Scale(1./double(rebin));
+      int rebin = 20;
+      h_single->Rebin(rebin);
+      h_single->Scale(1./double(rebin));
       
-//       h_double->Rebin(rebin);
-//       h_double->Scale(1./double(rebin));
+      h_double->Rebin(rebin);
+      h_double->Scale(1./double(rebin));
 
       h_single->GetXaxis()->SetRangeUser(0,1200);
       h_double->GetXaxis()->SetRangeUser(0,1200);
@@ -216,7 +217,7 @@ void makePlots_cs1()
       if(run_num[run] == 210885)
         c1 = new TCanvas; //please use a new one to paint your fit crap
     }
-  h_run_double_pPb->GetYaxis()->SetRangeUser(1.8,2.5);
+  h_run_double_pPb->GetYaxis()->SetRangeUser(2.0,2.8);
   h_run_double_pPb->SetLineColor(kRed);
   h_run_double_pPb->SetMarkerColor(kRed);
   h_run_double_pPb->SetTitle("double-arm (pPb);run number;#sigma_{inel} / b");
@@ -252,9 +253,9 @@ void makePlots_cs1()
   can3->SaveAs((string("plots/CS_runs")+string(".png")).c_str());
 
   TCanvas* can4 = new TCanvas;
-  h_run_double->Draw("P");
+  h_run_double_pPb->Draw("P");
   h_run_double_Pbp->Draw("PSAME");
-  TLegend* leg4 = can3->BuildLegend(0.6,0.7,0.85,0.9);
+  TLegend* leg4 = can4->BuildLegend(0.6,0.7,0.85,0.9);
   leg4->SetFillColor(kWhite);
   leg4->Draw();
   CMSPreliminary();
@@ -263,6 +264,9 @@ void makePlots_cs1()
   can4->SaveAs((string("plots/CS_runs_pas")+string(".pdf")).c_str());
   can4->SaveAs((string("plots/CS_runs_pas")+string(".png")).c_str());
 
-  h_run_double->Fit(pol0,"S");
+
+  TFitResultPtr fit_final = h_run_double->Fit(pol0,"QS");
+  cout << "sigma_inel: " << fit_final->Parameter(0) << " b"<< endl;
+  cout << "Run-by-run variation: " << fit_final->ParError(0)/fit_final->Parameter(0) << endl;;
 
 }

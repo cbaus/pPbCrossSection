@@ -6,25 +6,26 @@ void makePlots7()
   style();
 
   vector<string> list;
-  //list.push_back(string("Epos"));
-  //list.push_back(string("Hijing"));
+  list.push_back(string("Epos"));
+  list.push_back(string("Hijing"));
   list.push_back(string("QGSJetII"));
 
   
   for(int i=0; i<int(list.size()); i++)
     {
       cout << i << " " << int(list.size()) << endl;
-      TFile* file = TFile::Open("histos_mc.root");
+      TFile* file = TFile::Open("histos_old.root");
+      file->cd();
 
       cout << string(list[i]+string("/")+list[i]+string("_h_mc_diffraction_single")) << endl;
-      TH1D* a=file->Get(string(list[i]+string("/")+list[i]+string("_h_mc_diffraction_single")).c_str());
-      TH1D* b=file->Get(string(list[i]+string("/")+list[i]+string("_h_mc_diffraction_double")).c_str());
-      TH1D* c1=file->Get(string(list[i]+string("/")+list[i]+string("_h_mc_diffraction_SD1")).c_str());
-      TH1D* c2=file->Get(string(list[i]+string("/")+list[i]+string("_h_mc_diffraction_SD2")).c_str());
-      TH1D* d=file->Get(string(list[i]+string("/")+list[i]+string("_h_mc_diffraction_DD")).c_str());
-      TH1D* e=file->Get(string(list[i]+string("/")+list[i]+string("_h_mc_diffraction_CD")).c_str());
-      TH1D* f=file->Get(string(list[i]+string("/")+list[i]+string("_h_mc_diffraction_ND")).c_str());
-      TH1D* g=file->Get(string(list[i]+string("/")+list[i]+string("_h_mc_diffraction_all")).c_str());
+      TH1D* a=(TH1D*)file->Get(string(list[i]+string("/")+list[i]+string("_h_mc_diffraction_single")).c_str());
+      TH1D* b=(TH1D*)file->Get(string(list[i]+string("/")+list[i]+string("_h_mc_diffraction_double")).c_str());
+      TH1D* c1=(TH1D*)file->Get(string(list[i]+string("/")+list[i]+string("_h_mc_diffraction_SD1")).c_str());
+      TH1D* c2=(TH1D*)file->Get(string(list[i]+string("/")+list[i]+string("_h_mc_diffraction_SD2")).c_str());
+      TH1D* d=(TH1D*)file->Get(string(list[i]+string("/")+list[i]+string("_h_mc_diffraction_DD")).c_str());
+      TH1D* e=(TH1D*)file->Get(string(list[i]+string("/")+list[i]+string("_h_mc_diffraction_CD")).c_str());
+      TH1D* f=(TH1D*)file->Get(string(list[i]+string("/")+list[i]+string("_h_mc_diffraction_ND")).c_str());
+      TH1D* g=(TH1D*)file->Get(string(list[i]+string("/")+list[i]+string("_h_mc_diffraction_all")).c_str());
 
 
       a->Scale(1./double(g->GetEntries()));
@@ -72,8 +73,8 @@ void makePlots7()
       e->SetFillColor(kGreen+3);
       f->SetFillColor(kBlack);
 
-      a->SetTitle("single arm > 3 GeV");
-      b->SetTitle("double arm > 1.5 GeV");
+      a->SetTitle("single arm > 6 GeV");
+      b->SetTitle("double arm > 2 GeV");
       c1->SetTitle("SD1");
       c2->SetTitle("SD2");
       d->SetTitle("DD");
@@ -97,6 +98,7 @@ void makePlots7()
       TLegend* leg = can1->BuildLegend(0.25,0.65,0.45,0.85);
       leg->SetFillColor(kWhite);
       leg->Draw();
+      CMSPreliminary();
       can1->SaveAs((string("plots/diff_1_")+list[i]+string(".eps")).c_str());
       can1->SaveAs((string("plots/diff_1_")+list[i]+string(".pdf")).c_str());
       can1->SaveAs((string("plots/diff_1_")+list[i]+string(".png")).c_str());
@@ -112,6 +114,7 @@ void makePlots7()
       hs2->Draw("HIST");
       hs2->SetTitle(";lg(#xi);events (normalised)");
       leg->Draw();
+      CMSPreliminary();
       can2->SaveAs((string("plots/diff_2_")+list[i]+string(".eps")).c_str());
       can2->SaveAs((string("plots/diff_2_")+list[i]+string(".pdf")).c_str());
       can2->SaveAs((string("plots/diff_2_")+list[i]+string(".png")).c_str());
@@ -127,17 +130,18 @@ void makePlots7()
       TLegend* leg = c3->BuildLegend(0.25,0.65,0.65,0.85);
       leg->SetFillColor(kWhite);
       leg->Draw();
+      CMSPreliminary();
       c3->SaveAs((string("plots/diff_3_")+list[i]+string(".eps")).c_str());
       c3->SaveAs((string("plots/diff_3_")+list[i]+string(".pdf")).c_str());
       c3->SaveAs((string("plots/diff_3_")+list[i]+string(".png")).c_str());
 
 
       TCanvas* c4 = new TCanvas;
-      TH1D* single2 = a->Clone("single2");
-      TH1D* double2 = b->Clone("double2");
+      TH1D* single2 = (TH1D*)a->Clone("single2");
+      TH1D* double2 = (TH1D*)b->Clone("double2");
 
-      single2->SetTitle("single-arm > 3 GeV;lg(#xi);efficiency #epsilon");
-      double2->SetTitle("double-arm > 3 GeV;lg(#xi);efficiency #epsilon");
+      single2->SetTitle("single-arm > 6 GeV;lg(#xi);efficiency #epsilon");
+      double2->SetTitle("double-arm > 2 GeV;lg(#xi);efficiency #epsilon");
 
       for(int n=0; n<=single2->GetNbinsX(); n++)
         {
@@ -160,6 +164,7 @@ void makePlots7()
       TLegend* leg = c4->BuildLegend(0.22,0.65,0.5,0.85);
       leg->SetFillColor(kWhite);
       leg->Draw();
+      CMSPreliminary();
       c4->SaveAs((string("plots/diff_4_")+list[i]+string(".eps")).c_str());
       c4->SaveAs((string("plots/diff_4_")+list[i]+string(".pdf")).c_str());
       c4->SaveAs((string("plots/diff_4_")+list[i]+string(".png")).c_str());

@@ -5,8 +5,9 @@ TVectorD corr_fac_noise(2);
 TVectorD corr_fac_mc(2);
 TVectorD corr_fac_all(2);
 
-const double cut_value_single = 6.6.;
-const double cut_value_double = 2.2.;
+const double fac_error = 1.0; 
+const double cut_value_single = 6.*fac_error;
+const double cut_value_double = 2.*fac_error;
 
 void makePlots()
 {
@@ -18,7 +19,7 @@ void makePlots()
   for(int n=0; n<int(type.size()); n++)
     {
 
-  TFile* file = TFile::Open("histos_error_p.root");
+  TFile* file = TFile::Open("histos_old.root");
   TFile* file2 = TFile::Open("histos_mc.root");
   TFile* file3 = TFile::Open("plots/hf_cuts_noise.root");
 
@@ -168,6 +169,9 @@ void makePlots()
           corr_fac_mc[1] = f_mc;
           corr_fac_noise[1] = f_noise;
           corr_fac_all[1] = corr;
+
+          cout << i << "EM error: " << fabs(e->GetBinContent(i) - f->GetBinContent(i)) * 195./2100. / f_em << endl;
+          cout << "MC error: " << fabs((c->GetBinContent(i)/c->GetBinContent(1) - d->GetBinContent(i)/d->GetBinContent(1))/2.) / f_mc << endl;
         }
     }
   a1->GetXaxis()->SetRange(startPlot,a1->GetNbinsX());

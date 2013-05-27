@@ -1,4 +1,4 @@
-#define MAXEVT -10000
+#define MAXEVT 50000
 
 #include "TChain.h"
 #include "TFile.h"
@@ -12,6 +12,7 @@
 #include "TTree.h"
 #include "TVectorD.h"
 
+#include <assert.h>
 #include <iostream>
 #include <vector>
 #include <string>
@@ -44,23 +45,23 @@ int main()
   //style();
 
   //*************************************************************INPUT***********************************************************
-  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Data210614/*_*.root"); sample_name.push_back("data210614"); sample_type.push_back(DATA);
-  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Data210885/*_*.root"); sample_name.push_back("data210885"); sample_type.push_back(DATA);
-  sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211000/*.root"); sample_name.push_back("data211000"); sample_type.push_back(DATA);
-  sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211001/*.root"); sample_name.push_back("data211001"); sample_type.push_back(DATA);
-  sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211032/*.root"); sample_name.push_back("data211032"); sample_type.push_back(DATA);
-  sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211256/*.root"); sample_name.push_back("data211256"); sample_type.push_back(DATA);
-  sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211371/*.root"); sample_name.push_back("data211371"); sample_type.push_back(DATA);
-  sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211390/*.root"); sample_name.push_back("data211390"); sample_type.push_back(DATA);
-  sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211532/*.root"); sample_name.push_back("data211532"); sample_type.push_back(DATA);
-  sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211538/*.root"); sample_name.push_back("data211538"); sample_type.push_back(DATA);
-  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Data211607/*_*.root"); sample_name.push_back("data211607"); sample_type.push_back(DATA);
+//   sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Data210614/*_*.root"); sample_name.push_back("data210614"); sample_type.push_back(DATA);
+//   sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Data210885/*_*.root"); sample_name.push_back("data210885"); sample_type.push_back(DATA);
+//   sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211000/*.root"); sample_name.push_back("data211000"); sample_type.push_back(DATA);
+//   sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211001/*.root"); sample_name.push_back("data211001"); sample_type.push_back(DATA);
+//   sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211032/*.root"); sample_name.push_back("data211032"); sample_type.push_back(DATA);
+//   sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211256/*.root"); sample_name.push_back("data211256"); sample_type.push_back(DATA);
+//   sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211371/*.root"); sample_name.push_back("data211371"); sample_type.push_back(DATA);
+//   sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211390/*.root"); sample_name.push_back("data211390"); sample_type.push_back(DATA);
+//   sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211532/*.root"); sample_name.push_back("data211532"); sample_type.push_back(DATA);
+//   sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211538/*.root"); sample_name.push_back("data211538"); sample_type.push_back(DATA);
+//   sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Data211607/*_*.root"); sample_name.push_back("data211607"); sample_type.push_back(DATA);
   sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Epos/*.root"); sample_name.push_back("Epos"); sample_type.push_back(MC);
-  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Epos_SL/*.root"); sample_name.push_back("Epos_SL"); sample_type.push_back(MC);
-  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Hijing/*.root"); sample_name.push_back("Hijing"); sample_type.push_back(MC);
-  sample_fname.push_back("/afs/cern.ch/work/c/cbaus/public/castortree/pPb_QGSJetII/treeMC.root"); sample_name.push_back("QGSJetII"); sample_type.push_back(MC);
-  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/StarlightDPMjet_v2/treeMC.root"); sample_name.push_back("Starlight_DPMJet");  sample_type.push_back(MC);
-  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/StarlightPythia/treeMC.root"); sample_name.push_back("Starlight_Pythia");  sample_type.push_back(MC);
+//   sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Epos_SL/*.root"); sample_name.push_back("Epos_SL"); sample_type.push_back(MC);
+//   sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Hijing/*.root"); sample_name.push_back("Hijing"); sample_type.push_back(MC);
+//   sample_fname.push_back("/afs/cern.ch/work/c/cbaus/public/castortree/pPb_QGSJetII/treeMC.root"); sample_name.push_back("QGSJetII"); sample_type.push_back(MC);
+//   sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/StarlightDPMjet_v2/treeMC.root"); sample_name.push_back("Starlight_DPMJet");  sample_type.push_back(MC);
+//   sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/StarlightPythia/treeMC.root"); sample_name.push_back("Starlight_Pythia");  sample_type.push_back(MC);
 
   TFile f("plots/hf_cuts_noise.root");
   TVectorD* hf_m_cuts_light_noise = NULL;
@@ -81,7 +82,7 @@ int main()
 
   //**************************************************************OUTPUT*********************************************************
 
-  TFile* out_file = new TFile("histos_error_p.root","RECREATE");
+  TFile* out_file = new TFile("histos.root","RECREATE");
 
   TH1D* h_zero_count_zb_coll;
   TH1D* h_zero_count_zb_no_coll;
@@ -255,14 +256,14 @@ int main()
       h_perf_hf_totE_eta_single_3gev       = new TH1D((add + string("_h_perf_hf_totE_eta_single_3gev")).c_str(),"",100,-5.2,5.2);
       h_perf_hf_totE_eta_double_1dot5gev   = new TH1D((add + string("_h_perf_hf_totE_eta_double_1dot5gev")).c_str(),"",100,-5.2,5.2);
 
-      h_mc_diffraction_single = new TH1D((add + string("_h_mc_diffraction_single")).c_str(),"",100,-9,2);
-      h_mc_diffraction_double = new TH1D((add + string("_h_mc_diffraction_double")).c_str(),"",100,-9,2);
-      h_mc_diffraction_SD1    = new TH1D((add + string("_h_mc_diffraction_SD1")).c_str(),"",100,-9,2);
-      h_mc_diffraction_SD2    = new TH1D((add + string("_h_mc_diffraction_SD2")).c_str(),"",100,-9,2);
-      h_mc_diffraction_DD     = new TH1D((add + string("_h_mc_diffraction_DD")).c_str(),"",100,-9,2);
-      h_mc_diffraction_CD     = new TH1D((add + string("_h_mc_diffraction_CD")).c_str(),"",100,-9,2);
-      h_mc_diffraction_ND     = new TH1D((add + string("_h_mc_diffraction_ND")).c_str(),"",100,-9,2);
-      h_mc_diffraction_all    = new TH1D((add + string("_h_mc_diffraction_all")).c_str(),"",100,-9,2);
+      h_mc_diffraction_single = new TH1D((add + string("_h_mc_diffraction_single")).c_str(),"",100,-1,11);
+      h_mc_diffraction_double = new TH1D((add + string("_h_mc_diffraction_double")).c_str(),"",100,-1,11);
+      h_mc_diffraction_SD1    = new TH1D((add + string("_h_mc_diffraction_SD1")).c_str(),"",100,-1,11);
+      h_mc_diffraction_SD2    = new TH1D((add + string("_h_mc_diffraction_SD2")).c_str(),"",100,-1,11);
+      h_mc_diffraction_DD     = new TH1D((add + string("_h_mc_diffraction_DD")).c_str(),"",100,-1,11);
+      h_mc_diffraction_CD     = new TH1D((add + string("_h_mc_diffraction_CD")).c_str(),"",100,-1,11);
+      h_mc_diffraction_ND     = new TH1D((add + string("_h_mc_diffraction_ND")).c_str(),"",100,-1,11);
+      h_mc_diffraction_all    = new TH1D((add + string("_h_mc_diffraction_all")).c_str(),"",100,-1,11);
 
       h_mc_rapidity           = new TH1D((add + string("_h_mc_rapidity")).c_str(),"",100,-12,12);
       h_mc_eta_e              = new TH1D((add + string("_h_mc_eta_e")).c_str(),"",100,-12,12);
@@ -382,7 +383,7 @@ int main()
           const double s = 5020*5020;
           double m_x=0, xi_x=0;
           double m_y=0, xi_y=0;
-          double rapGap=0;
+          double rapGap=-1;
           bool SD1 = event->genProcessID == 103;
           bool SD2 = event->genProcessID == 104;
           bool DD = event->genProcessID == 105;
@@ -409,79 +410,111 @@ int main()
 //               beam1->Py = 0;
 //               beam1->Pz = 1578;
               
-              //rapidityMassMap.insert(pair<double,GenParticle*>(beam0->GetRapidity(),beam0));//add fake particle at beginning and end
               for (vector<GenParticle>::iterator it = event->GEN.begin(); it < event->GEN.end(); ++it)
                 {
                   if (it->Status != 1)
                     continue;
-                  
+                  if(abs(it->Id) == 12 || abs(it->Id) == 14 || abs(it->Id) == 16 || abs(it->Id) == 13)
+                    continue; //muon + neutrinos
+                    
                   if (it->Id > 1e9) //skip fragments
                     continue;
 
-                  double Rapidity= it->GetRapidity();
-                  h_mc_rapidity->Fill(Rapidity);
+                  double Eta= it->GetEta();
+                  h_mc_rapidity->Fill(Eta);
                   h_mc_eta_e->Fill(it->GetEta(),it->GetEnergy());
-                  rapidityMassMap.insert(pair<double,GenParticle*>(it->GetRapidity(),&(*it)));
+                  rapidityMassMap.insert(pair<double,GenParticle*>(it->GetEta(),&(*it)));
                 }
-              //rapidityMassMap.insert(pair<double,GenParticle*>(beam1->GetRapidity(),beam1));//add fake particle at beginning and end
-              
+              assert(rapidityMassMap.size() >= 2); //Assume 2 or more final usable particles
               multimap<double,GenParticle*>::const_iterator thisIsIt; //start of m_x
               int n=0;
+//               if(!SD1 && !SD2)
+//                 continue;
               for (multimap<double,GenParticle*>::const_iterator it = rapidityMassMap.begin(); it != rapidityMassMap.end(); ++it)
                 {
-                  //if(SD1 || SD2) cout << n++ << " " << it->second->Id << ": E=" << it->second->GetEnergy() << "  --  eta=" << it->second->GetEta() << "  --  y=" << it->second->GetRapidity() << endl;
+                  //cout << n++ << " " << it->second->Id << ": E=" << it->second->GetEnergy() << "  --  eta=" << it->second->GetEta() << "  --  y=" << it->second->GetRapidity() << endl;
                   if (it == rapidityMassMap.begin())
                     continue;
+
                   multimap<double,GenParticle*>::const_iterator it1=--it;
                   ++it;
-                  double thisRapGap = fabs(it->second->GetRapidity() - it1->second->GetRapidity());
-                  //cout << it->second->GetRapidity() << " " << it1->second->GetRapidity();
+                  double Eta1 = it ->second->GetEta();
+                  double Eta0 = it1->second->GetEta();
+                  double thisRapGap;
+
+                  if(Eta0 < -5.2 && Eta1 >= -5.2) //it = first particle in detector acceptance
+                    {
+                      thisRapGap = fabs(-5.2 - Eta1);
+                    }
+                  else if(Eta0 < -5.2) continue;
+
+                  else if(Eta0 < 5.2 && Eta1 >= 5.2) //it = first particle outside detector acceptance
+                    {
+                      thisRapGap = fabs(5.2 - Eta0);
+                    }
+                  else if(Eta1 >  5.2) continue;
+                  else
+                    {
+                      thisRapGap = fabs(it->second->GetEta() - it1->second->GetEta());
+                    }
                   if(!TMath::Finite(thisRapGap) || TMath::IsNaN(thisRapGap))
-                    continue;
-                  //cerr << "   !!! ! PARTICLES WITH INFINITE RAP DETECTED " << distance(event->GEN.begin(),it) << " " << it->GetRapidity() << " " << it->Id << endl;
-                  
+                    {
+                      continue;
+                      cerr << "   !!! ! PARTICLES WITH INFINITE RAP DETECTED " << n<< it->second->GetEta() << " " << it->second->Id << endl;
+                    }
                   if (thisRapGap > rapGap)
                     {
-                      //cout << " blib";
+                      //cout << it->second->GetEta() << " " << it1->second->GetEta();
+                      //cout << " = " << thisRapGap << " blib";
                       rapGap = thisRapGap;
                       thisIsIt = it;
                     }
                   //cout << endl;
                 }
+//               if(rapGap != -1)
+//                 {
               
-              TLorentzVector vecX(0,0,0,0);
-              multimap<double,GenParticle*>::const_iterator it = rapidityMassMap.begin();
-              for (; it != thisIsIt; ++it)
-                {
-                  if(it->second->GetEta() > 1e9) //skip fragments only for mass calculation
-                    continue;
-                  TLorentzVector vec(it->second->Px,it->second->Py,it->second->Pz,it->second->GetEnergy());
-                  vecX += vec;
-                }
-                m_x = vecX.M();
-
-              TLorentzVector vecY(0,0,0,0);
-              multimap<double,GenParticle*>::const_iterator it2 = thisIsIt;
-              for (; it2 != rapidityMassMap.end(); ++it2)
-                {
-                  if(it->second->GetEta() > 1e9) //skip fragments only for mass calculation
-                    continue;
-                  TLorentzVector vec(it2->second->Px,it2->second->Py,it2->second->Pz,it2->second->GetEnergy());
-                  vecY += vec;
-                }
-                m_y = vecY.M();
-
-              if (m_x < m_y)
-                {
-                  double helper = m_y;
-                  m_y = m_x;
-                  m_x = helper;
-                }
-              xi_x = m_x*m_x / s;
-              xi_y = m_y*m_y / s;
-              //cout << "----------- !! M_X=" << m_x << "    M_Y=" << m_y << endl;
+//                   //TLorentzVector vecX(0,0,0,0);
+//                   multimap<double,GenParticle*>::const_iterator it = rapidityMassMap.begin();
+//                   for (; it != thisIsIt && it != rapidityMassMap.end(); ++it)
+//                     {
+//                       if(it->second->GetEta() < -5.2 || it->second->GetEta() > 5.2)
+//                         continue;
+//                       //TLorentzVector vec(it->second->Px,it->second->Py,it->second->Pz,it->second->GetEnergy());
+//                       //vecX += vec;
+//                       m_x += it->second->GetEnergy() + it->second->Pz;
+//                     }
+//                   //m_x = vecX.M();
+                  
+//                   TLorentzVector vecY(0,0,0,0);
+//                   multimap<double,GenParticle*>::const_iterator it2 = thisIsIt;
+//                   for (; it2 != rapidityMassMap.end(); ++it2)
+//                     {
+//                       if(it2->second->GetEta() < -5.2 || it2->second->GetEta() > 5.2)
+//                         continue;
+//                       //TLorentzVector vec(it2->second->Px,it2->second->Py,it2->second->Pz,it2->second->GetEnergy());
+//                       //vecY += vec;
+//                       m_y += it2->second->GetEnergy() - it2->second->Pz;
+//                     }
+//                   //m_y = vecY.M();
+                  
+//                   //               if (m_x < m_y)
+//                   //                 {
+//                   //                   double helper = m_y;
+//                   //                   m_y = m_x;
+//                   //                   m_x = helper;
+//                   //                 }
+//                   xi_x = m_x / sqrt(s);
+//                   xi_y = m_y / sqrt(s);
+//                   cout << "----------- !! M_X=" << m_x << "    M_Y=" << m_y << endl;
+//                 }
+//           else
+//             {
+//               cout << " no particles in -5.2 to 5.2" << endl;
+//               xi_x = 1e-8;
+//               xi_y = 1e-8;
+//             }
             }
-
           //Counting events
           const int prescale      = zero_bias_prescale_L1*zero_bias_prescale_HLT;
           const double lumiPerLS  = event->instLuminosity * event->instLuminosityCorr * 1e6;
@@ -586,14 +619,14 @@ int main()
                 h_perf_hf_totE_eta_single_3gev->Fill(it->Eta,it->Energy);
             }
 
-          if(coll && hf_single_tag)                                 h_mc_diffraction_single->Fill(log10(xi_x));
-          if(coll && hf_double_tag)                                 h_mc_diffraction_double->Fill(log10(xi_x));
-          if(coll && SD1)                                           h_mc_diffraction_SD1->Fill(log10(xi_x));
-          if(coll && SD2)                                           h_mc_diffraction_SD2->Fill(log10(xi_x));
-          if(coll && DD)                                            h_mc_diffraction_DD->Fill(log10(xi_x));
-          if(coll && CD)                                            h_mc_diffraction_CD->Fill(log10(xi_x));
-          if(coll && ND)                                            h_mc_diffraction_ND->Fill(log10(xi_x));
-          if(coll)                                                  h_mc_diffraction_all->Fill(log10(xi_x));
+          if(coll && hf_single_tag)                                 h_mc_diffraction_single->Fill(rapGap);
+          if(coll && hf_double_tag)                                 h_mc_diffraction_double->Fill(rapGap);
+          if(coll && SD1)                                           h_mc_diffraction_SD1->Fill(rapGap);
+          if(coll && SD2)                                           h_mc_diffraction_SD2->Fill(rapGap);
+          if(coll && DD)                                            h_mc_diffraction_DD->Fill(rapGap);
+          if(coll && CD)                                            h_mc_diffraction_CD->Fill(rapGap);
+          if(coll && ND)                                            h_mc_diffraction_ND->Fill(rapGap);
+          if(coll)                                                  h_mc_diffraction_all->Fill(rapGap);
 
           if(sample_type[sample]==DATA)
             {

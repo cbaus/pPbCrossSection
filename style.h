@@ -10,6 +10,6 @@ void CMSPreliminary();
 
 // #################################################################################
 // helper function to specify that lead lead data is used
-void DataText(const bool left=true, const bool top=true, const std::string txt="pPb, #sqrt{s_{_{NN}}}=5 TeV");
+void DataText(const bool left=true, const bool top=true, const std::string txt="pPb, #sqrt{s_{_{NN}}}=5.02 TeV");
 
 #endif
