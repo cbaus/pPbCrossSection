@@ -1,9 +1,9 @@
 #include <iomanip>
 
 TVectorD corr_fac_em(2);
-TVectorD corr_fac_noise(2);
+TVectorD corr_fac_eme(2);
 TVectorD corr_fac_mc(2);
-TVectorD corr_fac_all(2);
+TVectorD corr_fac_mce(2);
 
 const double fac_error = 1.0; 
 const double cut_value_single = 6.*fac_error;
@@ -126,11 +126,13 @@ void makePlots()
   int startPlot=0;
   for(int i=1; i<=a1->GetNbinsX(); i++)
     {
-      const double f_em = 0.5* (e->GetBinContent(i) + f->GetBinContent(i)) * 195./2100.;
-      const double f_noise = a2->GetBinContent(i)/a2->GetBinContent(1);
-      const double f_mc = (c->GetBinContent(i)/c->GetBinContent(1) + d->GetBinContent(i)/d->GetBinContent(1))/2.;
+      const double f_em     = 0.5* (e->GetBinContent(i) + f->GetBinContent(i)) * 195./2100.;
+      const double f_eme    = fabs(e->GetBinContent(i) - f->GetBinContent(i)) * 195./2100.;
+      const double f_mc     = (c->GetBinContent(i)/c->GetBinContent(1) + d->GetBinContent(i)/d->GetBinContent(1))/2.;
+      const double f_mce    = fabs(c->GetBinContent(i)/c->GetBinContent(1) - d->GetBinContent(i)/d->GetBinContent(1));
+      const double f_noise  = a2->GetBinContent(i)/a2->GetBinContent(1);
       const double n_sel_zb = a->GetBinContent(i);
-      const double n_zb = 1;
+      const double n_zb     = 1;
 
       double n_inel = 0;
       double corr = -1;
@@ -149,8 +151,8 @@ void makePlots()
       cout
         << setprecision(4)
         << endl << i << "(" << a1->GetBinCenter(i) << ")"
-        << endl << "f_mc= " << f_mc
-        << endl << "f_em= " << f_em
+        << endl << "f_mc= " << f_mc << " ± " << f_mce << " ( " << f_mce/f_mc*100. << "%)"
+        << endl << "f_em= " << f_em << " ± " << f_eme << " ( " << f_eme/f_em*100. << "%)"
         << endl << "f_noise= " << f_noise
         << endl << "n_sel_zb= " << n_sel_zb
         << endl << "n_inel= " << n_inel
@@ -160,18 +162,15 @@ void makePlots()
         {
           corr_fac_em[0] = f_em;
           corr_fac_mc[0] = f_mc;
-          corr_fac_noise[0] = f_noise;
-          corr_fac_all[0] = corr;
+          corr_fac_eme[0] = f_eme;
+          corr_fac_mce[0] = f_mce;
         }
       if(i==a->FindBin(cut_value_double) && type[n]==string("double"))
         {
           corr_fac_em[1] = f_em;
           corr_fac_mc[1] = f_mc;
-          corr_fac_noise[1] = f_noise;
-          corr_fac_all[1] = corr;
-
-          cout << i << "EM error: " << fabs(e->GetBinContent(i) - f->GetBinContent(i)) * 195./2100. / f_em << endl;
-          cout << "MC error: " << fabs((c->GetBinContent(i)/c->GetBinContent(1) - d->GetBinContent(i)/d->GetBinContent(1))/2.) / f_mc << endl;
+          corr_fac_eme[1] = f_eme;
+          corr_fac_mce[1] = f_mce;
         }
     }
   a1->GetXaxis()->SetRange(startPlot,a1->GetNbinsX());
@@ -213,8 +212,8 @@ void makePlots()
 
   TFile outfile("plots/corr_factors.root","recreate");
   corr_fac_em.Write("corr_fac_em");
-  corr_fac_noise.Write("corr_fac_noise");
   corr_fac_mc.Write("corr_fac_mc");
-  corr_fac_all.Write("corr_fac_all");
+  corr_fac_eme.Write("corr_fac_eme");
+  corr_fac_mce.Write("corr_fac_mce");
   outfile.Close();
 }

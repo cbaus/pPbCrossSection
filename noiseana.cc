@@ -44,7 +44,7 @@ int main()
 
   //**************************************************************OUTPUT*********************************************************
 
-  TFile* out_file = new TFile("histos_noise.root","RECREATE");
+  TFile* out_file = new TFile("histos_noise2.root","RECREATE");
 
 
   TH1D* h_hf_hits_noise;
@@ -396,9 +396,9 @@ int main()
           if(noise)                                                 h_noise_tracks_hf->Fill(hf_single_energy_max,event->Tracks.size());
           if(beamgas)                                               h_beamgas_tracks_hf->Fill(hf_single_energy_max,event->Tracks.size());
 
-          if((noise || beamgas) && hf_single_energy_max > 3)        h_run_events_single->Fill(lumiPerTime,evtWeight);
-          if((noise || beamgas) && hf_double_energy_max > 1.5)      h_run_events_double->Fill(lumiPerTime,evtWeight);
-          if((noise || beamgas) )                                   h_run_events->Fill(lumiPerTime,evtWeight);
+          if((noise) && hf_single_energy_max > 3)        h_run_events_single->Fill(lumiPerTime,evtWeight);
+          if((noise) && hf_double_energy_max > 1.5)      h_run_events_double->Fill(lumiPerTime,evtWeight);
+          if((noise) )                                   h_run_events->Fill(lumiPerTime,evtWeight);
                                                                         
 
         }
