@@ -1,92 +1,135 @@
+#include "TGraphErrors.h"
+#include "TCanvas.h"
+#include "TGraphErrors.h"
+#include "TLegend.h"
+
+#include "TROOT.h"
+void DataText2(const bool left=true, const bool top=true, const std::string txt="pPb, #sqrt{s_{_{NN}}}=5.02 TeV");
+
+void CMSPreliminary() {
+  TLatex* txt = new TLatex();
+  txt->SetNDC();
+  txt->SetTextFont(62);
+  txt->SetTextColor(kGray+1);
+  txt->SetTextSize(0.07);
+  txt->SetTextAlign(32);
+  txt->DrawLatex(1-gStyle->GetPadRightMargin(), 0.95, "CMS PRELIMINARY");
+}
+void DataText2(const bool left, const bool top, const std::string str) {
+  const double marg = 0.005, margY = 0.01;
+  TPaveText* txt
+    = new TPaveText(left ? gStyle->GetPadLeftMargin()+marg : 1-gStyle->GetPadRightMargin()-marg-0.30,
+                    top ? 1-gStyle->GetPadTopMargin()-margY-0.08 : gStyle->GetPadBottomMargin() + margY,
+                    left ? gStyle->GetPadLeftMargin()+marg+0.60 : 1-gStyle->GetPadRightMargin()-marg,
+                    top ? 1-gStyle->GetPadTopMargin()-margY : gStyle->GetPadBottomMargin() + margY + 0.04,
+                    "NDC b t l");
+    txt->SetTextAlign(10*(left ? 1 : 3) + (top ? 1 : 3));
+    txt->SetTextFont(42);
+    txt->SetFillStyle(0);
+    txt->SetTextColor(kBlack);
+    txt->SetTextSize(0.066);
+    txt->SetBorderSize(0);
+    txt->AddText(str.c_str());
+    txt->Draw();
+}
+
+void SetAttributes(TGraphErrors* theGraph, int colour, int marker)
+{
+  theGraph->SetMarkerSize(2);
+  theGraph->SetLineWidth(1.8);
+  theGraph->SetFillColor(kWhite);
+  theGraph->SetLineColor(colour);
+  theGraph->SetMarkerColor(colour);
+  theGraph->SetMarkerStyle(marker);
+}
+
 void makePlots_concl1()
 {
   gROOT->ProcessLine(" .L style.cc+");
   style();
-  
+
   TCanvas* can1 = new TCanvas;
   can1->Divide(2);
 
   TGraphErrors* pp_epos  = new TGraphErrors(1);
   pp_epos->SetName("pp_epos");
   pp_epos->SetTitle("EPOS");
-  pp_epos->SetPoint(0,0.9,64.783);
-  pp_epos->SetMarkerColor(kBlue);
-  pp_epos->SetMarkerStyle(22);
+  pp_epos->SetPoint(0,0.9,0.064783);
+  SetAttributes(pp_epos,kBlue,22);
   TGraphErrors* pb_epos  = new TGraphErrors(1);
   pb_epos->SetName("pb_epos");
   pb_epos->SetTitle("EPOS");
-  pb_epos->SetPoint(0,0.9,2096.168);
-  pb_epos->SetMarkerColor(kBlue);
-  pb_epos->SetMarkerStyle(22);
+  pb_epos->SetPoint(0,0.9,2.096168);
+  SetAttributes(pb_epos,kBlue,22);
 
   TGraphErrors* pp_eposlhc  = new TGraphErrors(1);
   pp_eposlhc->SetName("pp_eposlhc");
   pp_eposlhc->SetTitle("EPOSLHC");
-  pp_eposlhc->SetPoint(0,0.95,67.448);
-  pp_eposlhc->SetMarkerColor(kGreen-2);
-  pp_eposlhc->SetMarkerStyle(23);
+  pp_eposlhc->SetPoint(0,0.95,0.067448);
+  SetAttributes(pp_eposlhc,kGreen-2,23);
   TGraphErrors* pb_eposlhc  = new TGraphErrors(1);
   pb_eposlhc->SetName("pb_eposlhc");
   pb_eposlhc->SetTitle("EPOSLHC");
-  pb_eposlhc->SetPoint(0,0.95,2085.057);
-  pb_eposlhc->SetMarkerColor(kGreen-2);
-  pb_eposlhc->SetMarkerStyle(23);
+  pb_eposlhc->SetPoint(0,0.95,2.085057);
+  SetAttributes(pb_eposlhc,kGreen-2,23);
 
 
   TGraphErrors* pp_qgsjetii  = new TGraphErrors(1);
   pp_qgsjetii->SetName("pp_qgsjetii");
   pp_qgsjetii->SetTitle("QGSJETII-04");
-  pp_qgsjetii->SetPoint(0,1,69.422);
-  pp_qgsjetii->SetMarkerColor(kMagenta);
-  pp_qgsjetii->SetMarkerStyle(24);
+  pp_qgsjetii->SetPoint(0,1,0.069422);
+  SetAttributes(pp_qgsjetii,kMagenta,24);
   TGraphErrors* pb_qgsjetii  = new TGraphErrors(1);
   pb_qgsjetii->SetName("pb_qgsjetii");
   pb_qgsjetii->SetTitle("QGSJETII-04");
-  pb_qgsjetii->SetPoint(0,1,2176.422);
-  pb_qgsjetii->SetMarkerColor(kMagenta);
-  pb_qgsjetii->SetMarkerStyle(24);
+  pb_qgsjetii->SetPoint(0,1,2.176422);
+  SetAttributes(pb_qgsjetii,kMagenta,24);
 
 
   TGraphErrors* pp_fit  = new TGraphErrors(1);
   pp_fit->SetName("pp_fit");
   pp_fit->SetTitle("COMPETE and Glauber");
-  pp_fit->SetPoint(0,1.05,70);
-  pp_fit->SetMarkerColor(kBlack);
-  pp_fit->SetMarkerStyle(20);
+  pp_fit->SetPoint(0,1.05,0.070);
+  pp_fit->SetPointError(0,0,0.070*0.04);
+  SetAttributes(pp_fit,kBlack,20);
   TGraphErrors* pb_fit  = new TGraphErrors(1);
   pb_fit->SetName("pb_fit");
   pb_fit->SetTitle("COMPETE and Glauber");
-  pb_fit->SetPoint(0,1,2110);
-  pb_fit->SetMarkerColor(kBlack);
-  pb_fit->SetMarkerStyle(20);
+  pb_fit->SetPoint(0,1.05,2.110);
+  SetAttributes(pb_fit,kBlack,20);
 
-
-  TGraphErrors* pp_this  = new TGraphErrors(1);
-  pp_this->SetName("pp_this");
-  pp_this->SetTitle("THIS WORK");
-  pp_this->SetPoint(0,1.05,0);
-  pp_this->SetMarkerColor(kRed);
-  pp_this->SetMarkerStyle(21);
+  const double measured=(2.173+2.159)/2.;
   TGraphErrors* pb_this  = new TGraphErrors(1);
   pb_this->SetName("pb_this");
   pb_this->SetTitle("THIS WORK");
-  pb_this->SetPoint(0,1.05,2173);
-  pb_this->SetPointError(0,0,2173*0.081);
-  pb_this->SetMarkerColor(kRed);
-  pb_this->SetMarkerStyle(21);
+  pb_this->SetPoint(0,1.1,measured);
+  pb_this->SetPointError(0,0,measured*0.081);
+  SetAttributes(pb_this,kRed,21);
+  TGraphErrors* pb_this_up  = new TGraphErrors(1);
+  pb_this_up->SetName("pb_this_up");
+  pb_this_up->SetTitle("THIS WORK");
+  pb_this_up->SetPoint(0,1.1,measured*1.012);
+  SetAttributes(pb_this_up,kRed,23);
+  pb_this_up->SetMarkerSize(1.2);
+  TGraphErrors* pb_this_down  = new TGraphErrors(1);
+  pb_this_down->SetName("pb_this_down");
+  pb_this_down->SetTitle("THIS WORK");
+  pb_this_down->SetPoint(0,1.1,measured*(1.-0.012));
+  SetAttributes(pb_this_down,kRed,22);
+  pb_this_down->SetMarkerSize(1.2);
 
 
   ///RANGE
-  pp_epos->GetYaxis()->SetTitle("sigma_{inel} / b");
+  pp_epos->GetYaxis()->SetTitle("#sigma_{inel} / b");
   pp_epos->GetXaxis()->SetNdivisions(0);
   pp_epos->GetXaxis()->SetLimits(0.5,1.5);
-  pp_epos->GetHistogram()->SetMaximum(80);
-  pp_epos->GetHistogram()->SetMinimum(65);
+  pp_epos->GetHistogram()->SetMaximum(0.076);
+  pp_epos->GetHistogram()->SetMinimum(0.064);
 
   pb_epos->GetXaxis()->SetLimits(0.5,1.5);
   pb_epos->GetXaxis()->SetNdivisions(0);
-  pb_epos->GetHistogram()->SetMaximum(2400);
-  pb_epos->GetHistogram()->SetMinimum(1800);
+  pb_epos->GetHistogram()->SetMaximum(2.410);
+  pb_epos->GetHistogram()->SetMinimum(1.810);
   ///RANGE
 
   can1->cd(1);
@@ -94,7 +137,6 @@ void makePlots_concl1()
   pp_eposlhc->Draw("P");
   pp_qgsjetii->Draw("P");
   pp_fit->Draw("P");
-  pp_this->Draw("P");
 
   can1->cd(2);
   pb_epos->Draw("AP");
@@ -102,14 +144,26 @@ void makePlots_concl1()
   pb_qgsjetii->Draw("P");
   pb_fit->Draw("P");
   pb_this->Draw("P");
+  pb_this_up->Draw("P");
+  pb_this_down->Draw("P");
 
-  TLegend* leg1 = ((TCanvas*)(can1->GetPad(1)))->BuildLegend(0.55,0.7,0.85,0.9);
+  TLegend* leg1 = new TLegend(0.1,0.1,0.9,0.9);
   leg1->SetFillColor(kWhite);
-  
+  leg1->AddEntry(pb_epos,"EPOS","p");
+  leg1->AddEntry(pb_eposlhc,"EPOS-LHC","p");
+  leg1->AddEntry(pb_qgsjetii,"QGSJetII-04","p");
+  leg1->AddEntry(pb_fit,"COMPETE+Glauber","p");
+  leg1->AddEntry(pb_this,"this work","p");
+
   can1->cd(1);
-  DataText(true,true,"pp, #sqrt{s_{_{NN}}}=5.02 TeV");
+  DataText2(true,true,"pp, #sqrt{s_{_{NN}}}=5.02 TeV");
   can1->cd(2);
+  DataText2(true,true);
   CMSPreliminary();
-  DataText(true,true);
-  can1->SaveAs((string("plots/concl1.pdf")+string(".pdf")).c_str());
+  can1->SaveAs((string("plots/concl_1")+string(".pdf")).c_str());
+
+
+  TCanvas* can2 = new TCanvas;
+  leg1->Draw();
+  can2->SaveAs((string("plots/concl_1b")+string(".pdf")).c_str());
 }

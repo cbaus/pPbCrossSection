@@ -5,7 +5,7 @@ TVectorD corr_fac_eme(2);
 TVectorD corr_fac_mc(2);
 TVectorD corr_fac_mce(2);
 
-const double fac_error = 1.0; 
+const double fac_error = 1.0;
 const double cut_value_single = 6.*fac_error;
 const double cut_value_double = 2.*fac_error;
 
@@ -61,6 +61,12 @@ void makePlots()
   d->SetLineColor(kGreen+2);
   e->SetLineColor(kMagenta+2);
   f->SetLineColor(kMagenta-5);
+  a2->SetMarkerColor(a2->GetLineColor());
+  b->SetMarkerColor(b->GetLineColor());
+  c->SetMarkerColor(c->GetLineColor());
+  d->SetMarkerColor(d->GetLineColor());
+  e->SetMarkerColor(e->GetLineColor());
+  f->SetMarkerColor(f->GetLineColor());
   b->SetLineStyle(9);
 
   a->SetTitle("zero bias");
@@ -73,7 +79,7 @@ void makePlots()
 
   b->GetYaxis()->SetRangeUser(0.9,1.001);
   b->GetXaxis()->SetTitle("cut value / GeV");
-  b->GetYaxis()->SetTitle("efficiency #epsilon");
+  b->GetYaxis()->SetTitle("event fraction");
 
 
   TGraphErrors* b3 = new TGraphErrors(3);
@@ -97,19 +103,43 @@ void makePlots()
   c->Draw("HIST L SAME");
   d->Draw("HIST L SAME");
   TLegend* leg = can1->BuildLegend();
-  b3->Draw("P");
-  c3->Draw("P");
-  d3->Draw("P");
-  leg->SetFillColor(kWhite);
-  leg->SetX1(0.65);
-  leg->SetX2(0.85);
-  leg->SetY1(0.2);
-  leg->SetY2(0.4);
+
+  const double cut_value = type[n]=="single"?cut_value_single:cut_value_double;
+  TLine* line = new TLine(cut_value,0.9,cut_value,1.001);
+  line->SetLineWidth(2);
+  line->SetLineStyle(2);
+  line->Draw("SAME");
+
+  if(type[n]=="single")
+    {
+      leg->SetX1(0.24);
+      leg->SetX2(0.44);
+      leg->SetY1(0.24);
+      leg->SetY2(0.44);
+    }
+  if(type[n]=="double")
+    {
+      leg->SetX1(0.60);
+      leg->SetX2(0.80);
+      leg->SetY1(0.65);
+      leg->SetY2(0.85);
+    }
+  SetLegAtt(leg);
   leg->Draw();
 
   a->GetYaxis()->SetRangeUser(0,1.01);
   a->GetXaxis()->SetTitle("cut value / GeV");
   a->GetYaxis()->SetTitle("event fraction");
+
+  CMSPreliminary();
+  can1->SaveAs((string("plots/full_p_space_eff_PAS_")+type[n]+string(".pdf")).c_str());
+
+  b3->Draw("P");
+  c3->Draw("P");
+  d3->Draw("P");
+  can1->SaveAs((string("plots/full_p_space_eff_")+type[n]+string(".pdf")).c_str());
+
+  //////////////////////////////////////////////////////////////////////////////////////////////
 
   TH1D* copy = new TH1D;
   a->Copy(*copy);  TH1D* a1 = copy;
@@ -175,36 +205,32 @@ void makePlots()
     }
   a1->GetXaxis()->SetRange(startPlot,a1->GetNbinsX());
   h_corr->GetXaxis()->SetRange(startPlot,h_corr->GetNbinsX());
+
   a1->SetLineColor(kRed);
-  CMSPreliminary();
-  can1->SaveAs((string("plots/full_p_space_eff_")+type[n]+string(".eps")).c_str());
-  can1->SaveAs((string("plots/full_p_space_eff_")+type[n]+string(".pdf")).c_str());
-  can1->SaveAs((string("plots/full_p_space_eff_")+type[n]+string(".png")).c_str());
+
+  //////////////////////////////////////////////////////////////////////////////////////////////
 
   TCanvas* can2 = new TCanvas;
+  a2->GetXaxis()->SetTitle("cut value / GeV");
+  a2->GetYaxis()->SetTitle("event fraction");
   a2->Draw("HIST l");
-  //a1->Draw("HIST l SAME");
-  //a2->Draw("HIST l SAME");
   e->Draw("HIST l SAME");
   f->Draw("HIST l SAME");
   TLegend* leg2 = can2->BuildLegend();
-  leg2->SetX1(0.45);
+  leg2->SetX1(0.60);
   leg2->SetX2(0.80);
-  leg2->SetY1(0.65);
-  leg2->SetY2(0.85);
-  leg2->SetFillColor(kWhite);
+  leg2->SetY1(0.68);
+  leg2->SetY2(0.88);
+
+  TLine* line = new TLine(cut_value,0,cut_value,1.01);
+  line->SetLineWidth(2);
+  line->SetLineStyle(2);
+  line->Draw("SAME");
+
+  SetLegAtt(leg2);
   leg2->Draw();
   CMSPreliminary();
-  can2->SaveAs((string("plots/starlight_eff_")+type[n]+string(".eps")).c_str());
   can2->SaveAs((string("plots/starlight_eff_")+type[n]+string(".pdf")).c_str());
-  can2->SaveAs((string("plots/starlight_eff_")+type[n]+string(".png")).c_str());
-
-//   TCanvas* can3 = new TCanvas;
-//   h_corr->GetYaxis()->SetRangeUser(0.5,3.);
-//   h_corr->Draw();
-//   TF1* line = new TF1("line","1",0,10);
-//   line->Draw("SAME");
-//   CMSPreliminary();
 
   //file->Close();
   //file2->Close();

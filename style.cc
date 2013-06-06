@@ -50,13 +50,13 @@ void CMSPreliminary() {
   txt->DrawLatex(1-gStyle->GetPadRightMargin(), 0.95, "CMS PRELIMINARY");
 }
 // #################################################################################
-// helper function to specify that lead lead data is used
+// helper function to specify that proton/lead data is used
 void DataText(const bool left, const bool top, const std::string str) {
   const double marg = 0.005, margY = 0.03;
-  TPaveText* txt 
-    = new TPaveText(left ? gStyle->GetPadLeftMargin()+marg : 1-gStyle->GetPadRightMargin()-marg-0.30, 
-                    top ? 1-gStyle->GetPadTopMargin()-margY-0.04 : gStyle->GetPadBottomMargin() + margY, 
-                    left ? gStyle->GetPadLeftMargin()+marg+0.30 : 1-gStyle->GetPadRightMargin()-marg, 
+  TPaveText* txt
+    = new TPaveText(left ? gStyle->GetPadLeftMargin()+marg : 1-gStyle->GetPadRightMargin()-marg-0.30,
+                    top ? 1-gStyle->GetPadTopMargin()-margY-0.04 : gStyle->GetPadBottomMargin() + margY,
+                    left ? gStyle->GetPadLeftMargin()+marg+0.30 : 1-gStyle->GetPadRightMargin()-marg,
                     top ? 1-gStyle->GetPadTopMargin()-margY : gStyle->GetPadBottomMargin() + margY + 0.04,
                     "NDC b t l");
     txt->SetTextAlign(10*(left ? 1 : 3) + (top ? 1 : 3));
@@ -67,4 +67,14 @@ void DataText(const bool left, const bool top, const std::string str) {
     txt->SetBorderSize(0);
     txt->AddText(str.c_str());
     txt->Draw();
+}
+// #################################################################################
+// helper function for legend
+void SetLegAtt(TLegend* leg,const double txtsize)
+{
+  leg->SetFillColor(kWhite);
+  leg->SetBorderSize(0);
+  leg->SetFillStyle(0);
+  leg->SetTextFont(42);
+  leg->SetTextSize(txtsize);
 }

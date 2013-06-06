@@ -19,7 +19,7 @@ void makePlots_noise3()
   for (int run=0; run<int(run_num.size()); run++)
     {
       cout << endl << " Processing ... run: " << run_num[run] << endl << endl;
-      TFile* file = TFile::Open("histos_noise.root");
+      TFile* file = TFile::Open("histos_noise2.root");
       ostringstream runname_ss;
       runname_ss << run_num[run];
       string runname = runname_ss.str();
@@ -36,33 +36,33 @@ void makePlots_noise3()
 
       a2->Divide(atot);
 
-      int rebin = 50;
-      a->Rebin(rebin);
-      a->Scale(1./double(rebin)/a->GetBinWidth(1));
-      
-      a2->Rebin(rebin);
-      a2->Scale(1./double(rebin)/a2->GetBinWidth(1));
-      
+      // int rebin = 50;
+      // a->Rebin(rebin);
+      // a->Scale(1./double(rebin)/a->GetBinWidth(1));
+
+      // a2->Rebin(rebin);
+      // a2->Scale(1./double(rebin)/a2->GetBinWidth(1));
+
       a->SetLineColor(run+1);
       a2->SetLineColor(run+1);
-      
+
       a->SetMarkerColor(run+1);
       a2->SetMarkerColor(run+1);
 
       a->GetXaxis()->SetRangeUser(0,100000);
       a2->GetXaxis()->SetRangeUser(0,100000);
-      
+
       runname_ss << ";L_{i} / (s b)^{-1};d#frac{N_{sel}}{N_{Noise}} / dL_{i}";
       a->SetTitle(runname_ss.str().c_str());
       a2->SetTitle(runname_ss.str().c_str());
-      
+
       can1->cd();
       a->Draw(run==0?"":"SAME");
-      
+
       can2->cd();
       a2->Draw(run==0?"":"SAME");
     }
-  
+
   can1->cd();
   TLegend* leg1 = can1->BuildLegend(0.25,0.5,0.35,0.88);
   leg1->SetFillColor(kWhite);
@@ -75,4 +75,4 @@ void makePlots_noise3()
   can1->SaveAs((string("plots/noise_lumi_double")+string(".pdf")).c_str());
   can1->SaveAs((string("plots/noise_lumi_double")+string(".png")).c_str());
 }
-  
+

@@ -1,4 +1,4 @@
-void Show(TH1D* a,TH1D* a2,TH1D* b,TH1D* c,TH1D* d,TH1D* e,TH1D* f);
+void Show(TH1D* a,TH1D* a2,TH1D* b,TH1D* c,TH1D* d,TH1D* e,TH1D* f,string prefix);
 
 void makePlots3()
 {
@@ -6,31 +6,31 @@ void makePlots3()
   style();
 
   {
-  TFile* file2 = TFile::Open("histos.root");
-  TFile* file = TFile::Open("histos_mc.root");
-  TH1D* a=file2->Get("data210885/data210885_h_hfp_hits_coll");
-  TH1D* a2=file2->Get("data210885/data210885_h_hf_hits_noise");
-  TH1D* b=file->Get("Hijing/Hijing_h_hfp_hits_coll");
-  TH1D* c=file->Get("Epos/Epos_h_hfp_hits_coll");
-  TH1D* d=file->Get("QGSJetII/QGSJetII_h_hfp_hits_coll");
-  TH1D* e=file->Get("Starlight_DPMJet/Starlight_DPMJet_h_hfp_hits_coll");
-  TH1D* f=file->Get("Starlight_Pythia/Starlight_Pythia_h_hfp_hits_coll");
-  Show(a,a2,b,c,d,e,f);
+  TFile* file2 = TFile::Open("histos_old.root");
+  TFile* file = TFile::Open("histos_old.root");
+  TH1D* a=(TH1D*)file2->Get("data210885/data210885_h_hfp_hits_coll");
+  TH1D* a2=(TH1D*)file2->Get("data210885/data210885_h_hf_hits_noise");
+  TH1D* b=(TH1D*)file->Get("Hijing/Hijing_h_hfp_hits_coll");
+  TH1D* c=(TH1D*)file->Get("Epos/Epos_h_hfp_hits_coll");
+  TH1D* d=(TH1D*)file->Get("QGSJetII/QGSJetII_h_hfp_hits_coll");
+  TH1D* e=(TH1D*)file->Get("Starlight_DPMJet/Starlight_DPMJet_h_hfp_hits_coll");
+  TH1D* f=(TH1D*)file->Get("Starlight_Pythia/Starlight_Pythia_h_hfp_hits_coll");
+  Show(a,a2,b,c,d,e,f,"p");
   }
-//   {
-//   TFile* file = TFile::Open("histos.root");
-//   file->ls();
-//   TH1D* aa=file->Get("data210885/data210885_h_hfp_hits_coll");
-//   TH1D* aa2=file->Get("data210885/data210885_h_hf_hits_noise");
-//   TH1D* bb=file->Get("Hijing/Hijing_h_hfp_hits_coll");
-//   TH1D* cc=file->Get("Epos/Epos_h_hfp_hits_coll");
-//   TH1D* dd=file->Get("QGSJetII/QGSJetII_h_hfp_hits_coll");
-//   TH1D* ee=file->Get("Starlight_DPMJet/Starlight_DPMJet_h_hfp_hits_coll");
-//   TH1D* ff=file->Get("Starlight_Pythia/Starlight_Pythia_h_hfp_hits_coll");
-//   Show(aa,aa2,bb,cc,dd,ee,ff,"double");
-//   }
+  {
+  TFile* file2 = TFile::Open("histos_old.root");
+  TFile* file = TFile::Open("histos_old.root");
+  TH1D* a=(TH1D*)file2->Get("data210885/data210885_h_hfm_hits_coll");
+  TH1D* a2=(TH1D*)file2->Get("data210885/data210885_h_hf_hits_noise");
+  TH1D* b=(TH1D*)file->Get("Hijing/Hijing_h_hfm_hits_coll");
+  TH1D* c=(TH1D*)file->Get("Epos/Epos_h_hfm_hits_coll");
+  TH1D* d=(TH1D*)file->Get("QGSJetII/QGSJetII_h_hfm_hits_coll");
+  TH1D* e=(TH1D*)file->Get("Starlight_DPMJet/Starlight_DPMJet_h_hfm_hits_coll");
+  TH1D* f=(TH1D*)file->Get("Starlight_Pythia/Starlight_Pythia_h_hfm_hits_coll");
+  Show(a,a2,b,c,d,e,f,"m");
+  }
 }
-void Show(TH1D* a,TH1D* a2,TH1D* b,TH1D* c,TH1D* d,TH1D* e,TH1D* f)
+void Show(TH1D* a,TH1D* a2,TH1D* b,TH1D* c,TH1D* d,TH1D* e,TH1D* f, string prefix)
   {
   const int normbin = a->FindBin(10);
   const int normendbin = a->GetNbinsX();
@@ -46,13 +46,16 @@ void Show(TH1D* a,TH1D* a2,TH1D* b,TH1D* c,TH1D* d,TH1D* e,TH1D* f)
   f->Scale(eposscale2*122./2100.*eposnorm);
 
   a->SetMarkerSize(1.25);
-  a->SetLineWidth(2.5);
-  a2->SetLineWidth(2.5);
-  b->SetLineWidth(2.5);
-  c->SetLineWidth(2.5);
-  d->SetLineWidth(2.5);
-  e->SetLineWidth(2.5);
-  f->SetLineWidth(2.5);
+  e->SetMarkerSize(1.25);
+  f->SetMarkerSize(1.25);
+
+  // a->SetLineWidth(2);
+  // a2->SetLineWidth(1.5);
+  // b->SetLineWidth(2);
+  // c->SetLineWidth(2);
+  // d->SetLineWidth(2);
+  // e->SetLineWidth(2);
+  // f->SetLineWidth(2);
 
 
   a->SetMarkerColor(kBlack);
@@ -63,11 +66,12 @@ void Show(TH1D* a,TH1D* a2,TH1D* b,TH1D* c,TH1D* d,TH1D* e,TH1D* f)
   e->SetMarkerColor(kMagenta+3);
   f->SetMarkerColor(kMagenta-5);
 
+  a2->SetMarkerStyle(34);
   b->SetMarkerStyle(4);
   c->SetMarkerStyle(4);
   d->SetMarkerStyle(4);
-  e->SetMarkerStyle(34);
-  f->SetMarkerStyle(34);
+  e->SetMarkerStyle(22);
+  f->SetMarkerStyle(23);
 
   a->SetLineColor(kBlack);
   a2->SetLineColor(kCyan+2);
@@ -85,6 +89,7 @@ void Show(TH1D* a,TH1D* a2,TH1D* b,TH1D* c,TH1D* d,TH1D* e,TH1D* f)
   e->SetTitle("SL+DPMJet");
   f->SetTitle("SL+Pythia");
 
+  a->GetXaxis()->SetLimits(0.5,200);
   a->GetYaxis()->SetRangeUser(1e-7,1.01);
   a->GetXaxis()->SetTitle("hottest HF tower E / GeV");
   a->GetYaxis()->SetTitle("events (normalised)");
@@ -105,32 +110,31 @@ void Show(TH1D* a,TH1D* a2,TH1D* b,TH1D* c,TH1D* d,TH1D* e,TH1D* f)
   d->Draw("L SAME");
   e->Draw("L SAME");
   f->Draw("L SAME");
-  TLegend* leg = c1->BuildLegend(0.4,0.67,0.78,0.88);
-  leg->SetFillColor(kWhite);
+  TLegend* leg = c1->BuildLegend(0.6,0.67,0.78,0.88);
+  SetLegAtt(leg);
   leg->Draw();
   c1->SetLogy();
+  c1->SetLogx();
   CMSPreliminary();
-  c1->SaveAs((string("plots/hf_p_signal")+string(".eps")).c_str());
-  c1->SaveAs((string("plots/hf_p_signal")+string(".pdf")).c_str());
-  c1->SaveAs((string("plots/hf_p_signal")+string(".png")).c_str());
+  c1->SaveAs((string("plots/hf_") + prefix + string("_signal")+string(".pdf")).c_str());
 
-  TCanvas* c2 = new TCanvas;
-  TH1D* acopy = a->Clone("acopy");
-  acopy->GetXaxis()->SetRangeUser(0,10);
-  acopy->Draw("P");
-  a2->Draw("L SAME");
-  b->Draw("L SAME");
-  c->Draw("L SAME");
-  d->Draw("L SAME");
-  e->Draw("L SAME");
-  f->Draw("L SAME");
-  TLegend* leg = c1->BuildLegend(0.4,0.67,0.78,0.88);
-  leg->SetFillColor(kWhite);
-  leg->Draw();
-  c2->SetLogy();
-  CMSPreliminary();
-  c2->SaveAs((string("plots/hf_p_signal_zoom_")+string(".eps")).c_str());
-  c2->SaveAs((string("plots/hf_p_signal_zoom_")+string(".pdf")).c_str());
-  c2->SaveAs((string("plots/hf_p_signal_zoom_")+string(".png")).c_str());
+  // TCanvas* c2 = new TCanvas;
+  // TH1D* acopy = a->Clone("acopy");
+  // acopy->GetXaxis()->SetRangeUser(0,10);
+  // acopy->Draw("P");
+  // a2->Draw("L SAME");
+  // b->Draw("L SAME");
+  // c->Draw("L SAME");
+  // d->Draw("L SAME");
+  // e->Draw("L SAME");
+  // f->Draw("L SAME");
+  // TLegend* leg = c1->BuildLegend(0.4,0.67,0.78,0.88);
+  // leg->SetFillColor(kWhite);
+  // leg->Draw();
+  // c2->SetLogy();
+  // CMSPreliminary();
+  // c2->SaveAs((string("plots/hf_p_signal_zoom_")+string(".eps")).c_str());
+  // c2->SaveAs((string("plots/hf_p_signal_zoom_")+string(".pdf")).c_str());
+  // c2->SaveAs((string("plots/hf_p_signal_zoom_")+string(".png")).c_str());
 
 }

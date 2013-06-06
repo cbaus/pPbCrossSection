@@ -1,4 +1,4 @@
-#define MAXEVT 50000
+#define MAXEVT -50000
 
 #include "TChain.h"
 #include "TFile.h"
@@ -44,25 +44,25 @@ int main()
   TH1::SetDefaultSumw2();
 
   //*************************************************************INPUT***********************************************************
-   sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Data210614/*_*.root"); sample_name.push_back("data210614"); sample_type.push_back(DATA);
-   sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Data210885/*_*.root"); sample_name.push_back("data210885"); sample_type.push_back(DATA);
-   sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data210998/*_*.root"); sample_name.push_back("data210998"); sample_type.push_back(DATA);
-   sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211000/*.root"); sample_name.push_back("data211000"); sample_type.push_back(DATA);
-   sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211001/*.root"); sample_name.push_back("data211001"); sample_type.push_back(DATA);
-   sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211032/*.root"); sample_name.push_back("data211032"); sample_type.push_back(DATA);
-   sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211256/*.root"); sample_name.push_back("data211256"); sample_type.push_back(DATA);
-   sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211371/*.root"); sample_name.push_back("data211371"); sample_type.push_back(DATA);
-   sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211390/*.root"); sample_name.push_back("data211390"); sample_type.push_back(DATA);
-   sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211460/*.root"); sample_name.push_back("data211460"); sample_type.push_back(DATA);
-   sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211532/*.root"); sample_name.push_back("data211532"); sample_type.push_back(DATA);
-   sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211538/*.root"); sample_name.push_back("data211538"); sample_type.push_back(DATA);
-   sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Data211607/*_*.root"); sample_name.push_back("data211607"); sample_type.push_back(DATA);
+  // sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Data210614/*_*.root"); sample_name.push_back("data210614"); sample_type.push_back(DATA);
+  // sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Data210885/*_*.root"); sample_name.push_back("data210885"); sample_type.push_back(DATA);
+  // sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data210998/*_*.root"); sample_name.push_back("data210998"); sample_type.push_back(DATA);
+  // sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211000/*.root"); sample_name.push_back("data211000"); sample_type.push_back(DATA);
+  // sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211001/*.root"); sample_name.push_back("data211001"); sample_type.push_back(DATA);
+  // sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211032/*.root"); sample_name.push_back("data211032"); sample_type.push_back(DATA);
+  // sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211256/*.root"); sample_name.push_back("data211256"); sample_type.push_back(DATA);
+  // sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211371/*.root"); sample_name.push_back("data211371"); sample_type.push_back(DATA);
+  // sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211390/*.root"); sample_name.push_back("data211390"); sample_type.push_back(DATA);
+  // sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211460/*.root"); sample_name.push_back("data211460"); sample_type.push_back(DATA);
+  // sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211532/*.root"); sample_name.push_back("data211532"); sample_type.push_back(DATA);
+  // sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211538/*.root"); sample_name.push_back("data211538"); sample_type.push_back(DATA);
+  // sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Data211607/*_*.root"); sample_name.push_back("data211607"); sample_type.push_back(DATA);
   sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Epos/*.root"); sample_name.push_back("Epos"); sample_type.push_back(MC);
-  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Epos_SL/*.root"); sample_name.push_back("Epos_SL"); sample_type.push_back(MC);
-  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Hijing/*.root"); sample_name.push_back("Hijing"); sample_type.push_back(MC);
-  sample_fname.push_back("/afs/cern.ch/work/c/cbaus/public/castortree/pPb_QGSJetII/treeMC.root"); sample_name.push_back("QGSJetII"); sample_type.push_back(MC);
-  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/StarlightDPMjet_v2/treeMC.root"); sample_name.push_back("Starlight_DPMJet");  sample_type.push_back(MC);
-  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/StarlightPythia/treeMC.root"); sample_name.push_back("Starlight_Pythia");  sample_type.push_back(MC);
+  // sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Epos_SL/*.root"); sample_name.push_back("Epos_SL"); sample_type.push_back(MC);
+  // sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Hijing/*.root"); sample_name.push_back("Hijing"); sample_type.push_back(MC);
+  // sample_fname.push_back("/afs/cern.ch/work/c/cbaus/public/castortree/pPb_QGSJetII/treeMC.root"); sample_name.push_back("QGSJetII"); sample_type.push_back(MC);
+  // sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/StarlightDPMjet_v2/treeMC.root"); sample_name.push_back("Starlight_DPMJet");  sample_type.push_back(MC);
+  // sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/StarlightPythia/treeMC.root"); sample_name.push_back("Starlight_Pythia");  sample_type.push_back(MC);
 
   TFile f("plots/hf_cuts_noise.root");
   TVectorD* hf_m_cuts_light_noise = NULL;
@@ -100,6 +100,8 @@ int main()
   TH1D* h_mc_rapidity;
   TH1D* h_mc_eta_e;
   TH1D* h_mc_eff;
+  TH1D* h_mc_effgain_single;
+  TH1D* h_mc_effgain_double;
 
   TH2D* h_random_trig_tracks_hf;
 
@@ -268,7 +270,7 @@ int main()
 
       h_mc_rapidity           = new TH1D((add + string("_h_mc_rapidity")).c_str(),"",100,-12,12);
       h_mc_eta_e              = new TH1D((add + string("_h_mc_eta_e")).c_str(),"",100,-12,12);
-      h_mc_eff                = new TH1D((add + string("_h_mc_eff")).c_str(),"",9,-0.5,8.5);
+      h_mc_eff                = new TH1D((add + string("_h_mc_eff")).c_str(),"",8,-0.5,7.5);
       h_mc_eff->GetXaxis()->SetBinLabel(1,"All");
       h_mc_eff->GetXaxis()->SetBinLabel(2,"HF single > 3 GeV");
       h_mc_eff->GetXaxis()->SetBinLabel(3,"HF single > 4.5 GeV");
@@ -277,6 +279,21 @@ int main()
       h_mc_eff->GetXaxis()->SetBinLabel(6,"HF double > 3 GeV");
       h_mc_eff->GetXaxis()->SetBinLabel(7,"nTrack #geq 1");
       h_mc_eff->GetXaxis()->SetBinLabel(8,"CASTOR E_{tot} > 12.5 GeV");
+      h_mc_effgain_single     = new TH1D((add + string("_h_mc_effgain_single")).c_str(),"",7,-0.5,6.5);
+      h_mc_effgain_single->GetXaxis()->SetBinLabel(1,"All");
+      h_mc_effgain_single->GetXaxis()->SetBinLabel(2,"HF single > 3 GeV");
+      h_mc_effgain_single->GetXaxis()->SetBinLabel(3,"HF single > 4.5 GeV");
+      h_mc_effgain_single->GetXaxis()->SetBinLabel(4,"HF double > 2 GeV");
+      h_mc_effgain_single->GetXaxis()->SetBinLabel(5,"HF double > 3 GeV");
+      h_mc_effgain_single->GetXaxis()->SetBinLabel(6,"nTrack #geq 1");
+      h_mc_effgain_single->GetXaxis()->SetBinLabel(7,"CASTOR E_{tot} > 12.5 GeV");
+      h_mc_effgain_double     = new TH1D((add + string("_h_mc_effgain_double")).c_str(),"",6,-0.5,5.5);
+      h_mc_effgain_double->GetXaxis()->SetBinLabel(1,"All");
+      h_mc_effgain_double->GetXaxis()->SetBinLabel(2,"HF single > 3 GeV");
+      h_mc_effgain_double->GetXaxis()->SetBinLabel(3,"HF single > 4.5 GeV");
+      h_mc_effgain_double->GetXaxis()->SetBinLabel(4,"HF single > 6 GeV");
+      h_mc_effgain_double->GetXaxis()->SetBinLabel(5,"nTrack #geq 1");
+      h_mc_effgain_double->GetXaxis()->SetBinLabel(6,"CASTOR E_{tot} > 12.5 GeV");
 
       double n_total = double(tree->GetEntries());
       if(MAXEVT<n_total && MAXEVT>0)
@@ -369,8 +386,8 @@ int main()
 
           hf_double_energy_max = TMath::Min(hf_m_energy_max,hf_p_energy_max);
           hf_single_energy_max = TMath::Max(hf_m_energy_max,hf_p_energy_max);
-          bool hf_single_tag = hf_single_energy_max > 6.6;
-          bool hf_double_tag = hf_double_energy_max > 2.2;
+          bool hf_single_tag = hf_single_energy_max > 6;
+          bool hf_double_tag = hf_double_energy_max > 2;
 
           bool hf_light_double_tag = hf_p_light_cut && hf_m_light_cut;
           bool hf_medium_double_tag = hf_p_medium_cut && hf_m_medium_cut;
@@ -400,18 +417,18 @@ int main()
                   cerr << endl << " Empty event... skipping. (" << iEvent<< ")" << endl;
                   continue;
                 }
-              
+
               for (vector<GenParticle>::iterator it = event->GEN.begin(); it < event->GEN.end(); ++it)
                 {
                   if (it->Status != 1)
                     continue;
-                  
+
                   if (it->Id > 1e9) //skip fragments
                     continue;
-                  
+
                   if(abs(it->Id) == 12 || abs(it->Id) == 14 || abs(it->Id) == 16 || abs(it->Id) == 13)
                     continue; // skip muon + neutrinos
-                  
+
                   double Rapidity= it->GetRapidity();
                   h_mc_rapidity->Fill(Rapidity);
                   h_mc_eta_e->Fill(it->GetEta(),it->GetEnergy());
@@ -433,7 +450,7 @@ int main()
                   if(!TMath::Finite(thisRapGap) || TMath::IsNaN(thisRapGap))
                     continue;
                   //cerr << "   !!! ! PARTICLES WITH INFINITE RAP DETECTED " << distance(event->GEN.begin(),it) << " " << it->GetRapidity() << " " << it->Id << endl;
-                  
+
                   if (thisRapGap > rapGap)
                     {
                       //cout << " blib";
@@ -586,6 +603,21 @@ int main()
               if(coll && hf_double_energy_max > 3)                      h_mc_eff->Fill(5);
               if(coll && event->Tracks.size()>=1)                       h_mc_eff->Fill(6);
               if(coll && castor_tag)                                    h_mc_eff->Fill(7);
+
+              if(!(hf_single_energy_max > 6))                                      h_mc_effgain_single->Fill(0);
+              if(!(hf_single_energy_max > 6) && hf_single_energy_max > 3)          h_mc_effgain_single->Fill(1);
+              if(!(hf_single_energy_max > 6) && hf_single_energy_max > 4.5)        h_mc_effgain_single->Fill(2);
+              if(!(hf_single_energy_max > 6) && hf_double_energy_max > 2)          h_mc_effgain_single->Fill(3);
+              if(!(hf_single_energy_max > 6) && hf_double_energy_max > 3)          h_mc_effgain_single->Fill(4);
+              if(!(hf_single_energy_max > 6) && event->Tracks.size()>=1)           h_mc_effgain_single->Fill(5);
+              if(!(hf_single_energy_max > 6) && castor_tag)                        h_mc_effgain_single->Fill(6);
+
+              if(!(hf_double_energy_max > 2))                                      h_mc_effgain_double->Fill(0);
+              if(!(hf_double_energy_max > 2) && hf_single_energy_max > 3)          h_mc_effgain_double->Fill(1);
+              if(!(hf_double_energy_max > 2) && hf_single_energy_max > 4.5)        h_mc_effgain_double->Fill(2);
+              if(!(hf_double_energy_max > 2) && hf_single_energy_max > 6)          h_mc_effgain_double->Fill(3);
+              if(!(hf_double_energy_max > 2) && event->Tracks.size()>=1)           h_mc_effgain_double->Fill(4);
+              if(!(hf_double_energy_max > 2) && castor_tag)                        h_mc_effgain_double->Fill(5);
 
 
               if(coll && hf_single_tag)                                 h_mc_diffraction_single->Fill(rapGap);
