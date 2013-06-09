@@ -95,7 +95,8 @@ void makePlots_concl1()
   TGraphErrors* pb_fit  = new TGraphErrors(1);
   pb_fit->SetName("pb_fit");
   pb_fit->SetTitle("COMPETE and Glauber");
-  pb_fit->SetPoint(0,1.05,2.110);
+  pb_fit->SetPoint(0,1.05,2.130);
+  pb_fit->SetPointError(0,0,0.04);
   SetAttributes(pb_fit,kBlack,20);
 
   const double measured=(2.173+2.159)/2.;
@@ -152,7 +153,7 @@ void makePlots_concl1()
   leg1->AddEntry(pb_epos,"EPOS","p");
   leg1->AddEntry(pb_eposlhc,"EPOS-LHC","p");
   leg1->AddEntry(pb_qgsjetii,"QGSJetII-04","p");
-  leg1->AddEntry(pb_fit,"COMPETE+Glauber","p");
+  leg1->AddEntry(pb_fit,"Menon et al. + Glauber","p");
   leg1->AddEntry(pb_this,"this work","p");
 
   can1->cd(1);

@@ -77,7 +77,21 @@ void makePlots()
   e->SetTitle("SL+DPMJet");
   f->SetTitle("SL+Pythia");
 
+
+  // a->GetXaxis()->SetLimits(a->GetBinLowEdge(3),a->GetBinLowEdge(a->GetNbinsX())); //cut away first bin
+  // a2->GetXaxis()->SetLimits(2,a2->GetBinLowEdge(a2->GetNbinsX())); //cut away first bin
+  // b->GetXaxis()->SetLimits(b->GetBinLowEdge(3),b->GetBinLowEdge(b->GetNbinsX())); //cut away first bin
+  // c->GetXaxis()->SetLimits(c->GetBinLowEdge(3),c->GetBinLowEdge(c->GetNbinsX())); //cut away first bin
+  // d->GetXaxis()->SetLimits(d->GetBinLowEdge(3),d->GetBinLowEdge(d->GetNbinsX())); //cut away first bin
+  // e->GetXaxis()->SetLimits(3,e->GetBinLowEdge(e->GetNbinsX())); //cut away first bin
+  // f->GetXaxis()->SetLimits(4,f->GetBinLowEdge(f->GetNbinsX())); //cut away first bin
+
+  b->GetXaxis()->SetRange(2,b->GetNbinsX());
+  a2->GetXaxis()->SetRange(2,a2->GetNbinsX());
+
   b->GetYaxis()->SetRangeUser(0.9,1.001);
+  a2->GetYaxis()->SetRangeUser(0,1.01);
+
   b->GetXaxis()->SetTitle("cut value / GeV");
   b->GetYaxis()->SetTitle("event fraction");
 
@@ -156,8 +170,8 @@ void makePlots()
   int startPlot=0;
   for(int i=1; i<=a1->GetNbinsX(); i++)
     {
-      const double f_em     = 0.5* (e->GetBinContent(i) + f->GetBinContent(i)) * 195./2100.;
-      const double f_eme    = fabs(e->GetBinContent(i) - f->GetBinContent(i)) * 195./2100.;
+      const double f_em     = 0.5* (e->GetBinContent(i) + f->GetBinContent(i)) * 195./2130.;
+      const double f_eme    = fabs(e->GetBinContent(i) - f->GetBinContent(i)) * 195./2130.;
       const double f_mc     = (c->GetBinContent(i)/c->GetBinContent(1) + d->GetBinContent(i)/d->GetBinContent(1))/2.;
       const double f_mce    = fabs(c->GetBinContent(i)/c->GetBinContent(1) - d->GetBinContent(i)/d->GetBinContent(1));
       const double f_noise  = a2->GetBinContent(i)/a2->GetBinContent(1);

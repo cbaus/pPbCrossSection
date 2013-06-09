@@ -42,8 +42,8 @@ void Show(TH1D* a,TH1D* a2,TH1D* b,TH1D* c,TH1D* d,TH1D* e,TH1D* f, string prefi
   double eposnorm=a->Integral(normbin,normendbin)/c->Integral(normbin,normendbin);
   c->Scale(eposnorm);
   d->Scale(a->Integral(normbin,normendbin)/d->Integral(normbin,normendbin));
-  e->Scale(eposscale*195./2100.*eposnorm);
-  f->Scale(eposscale2*122./2100.*eposnorm);
+  e->Scale(eposscale*195./2130.*eposnorm);
+  f->Scale(eposscale2*122./2130.*eposnorm);
 
   a->SetMarkerSize(1.25);
   e->SetMarkerSize(1.25);

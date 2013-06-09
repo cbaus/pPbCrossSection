@@ -208,7 +208,7 @@ void makePlots_cs1()
                   h_single->SetBinError(i, error_single);
                   h_double->SetBinError(i, error_double);
 
-                  if(i<00)
+                  if(i<200)
                     {
                       cout << n_cut_single<< " " << n_cut_single/(*f_mc)[0]<< " " << n_noise_single<< " " << n_em_single<< " " << ((1./f_pileup_single) - f_noise_single) << " " << f_pileup_single << endl;
                       cout << n_zb_double << " " << n_cut_double<< " " << n_cut_double/(*f_mc)[1]<< " " << n_noise_double<< " " << n_em_double<< " " << ((1./f_pileup_double) - f_noise_double) << endl;

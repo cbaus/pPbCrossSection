@@ -53,11 +53,11 @@ void makePlots_eff()
       TCanvas* c2 = new TCanvas;
       h_effgain_single->Draw("HIST P");
       CMSPreliminary();
-      c1->SaveAs((string("plots/mc_effgain_single_")+list[i]+string(".pdf")).c_str());
+      c2->SaveAs((string("plots/mc_effgain_single_")+list[i]+string(".pdf")).c_str());
 
       TCanvas* c3 = new TCanvas;
       h_effgain_double->Draw("HIST P");
       CMSPreliminary();
-      c1->SaveAs((string("plots/mc_effgain_double_")+list[i]+string(".pdf")).c_str());
+      c3->SaveAs((string("plots/mc_effgain_double_")+list[i]+string(".pdf")).c_str());
     }
 }

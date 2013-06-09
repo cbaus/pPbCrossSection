@@ -35,34 +35,41 @@ using namespace std;
 
 int IetaToRing(int ring);
 
-vector<string> sample_fname;
-vector<string> sample_name;
-vector<e_type> sample_type;
 
 int main()
 {
   TH1::SetDefaultSumw2();
 
+  vector<string> sample_fname;
+  vector<string> sample_name;
+  vector<e_type> sample_type;
+
+  const int array_size = 9;
+  double array_cuts_single[array_size] = {5.4, 6, 6.6, 7,   8, 9,   10, 15,  20};
+  double array_cuts_double[array_size] = {1.8, 2, 2.2, 2.5, 3, 3.5, 4,  4.5, 5,};
+  vector<double> cut_energies_single(array_cuts_single,array_cuts_single+array_size);
+  vector<double> cut_energies_double(array_cuts_double,array_cuts_double+array_size);
+
   //*************************************************************INPUT***********************************************************
-  // sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Data210614/*_*.root"); sample_name.push_back("data210614"); sample_type.push_back(DATA);
-  // sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Data210885/*_*.root"); sample_name.push_back("data210885"); sample_type.push_back(DATA);
-  // sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data210998/*_*.root"); sample_name.push_back("data210998"); sample_type.push_back(DATA);
-  // sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211000/*.root"); sample_name.push_back("data211000"); sample_type.push_back(DATA);
-  // sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211001/*.root"); sample_name.push_back("data211001"); sample_type.push_back(DATA);
-  // sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211032/*.root"); sample_name.push_back("data211032"); sample_type.push_back(DATA);
-  // sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211256/*.root"); sample_name.push_back("data211256"); sample_type.push_back(DATA);
-  // sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211371/*.root"); sample_name.push_back("data211371"); sample_type.push_back(DATA);
-  // sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211390/*.root"); sample_name.push_back("data211390"); sample_type.push_back(DATA);
-  // sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211460/*.root"); sample_name.push_back("data211460"); sample_type.push_back(DATA);
-  // sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211532/*.root"); sample_name.push_back("data211532"); sample_type.push_back(DATA);
-  // sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211538/*.root"); sample_name.push_back("data211538"); sample_type.push_back(DATA);
-  // sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Data211607/*_*.root"); sample_name.push_back("data211607"); sample_type.push_back(DATA);
+  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Data210614/*_*.root"); sample_name.push_back("data210614"); sample_type.push_back(DATA);
+  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Data210885/*_*.root"); sample_name.push_back("data210885"); sample_type.push_back(DATA);
+  sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data210998/*_*.root"); sample_name.push_back("data210998"); sample_type.push_back(DATA);
+  sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211000/*.root"); sample_name.push_back("data211000"); sample_type.push_back(DATA);
+  sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211001/*.root"); sample_name.push_back("data211001"); sample_type.push_back(DATA);
+  sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211032/*.root"); sample_name.push_back("data211032"); sample_type.push_back(DATA);
+  sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211256/*.root"); sample_name.push_back("data211256"); sample_type.push_back(DATA);
+  sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211371/*.root"); sample_name.push_back("data211371"); sample_type.push_back(DATA);
+  sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211390/*.root"); sample_name.push_back("data211390"); sample_type.push_back(DATA);
+  sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211460/*.root"); sample_name.push_back("data211460"); sample_type.push_back(DATA);
+  sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211532/*.root"); sample_name.push_back("data211532"); sample_type.push_back(DATA);
+  sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211538/*.root"); sample_name.push_back("data211538"); sample_type.push_back(DATA);
+  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Data211607/*_*.root"); sample_name.push_back("data211607"); sample_type.push_back(DATA);
   sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Epos/*.root"); sample_name.push_back("Epos"); sample_type.push_back(MC);
-  // sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Epos_SL/*.root"); sample_name.push_back("Epos_SL"); sample_type.push_back(MC);
-  // sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Hijing/*.root"); sample_name.push_back("Hijing"); sample_type.push_back(MC);
-  // sample_fname.push_back("/afs/cern.ch/work/c/cbaus/public/castortree/pPb_QGSJetII/treeMC.root"); sample_name.push_back("QGSJetII"); sample_type.push_back(MC);
-  // sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/StarlightDPMjet_v2/treeMC.root"); sample_name.push_back("Starlight_DPMJet");  sample_type.push_back(MC);
-  // sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/StarlightPythia/treeMC.root"); sample_name.push_back("Starlight_Pythia");  sample_type.push_back(MC);
+  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Epos_SL/*.root"); sample_name.push_back("Epos_SL"); sample_type.push_back(MC);
+  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Hijing/*.root"); sample_name.push_back("Hijing"); sample_type.push_back(MC);
+  sample_fname.push_back("/afs/cern.ch/work/c/cbaus/public/castortree/pPb_QGSJetII/treeMC.root"); sample_name.push_back("QGSJetII"); sample_type.push_back(MC);
+  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/StarlightDPMjet_v2/treeMC.root"); sample_name.push_back("Starlight_DPMJet");  sample_type.push_back(MC);
+  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/StarlightPythia/treeMC.root"); sample_name.push_back("Starlight_Pythia");  sample_type.push_back(MC);
 
   TFile f("plots/hf_cuts_noise.root");
   TVectorD* hf_m_cuts_light_noise = NULL;
@@ -83,7 +90,7 @@ int main()
 
   //**************************************************************OUTPUT*********************************************************
 
-  TFile* out_file = new TFile("histos.root","RECREATE");
+  TFile* out_file = new TFile("histos_MC.root","RECREATE");
 
   TH1D* h_zero_count_zb_coll;
   TH1D* h_zero_count_zb_no_coll;
@@ -91,7 +98,6 @@ int main()
   TH1D* h_hf_hits_plus;
   TH1D* h_hf_hits_minus;
   TH1D* h_hf_hits_noise;
-  TH1D* h_hf_hits_beamgas;
   TH1D* h_castor_hf_diff_3;
   TH1D* h_castor_hf_diff_5;
   TH1D* h_castor_hf_diff_10;
@@ -105,12 +111,15 @@ int main()
 
   TH2D* h_random_trig_tracks_hf;
 
+  vector<TH1D*> v_run_events_single;
+  vector<TH1D*> v_run_events_double;
+
+  TH1D* h_run_events_lumi;
+
   TH1D* h_hf_cut_single;
   TH1D* h_hf_cut_single_noise;
-  TH1D* h_hf_cut_single_beamgas;
   TH1D* h_hf_cut_double;
   TH1D* h_hf_cut_double_noise;
-  TH1D* h_hf_cut_double_beamgas;
   TH1D* h_hf_new_cut_single;
   TH1D* h_hf_new_cut_double;
 
@@ -145,6 +154,14 @@ int main()
   TH1D* h_mc_diffraction_CD;
   TH1D* h_mc_diffraction_ND;
   TH1D* h_mc_diffraction_all;
+  TH1D* h_mc_lrg_single;
+  TH1D* h_mc_lrg_double;
+  TH1D* h_mc_lrg_SD1;
+  TH1D* h_mc_lrg_SD2;
+  TH1D* h_mc_lrg_DD;
+  TH1D* h_mc_lrg_CD;
+  TH1D* h_mc_lrg_ND;
+  TH1D* h_mc_lrg_all;
   //****************************************************************LOOP*******************************************************************
 
   for (int sample=0; sample<int(sample_name.size()); sample++)
@@ -196,49 +213,65 @@ int main()
       int bptx_p_nm;
       int bptx_np_m;
       int bptx_quiet;
-      tree->SetBranchAddress("L1_ZeroBias_algPrescale",&zero_bias_prescale_L1);
-      tree->SetBranchAddress("HLT_PAZeroBias_v1_Prescl",&zero_bias_prescale_HLT);
-      tree->SetBranchAddress("HLT_PAZeroBias_v1",&zero_bias);
-      tree->SetBranchAddress("HLT_PAL1Tech53_MB_SingleTrack_v1",&min_bias);
-      tree->SetBranchAddress("HLT_PARandom_v1",&random);
-      tree->SetBranchAddress("L1Tech_BPTX_plus_AND_minus.v0_DecisionBeforeMask",&bptx_p_m);
-      tree->SetBranchAddress("L1Tech_BPTX_plus_AND_NOT_minus.v0_DecisionBeforeMask",&bptx_p_nm);
-      tree->SetBranchAddress("L1Tech_BPTX_minus_AND_not_plus.v0_DecisionBeforeMask",&bptx_np_m);
-      tree->SetBranchAddress("L1Tech_BPTX_quiet.v0_DecisionBeforeMask",&bptx_quiet);
-
+      if(sample_type[sample] == DATA)
+        {
+          tree->SetBranchAddress("L1_ZeroBias_algPrescale",&zero_bias_prescale_L1);
+          tree->SetBranchAddress("HLT_PAZeroBias_v1_Prescl",&zero_bias_prescale_HLT);
+          tree->SetBranchAddress("HLT_PAZeroBias_v1",&zero_bias);
+          tree->SetBranchAddress("HLT_PAL1Tech53_MB_SingleTrack_v1",&min_bias);
+          tree->SetBranchAddress("HLT_PARandom_v1",&random);
+          tree->SetBranchAddress("L1Tech_BPTX_plus_AND_minus.v0_DecisionBeforeMask",&bptx_p_m);
+          tree->SetBranchAddress("L1Tech_BPTX_plus_AND_NOT_minus.v0_DecisionBeforeMask",&bptx_p_nm);
+          tree->SetBranchAddress("L1Tech_BPTX_minus_AND_not_plus.v0_DecisionBeforeMask",&bptx_np_m);
+          tree->SetBranchAddress("L1Tech_BPTX_quiet.v0_DecisionBeforeMask",&bptx_quiet);
+        }
       //________________________________________________________________________________
 
       out_file->mkdir(sample_name[sample].c_str());
       out_file->cd(sample_name[sample].c_str());
       string add = sample_name[sample];
+
+      ostringstream run_str;
+      run_str << event->runNb;
+
       h_zero_count_zb_coll        = new TH1D((add + string("_h_zero_count_zb_coll")).c_str(),"",100,728,1728);
       h_zero_count_zb_no_coll     = new TH1D((add + string("_h_zero_count_zb_no_coll")).c_str(),"",100,728,1728);
       h_hf_hits_coll              = new TH1D((add + string("_h_hf_hits_coll")).c_str(),"",200,0,200);
       h_hf_hits_plus              = new TH1D((add + string("_h_hfp_hits_coll")).c_str(),"",200,0,200);
       h_hf_hits_minus             = new TH1D((add + string("_h_hfm_hits_coll")).c_str(),"",200,0,200);
       h_hf_hits_noise             = new TH1D((add + string("_h_hf_hits_noise")).c_str(),"",200,0,20);
-      h_hf_hits_beamgas           = new TH1D((add + string("_h_hf_hits_beamgas")).c_str(),"",200,0,20);
       h_castor_hf_diff_3          = new TH1D((add + string("_h_castor_hf_diff_3")).c_str(),"",100,0,10000);
       h_castor_hf_diff_5          = new TH1D((add + string("_h_castor_hf_diff_5")).c_str(),"",100,0,10000);
       h_castor_hf_diff_10         = new TH1D((add + string("_h_castor_hf_diff_10")).c_str(),"",100,0,10000);
       h_castor_gap_hf             = new TH1D((add + string("_h_castor_gap_hf")).c_str(),"",100,0,50);
       h_castor_nogap_hf           = new TH1D((add + string("_h_castor_nogap_hf")).c_str(),"",100,0,50);
+      if(sample_type[sample] == DATA)
+        {
+          for (int i = 0; i<array_size; i++)
+            {
+              ostringstream ss_single; ss_single << add <<"_h_run_events_single_" << cut_energies_single[i];
+              ostringstream ss_double; ss_double << add <<"_h_run_events_double_" << cut_energies_double[i];
+              v_run_events_single.push_back(new TH1D(ss_single.str().c_str(),run_str.str().c_str(),2000,0,2000));
+              v_run_events_double.push_back(new TH1D(ss_double.str().c_str(),run_str.str().c_str(),2000,0,2000));
+            }
 
-      h_hf_cut_single             = new TH1D((add + string("_h_hf_cut_single")).c_str(),"",101,-0.05,10.05);
-      h_hf_cut_single_noise       = new TH1D((add + string("_h_hf_cut_single_noise")).c_str(),"",101,-0.05,10.05);
-      h_hf_cut_single_beamgas     = new TH1D((add + string("_h_hf_cut_single_beamgas")).c_str(),"",101,-0.05,10.05);
-      h_hf_cut_double             = new TH1D((add + string("_h_hf_cut_double")).c_str(),"",101,-0.05,10.05);
-      h_hf_cut_double_noise       = new TH1D((add + string("_h_hf_cut_double_noise")).c_str(),"",101,-0.05,10.05);
-      h_hf_cut_double_beamgas     = new TH1D((add + string("_h_hf_cut_double_beamgas")).c_str(),"",101,-0.05,10.05);
+          h_run_events_lumi = new TProfile((add+string("_h_run_events_lumi")).c_str(),run_str.str().c_str(),2000,0,2000,"s");
+
+
+          h_random_trig_tracks_hf     = new TH2D((add + string("_h_random_trig_tracks_hf")).c_str(),"",200,0,20,20,0,20);
+
+          h_hf_noise_all_lumi              = new TH1D((add + string("_h_hf_noise_all_lumi")).c_str(),"",2000,0,2000);
+          h_hf_noise_selected_single_lumi  = new TH1D((add + string("_h_hf_noise_selected_single_lumi")).c_str(),"",2000,0,2000);
+          h_hf_noise_selected_double_lumi  = new TH1D((add + string("_h_hf_noise_selected_double_lumi")).c_str(),"",2000,0,2000);
+        }
+
+      h_hf_cut_single             = new TH1D((add + string("_h_hf_cut_single")).c_str(),"",201,-0.05,20.05);
+      h_hf_cut_single_noise       = new TH1D((add + string("_h_hf_cut_single_noise")).c_str(),"",201,-0.05,20.05);
+      h_hf_cut_double             = new TH1D((add + string("_h_hf_cut_double")).c_str(),"",201,-0.05,20.05);
+      h_hf_cut_double_noise       = new TH1D((add + string("_h_hf_cut_double_noise")).c_str(),"",201,-0.05,20.05);
 
       h_hf_new_cut_single         = new TH1D((add + string("_h_hf_new_cut_single")).c_str(),"",4,-0.5,3.5);
       h_hf_new_cut_double         = new TH1D((add + string("_h_hf_new_cut_double")).c_str(),"",4,-0.5,3.5);
-
-      h_random_trig_tracks_hf     = new TH2D((add + string("_h_random_trig_tracks_hf")).c_str(),"",200,0,20,20,0,20);
-
-      h_hf_noise_all_lumi              = new TH1D((add + string("_h_hf_noise_all_lumi")).c_str(),"",2000,0,2000);
-      h_hf_noise_selected_single_lumi  = new TH1D((add + string("_h_hf_noise_selected_single_lumi")).c_str(),"",2000,0,2000);
-      h_hf_noise_selected_double_lumi  = new TH1D((add + string("_h_hf_noise_selected_double_lumi")).c_str(),"",2000,0,2000);
 
 
       h_hf_hits_coll_lumi         = new TProfile((add + string("_h_hf_hits_coll_lumi")).c_str(),"",2000,0,2000);
@@ -258,42 +291,52 @@ int main()
       h_perf_hf_totE_double_1dot5gev       = new TH1D((add + string("_h_perf_hf_totE_double_1dot5gev")).c_str(),"",500,0,10000);
       h_perf_hf_totE_eta_single_3gev       = new TH1D((add + string("_h_perf_hf_totE_eta_single_3gev")).c_str(),"",100,-5.2,5.2);
       h_perf_hf_totE_eta_double_1dot5gev   = new TH1D((add + string("_h_perf_hf_totE_eta_double_1dot5gev")).c_str(),"",100,-5.2,5.2);
+      if(sample_type[sample] == MC)
+        {
+          h_mc_diffraction_single = new TH1D((add + string("_h_mc_diffraction_single")).c_str(),"",100,-9,2);
+          h_mc_diffraction_double = new TH1D((add + string("_h_mc_diffraction_double")).c_str(),"",100,-9,2);
+          h_mc_diffraction_SD1    = new TH1D((add + string("_h_mc_diffraction_SD1")).c_str(),"",100,-9,2);
+          h_mc_diffraction_SD2    = new TH1D((add + string("_h_mc_diffraction_SD2")).c_str(),"",100,-9,2);
+          h_mc_diffraction_DD     = new TH1D((add + string("_h_mc_diffraction_DD")).c_str(),"",100,-9,2);
+          h_mc_diffraction_CD     = new TH1D((add + string("_h_mc_diffraction_CD")).c_str(),"",100,-9,2);
+          h_mc_diffraction_ND     = new TH1D((add + string("_h_mc_diffraction_ND")).c_str(),"",100,-9,2);
+          h_mc_diffraction_all    = new TH1D((add + string("_h_mc_diffraction_all")).c_str(),"",100,-9,2);
+          h_mc_lrg_single         = new TH1D((add + string("_h_mc_lrg_single")).c_str(),"",500,-1,100);
+          h_mc_lrg_double         = new TH1D((add + string("_h_mc_lrg_double")).c_str(),"",500,-1,100);
+          h_mc_lrg_SD1            = new TH1D((add + string("_h_mc_lrg_SD1")).c_str(),"",500,-1,100);
+          h_mc_lrg_SD2            = new TH1D((add + string("_h_mc_lrg_SD2")).c_str(),"",500,-1,100);
+          h_mc_lrg_CD             = new TH1D((add + string("_h_mc_lrg_CD")).c_str(),"",500,-1,100);
+          h_mc_lrg_DD             = new TH1D((add + string("_h_mc_lrg_DD")).c_str(),"",500,-1,100);
+          h_mc_lrg_ND             = new TH1D((add + string("_h_mc_lrg_ND")).c_str(),"",500,-1,100);
+          h_mc_lrg_all            = new TH1D((add + string("_h_mc_lrg_all")).c_str(),"",500,-1,100);
 
-      h_mc_diffraction_single = new TH1D((add + string("_h_mc_diffraction_single")).c_str(),"",100,-1,11);
-      h_mc_diffraction_double = new TH1D((add + string("_h_mc_diffraction_double")).c_str(),"",100,-1,11);
-      h_mc_diffraction_SD1    = new TH1D((add + string("_h_mc_diffraction_SD1")).c_str(),"",100,-1,11);
-      h_mc_diffraction_SD2    = new TH1D((add + string("_h_mc_diffraction_SD2")).c_str(),"",100,-1,11);
-      h_mc_diffraction_DD     = new TH1D((add + string("_h_mc_diffraction_DD")).c_str(),"",100,-1,11);
-      h_mc_diffraction_CD     = new TH1D((add + string("_h_mc_diffraction_CD")).c_str(),"",100,-1,11);
-      h_mc_diffraction_ND     = new TH1D((add + string("_h_mc_diffraction_ND")).c_str(),"",100,-1,11);
-      h_mc_diffraction_all    = new TH1D((add + string("_h_mc_diffraction_all")).c_str(),"",100,-1,11);
-
-      h_mc_rapidity           = new TH1D((add + string("_h_mc_rapidity")).c_str(),"",100,-12,12);
-      h_mc_eta_e              = new TH1D((add + string("_h_mc_eta_e")).c_str(),"",100,-12,12);
-      h_mc_eff                = new TH1D((add + string("_h_mc_eff")).c_str(),"",8,-0.5,7.5);
-      h_mc_eff->GetXaxis()->SetBinLabel(1,"All");
-      h_mc_eff->GetXaxis()->SetBinLabel(2,"HF single > 3 GeV");
-      h_mc_eff->GetXaxis()->SetBinLabel(3,"HF single > 4.5 GeV");
-      h_mc_eff->GetXaxis()->SetBinLabel(4,"HF single > 6 GeV");
-      h_mc_eff->GetXaxis()->SetBinLabel(5,"HF double > 2 GeV");
-      h_mc_eff->GetXaxis()->SetBinLabel(6,"HF double > 3 GeV");
-      h_mc_eff->GetXaxis()->SetBinLabel(7,"nTrack #geq 1");
-      h_mc_eff->GetXaxis()->SetBinLabel(8,"CASTOR E_{tot} > 12.5 GeV");
-      h_mc_effgain_single     = new TH1D((add + string("_h_mc_effgain_single")).c_str(),"",7,-0.5,6.5);
-      h_mc_effgain_single->GetXaxis()->SetBinLabel(1,"All");
-      h_mc_effgain_single->GetXaxis()->SetBinLabel(2,"HF single > 3 GeV");
-      h_mc_effgain_single->GetXaxis()->SetBinLabel(3,"HF single > 4.5 GeV");
-      h_mc_effgain_single->GetXaxis()->SetBinLabel(4,"HF double > 2 GeV");
-      h_mc_effgain_single->GetXaxis()->SetBinLabel(5,"HF double > 3 GeV");
-      h_mc_effgain_single->GetXaxis()->SetBinLabel(6,"nTrack #geq 1");
-      h_mc_effgain_single->GetXaxis()->SetBinLabel(7,"CASTOR E_{tot} > 12.5 GeV");
-      h_mc_effgain_double     = new TH1D((add + string("_h_mc_effgain_double")).c_str(),"",6,-0.5,5.5);
-      h_mc_effgain_double->GetXaxis()->SetBinLabel(1,"All");
-      h_mc_effgain_double->GetXaxis()->SetBinLabel(2,"HF single > 3 GeV");
-      h_mc_effgain_double->GetXaxis()->SetBinLabel(3,"HF single > 4.5 GeV");
-      h_mc_effgain_double->GetXaxis()->SetBinLabel(4,"HF single > 6 GeV");
-      h_mc_effgain_double->GetXaxis()->SetBinLabel(5,"nTrack #geq 1");
-      h_mc_effgain_double->GetXaxis()->SetBinLabel(6,"CASTOR E_{tot} > 12.5 GeV");
+          h_mc_rapidity           = new TH1D((add + string("_h_mc_rapidity")).c_str(),"",100,-12,12);
+          h_mc_eta_e              = new TH1D((add + string("_h_mc_eta_e")).c_str(),"",100,-12,12);
+          h_mc_eff                = new TH1D((add + string("_h_mc_eff")).c_str(),"",8,-0.5,7.5);
+          h_mc_eff->GetXaxis()->SetBinLabel(1,"All");
+          h_mc_eff->GetXaxis()->SetBinLabel(2,"HF single > 3 GeV");
+          h_mc_eff->GetXaxis()->SetBinLabel(3,"HF single > 4.5 GeV");
+          h_mc_eff->GetXaxis()->SetBinLabel(4,"HF single > 6 GeV");
+          h_mc_eff->GetXaxis()->SetBinLabel(5,"HF double > 2 GeV");
+          h_mc_eff->GetXaxis()->SetBinLabel(6,"HF double > 3 GeV");
+          h_mc_eff->GetXaxis()->SetBinLabel(7,"nTrack #geq 1");
+          h_mc_eff->GetXaxis()->SetBinLabel(8,"CASTOR E_{tot} > 12.5 GeV");
+          h_mc_effgain_single     = new TH1D((add + string("_h_mc_effgain_single")).c_str(),"",7,-0.5,6.5);
+          h_mc_effgain_single->GetXaxis()->SetBinLabel(1,"All");
+          h_mc_effgain_single->GetXaxis()->SetBinLabel(2,"HF single > 3 GeV");
+          h_mc_effgain_single->GetXaxis()->SetBinLabel(3,"HF single > 4.5 GeV");
+          h_mc_effgain_single->GetXaxis()->SetBinLabel(4,"HF double > 2 GeV");
+          h_mc_effgain_single->GetXaxis()->SetBinLabel(5,"HF double > 3 GeV");
+          h_mc_effgain_single->GetXaxis()->SetBinLabel(6,"nTrack #geq 1");
+          h_mc_effgain_single->GetXaxis()->SetBinLabel(7,"CASTOR E_{tot} > 12.5 GeV");
+          h_mc_effgain_double     = new TH1D((add + string("_h_mc_effgain_double")).c_str(),"",6,-0.5,5.5);
+          h_mc_effgain_double->GetXaxis()->SetBinLabel(1,"All");
+          h_mc_effgain_double->GetXaxis()->SetBinLabel(2,"HF single > 3 GeV");
+          h_mc_effgain_double->GetXaxis()->SetBinLabel(3,"HF single > 4.5 GeV");
+          h_mc_effgain_double->GetXaxis()->SetBinLabel(4,"HF single > 6 GeV");
+          h_mc_effgain_double->GetXaxis()->SetBinLabel(5,"nTrack #geq 1");
+          h_mc_effgain_double->GetXaxis()->SetBinLabel(6,"CASTOR E_{tot} > 12.5 GeV");
+        }
 
       double n_total = double(tree->GetEntries());
       if(MAXEVT<n_total && MAXEVT>0)
@@ -306,23 +349,21 @@ int main()
           //          if(event->runNb != 210885)
           //continue;
 
-          bool coll=0, noise=0, beamgas=0;
+          bool coll=0, noise=0;
 
           if(sample_type[sample] == DATA)
             {
               coll          = zero_bias && bptx_p_m; //double beam
-              beamgas      = (bptx_np_m || bptx_p_nm); // only single beam
-              noise         = bptx_quiet;// && !bptx_np_m && !bptx_p_nm; //not both and not single beam
+              noise         = random && bptx_quiet;// && !bptx_np_m && !bptx_p_nm; //not both and not single beam
             }
           else if(sample_type[sample] == MC)
             {
-              beamgas = 0;
               noise = 0;
               coll = 1;
               min_bias = 1;
             }
 
-          if(!coll && !noise && !beamgas && !min_bias) //not intersted
+          if(!coll && !noise && !min_bias) //not intersted
             continue;
 
 
@@ -404,7 +445,7 @@ int main()
           double m_x=0, xi_x=0;
           double m_y=0, xi_y=0;
           double rapGap=-1;
-          bool SD1 = event->genProcessID == 103;
+          bool SD1 = event->genProcessID == 103; //lead dissociates
           bool SD2 = event->genProcessID == 104;
           bool DD = event->genProcessID == 105;
           bool CD = event->genProcessID == 102;
@@ -430,7 +471,7 @@ int main()
                     continue; // skip muon + neutrinos
 
                   double Rapidity= it->GetRapidity();
-                  h_mc_rapidity->Fill(Rapidity);
+                  if (SD2) h_mc_rapidity->Fill(Rapidity); //WARNING
                   h_mc_eta_e->Fill(it->GetEta(),it->GetEnergy());
                   rapidityMassMap.insert(pair<double,GenParticle*>(it->GetRapidity(),&(*it)));
                 }
@@ -440,24 +481,24 @@ int main()
               int n=0;
               for (multimap<double,GenParticle*>::const_iterator it = rapidityMassMap.begin(); it != rapidityMassMap.end(); ++it)
                 {
-                  //if(SD1 || SD2) cout << n++ << " " << it->second->Id << ": E=" << it->second->GetEnergy() << "  --  eta=" << it->second->GetEta() << "  --  y=" << it->second->GetRapidity() << endl;
+                  //if(SD2) cout << n++ << " " << it->second->Id << ": E=" << it->second->GetEnergy() << "  --  eta=" << it->second->GetEta() << "  --  y=" << it->second->GetRapidity() << endl;
                   if (it == rapidityMassMap.begin())
                     continue;
                   multimap<double,GenParticle*>::const_iterator it1=--it;
                   ++it;
                   double thisRapGap = fabs(it->second->GetRapidity() - it1->second->GetRapidity());
-                  //cout << it->second->GetRapidity() << " " << it1->second->GetRapidity();
+                  //if(SD2) cout << it->second->GetRapidity() << " " << it1->second->GetRapidity();
                   if(!TMath::Finite(thisRapGap) || TMath::IsNaN(thisRapGap))
                     continue;
                   //cerr << "   !!! ! PARTICLES WITH INFINITE RAP DETECTED " << distance(event->GEN.begin(),it) << " " << it->GetRapidity() << " " << it->Id << endl;
 
                   if (thisRapGap > rapGap)
                     {
-                      //cout << " blib";
+                      //if(SD2) cout << " blib";
                       rapGap = thisRapGap;
                       thisIsIt = it;
                     }
-                  //cout << endl;
+                  //if(SD2) cout << endl;
                 }
               TLorentzVector vecX(0,0,0,0);
               multimap<double,GenParticle*>::const_iterator it = rapidityMassMap.begin();
@@ -480,6 +521,7 @@ int main()
                   vecY += vec;
                 }
               m_y = vecY.M();
+              //if (SD2 && rapGap< 2) cout << "HERE HERE HERE " << m_x << " " << m_y << endl; //WARNING
 
               if (m_x < m_y)
                 {
@@ -499,36 +541,14 @@ int main()
 
           //cout << prescale << " " << event->instLuminosity << " " <<  event->instLuminosityCorr << endl;
 
-          //Booking run histograms
-
-
-          TH1D* h_run_events_single = NULL;
-          TH1D* h_run_events_double = NULL;
-          TH1D* h_run_events_lumi = NULL;
-          if(sample_type[sample] == DATA)
-            {
-              ostringstream run_str;
-              run_str << event->runNb;
-              h_run_events_single = (TH1D*)(out_file->Get((add+string("/")+add+string("_h_run_events_single_")).c_str()));
-              h_run_events_double = (TH1D*)(out_file->Get((add+string("/")+add+string("_h_run_events_double_")).c_str()));
-              h_run_events_lumi = (TProfile*)(out_file->Get((add+string("/")+add+string("_h_run_events_lumi_")).c_str()));
-              if(h_run_events_single == NULL)
-                {
-                  h_run_events_single = new TH1D((add+string("_h_run_events_single_")).c_str(),run_str.str().c_str(),2000,0,2000);
-                  h_run_events_double = new TH1D((add+string("_h_run_events_double_")).c_str(),run_str.str().c_str(),2000,0,2000);
-                  h_run_events_lumi = new TProfile((add+string("_h_run_events_lumi_")).c_str(),run_str.str().c_str(),2000,0,2000,"s");
-                }
-            }
-
           //---------------------------------------------Filling HISTOS
           if(coll)                                                  h_zero_count_zb_coll->Fill(hf_zero_count);
-          if(noise || beamgas)                                      h_zero_count_zb_no_coll->Fill(hf_zero_count);
+          if(noise)                                                 h_zero_count_zb_no_coll->Fill(hf_zero_count);
 
           if(coll)                                                  h_hf_hits_coll->Fill(hf_double_energy_max);
           if(coll)                                                  h_hf_hits_plus->Fill(hf_p_energy_max);
           if(coll)                                                  h_hf_hits_minus->Fill(hf_m_energy_max);
           if(noise)                                                 h_hf_hits_noise->Fill(hf_double_energy_max);
-          if(beamgas)                                               h_hf_hits_beamgas->Fill(hf_double_energy_max);
 
           if(coll && hf_double_energy_max < 3)                      h_castor_hf_diff_3->Fill(sum_cas_e);
           if(coll && hf_double_energy_max < 5)                      h_castor_hf_diff_5->Fill(sum_cas_e);
@@ -540,11 +560,11 @@ int main()
           if(coll && hf_double_tag)                                 h_hf_hits_coll_lumi->Fill(event->lumiNb,hf_double_energy_max);
           if(coll && hf_double_tag)                                 h_hf_hits_minus_lumi->Fill(event->lumiNb,hf_m_energy_max);
           if(coll && hf_double_tag)                                 h_hf_hits_plus_lumi->Fill(event->lumiNb,hf_p_energy_max);
-          if((noise || beamgas))                                    h_hf_hits_noise_lumi->Fill(event->lumiNb,hf_double_energy_max);
+          if(noise)                                                 h_hf_hits_noise_lumi->Fill(event->lumiNb,hf_double_energy_max);
           if(coll && hf_double_tag)                                 h_hf_totE_coll_lumi->Fill(event->lumiNb,hf_pm_energy);
           if(coll && hf_double_tag)                                 h_hf_totE_minus_lumi->Fill(event->lumiNb,hf_m_energy);
           if(coll && hf_double_tag)                                 h_hf_totE_plus_lumi->Fill(event->lumiNb,hf_p_energy);
-          if((noise || beamgas))                                    h_hf_totE_noise_lumi->Fill(event->lumiNb,hf_pm_energy);
+          if(noise)                                                 h_hf_totE_noise_lumi->Fill(event->lumiNb,hf_pm_energy);
           if(coll && hf_double_tag)                                 h_lumi_3GeV->Fill(event->lumiNb);
           if(coll)                                                  h_lumi->Fill(event->lumiNb);
 
@@ -562,14 +582,12 @@ int main()
                 h_perf_hf_totE_eta_single_3gev->Fill(it->Eta,it->Energy);
             }
 
-          for (double cut=0; cut <= 10; cut+=0.1)
+          for (double cut=0; cut <= 20; cut+=0.1)
             {
-              if(coll && hf_double_energy_max >= cut)                h_hf_cut_double->Fill(cut);
-              if((noise || beamgas) && hf_double_energy_max >= cut)  h_hf_cut_double_noise->Fill(cut);
-              if((beamgas || beamgas) && hf_double_energy_max >= cut)h_hf_cut_double_beamgas->Fill(cut);
-              if(coll && hf_single_energy_max >= cut)                h_hf_cut_single->Fill(cut);
-              if((noise || beamgas) && hf_single_energy_max >= cut)  h_hf_cut_single_noise->Fill(cut);
-              if((beamgas || beamgas) && hf_single_energy_max >= cut)h_hf_cut_single_beamgas->Fill(cut);
+              if(coll && hf_double_energy_max >= cut)               h_hf_cut_double->Fill(cut);
+              if(noise && hf_double_energy_max >= cut)              h_hf_cut_double_noise->Fill(cut);
+              if(coll && hf_single_energy_max >= cut)               h_hf_cut_single->Fill(cut);
+              if(noise && hf_single_energy_max >= cut)              h_hf_cut_single_noise->Fill(cut);
             }
 
           if(coll)                                                  h_hf_new_cut_single->Fill(0);
@@ -583,13 +601,21 @@ int main()
 
           if(sample_type[sample]==DATA)
             {
-              if(coll && hf_single_tag)                             h_run_events_single->Fill(event->lumiNb,evtWeight);
-              if(coll && hf_double_tag)                             h_run_events_double->Fill(event->lumiNb,evtWeight);
-                                                                    h_run_events_lumi->Fill(event->lumiNb,lumiPerLS);
 
-              if(noise || beamgas)                                  h_hf_noise_all_lumi            ->Fill(event->lumiNb);
-              if((noise || beamgas) && hf_single_tag)               h_hf_noise_selected_single_lumi->Fill(event->lumiNb);
-              if((noise || beamgas) && hf_double_tag)               h_hf_noise_selected_double_lumi->Fill(event->lumiNb);
+              for (int i = 0; i<array_size; i++)
+                {
+                  //create new tags in loop
+                  bool hf_single_tag2 = hf_single_energy_max>cut_energies_single[i];
+                  bool hf_double_tag2 = hf_double_energy_max>cut_energies_double[i];
+                  if(coll && hf_single_tag2)                        v_run_events_single[i]->Fill(event->lumiNb,evtWeight);
+                  if(coll && hf_double_tag2)                        v_run_events_double[i]->Fill(event->lumiNb,evtWeight);
+                }
+
+              if(coll)                                              h_run_events_lumi->Fill(event->lumiNb,lumiPerLS);
+
+              if(noise)                                             h_hf_noise_all_lumi            ->Fill(event->lumiNb);
+              if(noise && hf_single_tag)                            h_hf_noise_selected_single_lumi->Fill(event->lumiNb);
+              if(noise && hf_double_tag)                            h_hf_noise_selected_double_lumi->Fill(event->lumiNb);
             }
 
 
@@ -620,30 +646,39 @@ int main()
               if(!(hf_double_energy_max > 2) && castor_tag)                        h_mc_effgain_double->Fill(5);
 
 
-              if(coll && hf_single_tag)                                 h_mc_diffraction_single->Fill(rapGap);
-              if(coll && hf_double_tag)                                 h_mc_diffraction_double->Fill(rapGap);
-              if(coll && SD1)                                           h_mc_diffraction_SD1->Fill(rapGap);
-              if(coll && SD2)                                           h_mc_diffraction_SD2->Fill(rapGap);
-              if(coll && DD)                                            h_mc_diffraction_DD->Fill(rapGap);
-              if(coll && CD)                                            h_mc_diffraction_CD->Fill(rapGap);
-              if(coll && ND)                                            h_mc_diffraction_ND->Fill(rapGap);
-              if(coll)                                                  h_mc_diffraction_all->Fill(rapGap);
+              if(coll && hf_single_tag)                                 h_mc_diffraction_single->Fill(log10(xi_x));
+              if(coll && hf_double_tag)                                 h_mc_diffraction_double->Fill(log10(xi_x));
+              if(coll && SD1)                                           h_mc_diffraction_SD1->Fill(log10(xi_x));
+              if(coll && SD2)                                           h_mc_diffraction_SD2->Fill(log10(xi_x)); //WARNING
+              if(coll && DD)                                            h_mc_diffraction_DD->Fill(log10(xi_x));
+              if(coll && CD)                                            h_mc_diffraction_CD->Fill(log10(xi_x));
+              if(coll && ND)                                            h_mc_diffraction_ND->Fill(log10(xi_x));
+              if(coll)                                                  h_mc_diffraction_all->Fill(log10(xi_x));
+
+              if(coll && hf_single_tag)                                 h_mc_lrg_single->Fill(rapGap);
+              if(coll && hf_double_tag)                                 h_mc_lrg_double->Fill(rapGap);
+              if(coll && SD1)                                           h_mc_lrg_SD1->Fill(rapGap);
+              if(coll && SD2)                                           h_mc_lrg_SD2->Fill(rapGap);
+              if(coll && DD)                                            h_mc_lrg_DD->Fill(rapGap);
+              if(coll && CD)                                            h_mc_lrg_CD->Fill(rapGap);
+              if(coll && ND)                                            h_mc_lrg_ND->Fill(rapGap);
+              if(coll)                                                  h_mc_lrg_all->Fill(rapGap);
             }
 
 
         }
 
       //******************************************AFTER EVENT LOOP*******************************************
-      double integ_lumi = 1854.344875;// nb^-1
-      double n_zb = h_mc_eff->GetBinContent(1) * n_total;
-      double n_mb = h_mc_eff->GetBinContent(4) * n_total;
 
-      cout << endl << "Cross section ZB: " << n_zb/integ_lumi << " --- cross section MB: " << n_mb/integ_lumi << endl;
+      cout << endl << "--- Processed " << n_total << " events." << endl << endl;
       h_perf_hf_totE_eta_double_1dot5gev->Scale(1./n_total);
       h_perf_hf_totE_eta_single_3gev->Scale(1./n_total);
 
-      h_mc_rapidity->Scale(1./n_total/h_mc_rapidity->GetBinWidth(1));
-      h_mc_eta_e   ->Scale(1./n_total/h_mc_eta_e->GetBinWidth(1));
+      if(sample_type[sample] == MC)
+        {
+          h_mc_rapidity->Scale(1./n_total/h_mc_rapidity->GetBinWidth(1));
+          h_mc_eta_e   ->Scale(1./n_total/h_mc_eta_e->GetBinWidth(1));
+        }
 
     }
 
