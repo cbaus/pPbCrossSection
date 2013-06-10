@@ -2,6 +2,7 @@
 #include "TFitResult.h"
 #include "TLegend.h"
 #include "TCanvas.h"
+#include "TF1.h"
 #include "TH1D.h"
 #include "TFile.h"
 #include "TVectorD.h"
@@ -75,6 +76,12 @@ void makePlots_cs1()
 
   double w = 0;
   double xw = 0;
+  double n_noise_runs_single=0;
+  double n_em_runs_single=0;
+  double A_runs_single=0;
+  double n_noise_runs_double=0;
+  double n_em_runs_double=0;
+  double A_runs_double=0;
   double sigma_em_runs_single=0;
   double sigma_mc_runs_single=0;
   double sigma_pu_runs_single=0;
@@ -133,6 +140,12 @@ void makePlots_cs1()
       const double f_zb_double = h_zb_double->GetBinContent(1)/h_zb_double->GetBinContent(h_zb_double->FindBin(cut_value_double));
 
 
+      double n_noise_run_single=0;
+      double n_em_run_single=0;
+      double A_run_single=0;
+      double n_noise_run_double=0;
+      double n_em_run_double=0;
+      double A_run_double=0;
       double sigma_em_run_single=0;
       double sigma_mc_run_single=0;
       double sigma_pu_run_single=0;
@@ -155,7 +168,7 @@ void makePlots_cs1()
           //PILEUP!!
           const double lumiPerLS=h_lumi->GetBinContent(i);
           const double lumiPerLS_error=h_lumi->GetBinError(i);
-          const double lambda = lumiPerLS*2.1/11246./23.31/296.;
+          const double lambda = lumiPerLS*2.13/11246./23.31/296.;
           const double p1_single = (*f_mc)[0];
           const double p1_double = (*f_mc)[1];
           double f_pileup_single = 1;
@@ -184,15 +197,12 @@ void makePlots_cs1()
               const double n_noise_double = f_noise_double * n_zb_double;
               const double n_em_double = (*f_em)[1] * n_cut_double;
 
-              if(i<200)
-                {
-                }
-              const double A_single = (1./f_pileup_single) - f_noise_single;
-              const double A_double = (1./f_pileup_double) - f_noise_double;
+              const double A_single = ((*f_mc)[0]/f_pileup_single) - f_noise_single;
+              const double A_double = ((*f_mc)[1]/f_pileup_double) - f_noise_double;
               if( A_double != 0 && A_single != 0)
                 {
-                  double n_single = ((n_cut_single/(*f_mc)[0]) - n_noise_single - n_em_single) / A_single;
-                  double n_double = ((n_cut_double/(*f_mc)[1]) - n_noise_double - n_em_double) / A_double;
+                  double n_single = (n_cut_single - n_noise_single - n_em_single) / A_single;
+                  double n_double = (n_cut_double - n_noise_double - n_em_double) / A_double;
                   double error_single = sqrt( pow(h_single->GetBinContent(i),2)/pow(lumiPerLS,4)*pow(lumiPerLS_error,2) + 1./pow(lumiPerLS,2)*pow(h_single->GetBinError(i),2));
                   double error_double = sqrt( pow(h_double->GetBinContent(i),2)/pow(lumiPerLS,4)*pow(lumiPerLS_error,2) + 1./pow(lumiPerLS,2)*pow(h_double->GetBinError(i),2));
                   double sigma_mc_single = (*f_mce)[0] / A_single * n_cut_single / pow((*f_mc)[0],2);
@@ -208,7 +218,7 @@ void makePlots_cs1()
                   h_single->SetBinError(i, error_single);
                   h_double->SetBinError(i, error_double);
 
-                  if(i<200)
+                  if(i<00)
                     {
                       cout << n_cut_single<< " " << n_cut_single/(*f_mc)[0]<< " " << n_noise_single<< " " << n_em_single<< " " << ((1./f_pileup_single) - f_noise_single) << " " << f_pileup_single << endl;
                       cout << n_zb_double << " " << n_cut_double<< " " << n_cut_double/(*f_mc)[1]<< " " << n_noise_double<< " " << n_em_double<< " " << ((1./f_pileup_double) - f_noise_double) << endl;
@@ -218,6 +228,12 @@ void makePlots_cs1()
                     }
 
                   n++;
+                  n_noise_run_single += n_noise_single;
+                  n_em_run_single    += n_em_single;
+                  A_run_single       += A_single;
+                  n_noise_run_double += n_noise_double;
+                  n_em_run_double    += n_em_double;
+                  A_run_double       += A_double;
                   sigma_mc_run_single += sigma_mc_single;
                   sigma_mc_run_double += sigma_mc_double;
                   sigma_em_run_single += sigma_em_single;
@@ -229,6 +245,20 @@ void makePlots_cs1()
             }
           else if (lumiPerLS<0.) {cerr << "lumi neg: " << i << endl; return;}
         }
+
+      n_noise_run_single /= double(n);
+      n_em_run_single    /= double(n);
+      A_run_single       /= double(n);
+      n_noise_run_double /= double(n);
+      n_em_run_double    /= double(n);
+      A_run_double       /= double(n);
+
+      n_noise_runs_single += n_noise_run_single;
+      n_em_runs_single    += n_em_run_single;
+      A_runs_single       += A_run_single;
+      n_noise_runs_double += n_noise_run_double;
+      n_em_runs_double    += n_em_run_double;
+      A_runs_double       += A_run_double;
 
       sigma_em_run_single /= double(n);
       sigma_em_run_double /= double(n);
@@ -299,7 +329,9 @@ void makePlots_cs1()
           projection_single->SetTitle("single-arm;#sigma_{inel} in b;weighted count");
           projection_double->SetTitle("double-arm;#sigma_{inel} in b;weighted count");
           TLegend* leg = c1->BuildLegend(0.55,0.7,0.85,0.9);
+#ifdef __CINT__
           SetLegAtt(leg);
+#endif
           leg->Draw();
           c1->SaveAs((string("plots/CS_run_proj")+string(".pdf")).c_str());
         }
@@ -342,6 +374,14 @@ void makePlots_cs1()
   double average = xw/w;
 
   int n = run_num.size();
+
+  n_noise_runs_single /= double(n);
+  n_em_runs_single /= double(n);
+  A_runs_single /= double(n);
+  n_noise_runs_double /= double(n);
+  n_em_runs_double /= double(n);
+  A_runs_double /= double(n);
+
   sigma_em_runs_single /= double(n);
   sigma_em_runs_double /= double(n);
   sigma_mc_runs_single /= double(n);
@@ -376,7 +416,9 @@ void makePlots_cs1()
   h_runs_double_Pbp->Draw("PSAME");
   h_runs_single_Pbp->Draw("PSAME");
   TLegend* leg3 = can3->BuildLegend(0.5,0.65,0.8,0.85);
+#ifdef __CINT__
   SetLegAtt(leg3);
+#endif
   leg3->Draw();
 #ifdef __CINT__
   CMSPreliminary();
@@ -388,7 +430,9 @@ void makePlots_cs1()
   h_runs_double_pPb->Draw("P");
   h_runs_double_Pbp->Draw("PSAME");
   TLegend* leg4 = can4->BuildLegend(0.5,0.65,0.8,0.85);
+#ifdef __CINT__
   SetLegAtt(leg4);
+#endif
   leg4->Draw();
 #ifdef __CINT__
   CMSPreliminary();
@@ -401,14 +445,21 @@ void makePlots_cs1()
   TFitResultPtr fit_runs_double = h_runs_double->Fit("pol0","S");
   double sigmainel = (fit_runs_single->Parameter(0)+fit_runs_double->Parameter(0))/2.;
   double runrun = (fit_runs_single->ParError(0)+fit_runs_double->ParError(0))/2.;
-  cout << "sigma_inel: " << sigmainel << " b"<< endl;
-  cout << "Run-by-run variation: " << runrun << " = " << runrun/sigmainel*100 << "%" << endl;
+  cout << endl << endl << " !!! sigma_inel: " << sigmainel << " b"<< endl;
+  cout << " !!! Run-by-run variation: " << runrun << " = " << runrun/sigmainel*100 << "%" << endl << endl;
 
-  if(fabs(average-fit_runs_double->Parameter(0))/(average+fit_runs_double->Parameter(0))*2 > 0.001)
+  if(fabs(average-fit_runs_double->Parameter(0))/(average+fit_runs_double->Parameter(0))*2 > 0.001 || // = a/((a+b)/2)
+     fabs(fit_runs_double->ParError(0)-sigma)/(sigma+fit_runs_double->ParError(0))*2 > 0.001
+     )
     {
-      cerr << "The weighted average is more than 1 per mille different from the fit" < endl;
+      cerr << "The weighted average is more than 1 per mille different from the fit " << average << " " << sigma << endl;
       return;
     }
+
+  cout << " n_noise_single=" << n_noise_runs_single/A_runs_single << " b "
+       << " n_em_single=" << n_em_runs_single/A_runs_single<< " b " << endl;
+  cout << " n_noise_double=" << n_noise_runs_double/A_runs_double << " b "
+       << " n_em_double=" << n_em_runs_double/A_runs_double << " b " << endl;
 
 
   cout << "sigma_em_single=" << sigma_em_runs_single/fit_runs_single->Parameter(0)*100 << "%"
@@ -445,7 +496,9 @@ void makePlots_cs1()
   h_pull_single->GetYaxis()->SetRangeUser(0,h_pull_double->GetMaximum()*1.4);
   h_pull_double->Draw("HIST SAME");
   TLegend* leg5 = can5->BuildLegend(0.6,0.7,0.85,0.9);
+#ifdef __CINT__
   SetLegAtt(leg5);
+#endif
   f_pull_single->SetLineWidth(2);
   f_pull_double->SetLineWidth(2);
   f_pull_single->SetLineColor(kBlack);
