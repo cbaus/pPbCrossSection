@@ -39,19 +39,53 @@ void style() {
   TGaxis::SetMaxDigits(3);
 }
 
-// ########################################################
-void CMSPreliminary() {
-  TLatex* txt = new TLatex();
-  txt->SetNDC();
-  txt->SetTextFont(62);
-  txt->SetTextColor(kGray+1);
-  txt->SetTextSize(0.05);
-  txt->SetTextAlign(32);
-  txt->DrawLatex(1-gStyle->GetPadRightMargin(), 0.95, "CMS PRELIMINARY");
-}
 // #################################################################################
 // helper function to specify that proton/lead data is used
 void DataText(const bool left, const bool top, const std::string str) {
+  const double marg = 0.005, margY = 0.03;
+  std::string text("CMS Preliminary");
+  TPaveText* txt
+    = new TPaveText(left ? gStyle->GetPadLeftMargin()+marg : 1-gStyle->GetPadRightMargin()-marg-0.30, //xlow
+                    top ? 1-gStyle->GetPadTopMargin()-margY-0.08 : gStyle->GetPadBottomMargin() + margY+0.04, //ylow
+                    left ? gStyle->GetPadLeftMargin()+marg+0.30 : 1-gStyle->GetPadRightMargin()-marg, //xhigh
+                    top ? 1-gStyle->GetPadTopMargin()-margY-0.04 : gStyle->GetPadBottomMargin() + margY + 0.08, //yhigh
+                    "NDC b t l");
+    txt->SetTextAlign(10*(left ? 1 : 3) + (top ? 1 : 3));
+    txt->SetTextFont(42);
+    txt->SetFillStyle(0);
+    txt->SetTextColor(kBlack);
+    txt->SetTextSize(0.033);
+    txt->SetBorderSize(0);
+    txt->AddText(text.c_str());
+    txt->Draw();
+    EnergyText(left,top,str);
+}
+
+// #################################################################################
+// helper function to specify that proton/lead data is used
+void MCText(const bool left, const bool top, const std::string str) {
+  const double marg = 0.005, margY = 0.03;
+  std::string text("CMS Simulation");
+  TPaveText* txt
+    = new TPaveText(left ? gStyle->GetPadLeftMargin()+marg : 1-gStyle->GetPadRightMargin()-marg-0.30, //xlow
+                    top ? 1-gStyle->GetPadTopMargin()-margY-0.08 : gStyle->GetPadBottomMargin() + margY+0.04, //ylow
+                    left ? gStyle->GetPadLeftMargin()+marg+0.30 : 1-gStyle->GetPadRightMargin()-marg, //xhigh
+                    top ? 1-gStyle->GetPadTopMargin()-margY-0.04 : gStyle->GetPadBottomMargin() + margY + 0.08, //yhigh
+                    "NDC b t l");
+    txt->SetTextAlign(10*(left ? 1 : 3) + (top ? 1 : 3));
+    txt->SetTextFont(42);
+    txt->SetFillStyle(0);
+    txt->SetTextColor(kBlack);
+    txt->SetTextSize(0.033);
+    txt->SetBorderSize(0);
+    txt->AddText(text.c_str());
+    txt->Draw();
+    EnergyText(left,top,str);
+}
+
+// #################################################################################
+// helper function to specify that proton/lead data is used
+void EnergyText(const bool left, const bool top, const std::string str) {
   const double marg = 0.005, margY = 0.03;
   TPaveText* txt
     = new TPaveText(left ? gStyle->GetPadLeftMargin()+marg : 1-gStyle->GetPadRightMargin()-marg-0.30,

@@ -10,7 +10,7 @@ void makePlots7()
   list.push_back(string("Hijing"));
   list.push_back(string("QGSJetII"));
 
-  
+
   for(int i=0; i<int(list.size()); i++)
     {
       cout << i << " " << int(list.size()) << endl;
@@ -49,40 +49,38 @@ void makePlots7()
       g->SetLineWidth(2.5);
 
 
-      a->SetMarkerColor(kBlue+2);
-      b->SetMarkerColor(kRed+2);
-      c1->SetMarkerColor(kBlue+3);
-      c2->SetMarkerColor(kBlue+1);
-      d->SetMarkerColor(kRed+2);
-      e->SetMarkerColor(kGreen+3);
-      f->SetMarkerColor(kBlack);
+      a->SetMarkerColor(kBlue-2);
+      b->SetMarkerColor(kRed-2);
+      c1->SetMarkerColor(kBlue-3);
+      c2->SetMarkerColor(kBlue-1);
+      d->SetMarkerColor(kRed-2);
+      e->SetMarkerColor(kGreen-3);
+      f->SetMarkerColor(kGray);
 
-      a->SetLineColor(kBlue+2);
-      b->SetLineColor(kRed+2);
-      c1->SetLineColor(kBlue+3);
-      c2->SetLineColor(kBlue+1);
-      d->SetLineColor(kRed+2);
-      e->SetLineColor(kGreen+3);
-      f->SetLineColor(kBlack);
+      a->SetLineColor(a->GetMarkerColor());
+      b->SetLineColor(b->GetMarkerColor());
+      c1->SetLineColor(c1->GetMarkerColor());
+      c2->SetLineColor(c2->GetMarkerColor());
+      d->SetLineColor(d->GetMarkerColor());
+      e->SetLineColor(e->GetMarkerColor());
+      f->SetLineColor(f->GetMarkerColor());
 
-      a->SetFillColor(kBlue+2);
-      b->SetFillColor(kRed+2);
-      c1->SetFillColor(kBlue+3);
-      c2->SetFillColor(kBlue+1);
-      d->SetFillColor(kRed+2);
-      e->SetFillColor(kGreen+3);
-      f->SetFillColor(kBlack);
+      a->SetFillColor(a->GetMarkerColor());
+      b->SetFillColor(b->GetMarkerColor());
+      c1->SetFillColor(c1->GetMarkerColor());
+      c2->SetFillColor(c2->GetMarkerColor());
+      d->SetFillColor(d->GetMarkerColor());
+      e->SetFillColor(e->GetMarkerColor());
+      f->SetFillColor(f->GetMarkerColor());
 
-      a->SetTitle("single arm > 6 GeV");
-      b->SetTitle("double arm > 2 GeV");
+      a->SetTitle("single-arm E>6 GeV");
+      b->SetTitle("double-arm E>2 GeV");
       c1->SetTitle("SD1");
       c2->SetTitle("SD2");
       d->SetTitle("DD");
       e->SetTitle("CD");
       f->SetTitle("ND");
       g->SetTitle("all");
-
-      g->GetYaxis()->SetRangeUser(0.0001,0.03);
 
       TCanvas* can1 = new TCanvas;
       THStack* hs = new THStack("hs","EPOS");
@@ -94,15 +92,13 @@ void makePlots7()
       hs->Draw("HIST");
       can1->SetLogy();
       hs->GetYaxis()->SetRangeUser(0.0001,0.03);
-      hs->SetTitle(";lg(#xi);events (normalised)");
+      hs->SetTitle(";log_{10}(#xi);events (normalised)");
       TLegend* leg = can1->BuildLegend(0.25,0.65,0.45,0.85);
-      leg->SetFillColor(kWhite);
+      SetLegAtt(leg);
       leg->Draw();
-      CMSPreliminary();
-      can1->SaveAs((string("plots/diff_1_")+list[i]+string(".eps")).c_str());
+      MCText(0);
       can1->SaveAs((string("plots/diff_1_")+list[i]+string(".pdf")).c_str());
-      can1->SaveAs((string("plots/diff_1_")+list[i]+string(".png")).c_str());
-  
+
 
       TCanvas* can2 = new TCanvas;
       THStack* hs2 = new THStack("hs","EPOS");
@@ -112,12 +108,10 @@ void makePlots7()
       hs2->Add(e);
       hs2->Add(f);
       hs2->Draw("HIST");
-      hs2->SetTitle(";lg(#xi);events (normalised)");
+      hs2->SetTitle(";log_{10}(#xi);events (normalised)");
       leg->Draw();
-      CMSPreliminary();
-      can2->SaveAs((string("plots/diff_2_")+list[i]+string(".eps")).c_str());
+      MCText(0);
       can2->SaveAs((string("plots/diff_2_")+list[i]+string(".pdf")).c_str());
-      can2->SaveAs((string("plots/diff_2_")+list[i]+string(".png")).c_str());
 
 
       TCanvas* c3 = new TCanvas;
@@ -125,23 +119,24 @@ void makePlots7()
       a->Draw("HIST P SAME");
       b->Draw("HIST P SAME");
       c3->SetLogy();
-      g->GetYaxis()->SetRangeUser(0.0001,0.03);
-      g->SetTitle("Inelastic events;lg(#xi);events (normalised)");
-      TLegend* leg = c3->BuildLegend(0.25,0.65,0.65,0.85);
-      leg->SetFillColor(kWhite);
+      //g->GetYaxis()->SetRangeUser(0.0001,0.03);
+      g->SetTitle("Inelastic events;log_{10}(#xi);events (normalised)");
+      TLegend* leg = new TLegend(0.22,0.70,0.62,0.87);
+      SetLegAtt(leg);
+      leg->AddEntry(g,"","l");
+      leg->AddEntry(a,"","p");
+      leg->AddEntry(b,"","p");
       leg->Draw();
-      CMSPreliminary();
-      c3->SaveAs((string("plots/diff_3_")+list[i]+string(".eps")).c_str());
+      MCText(0,0);
       c3->SaveAs((string("plots/diff_3_")+list[i]+string(".pdf")).c_str());
-      c3->SaveAs((string("plots/diff_3_")+list[i]+string(".png")).c_str());
 
 
       TCanvas* c4 = new TCanvas;
       TH1D* single2 = (TH1D*)a->Clone("single2");
       TH1D* double2 = (TH1D*)b->Clone("double2");
 
-      single2->SetTitle("single-arm > 6 GeV;lg(#xi);efficiency #epsilon");
-      double2->SetTitle("double-arm > 2 GeV;lg(#xi);efficiency #epsilon");
+      single2->SetTitle("single-arm E>6 GeV;log_{10}(#xi);efficiency #epsilon");
+      double2->SetTitle("double-arm E>2 GeV;log_{10}(#xi);efficiency #epsilon");
 
       for(int n=0; n<=single2->GetNbinsX(); n++)
         {
@@ -159,14 +154,15 @@ void makePlots7()
               double2->SetBinContent(n,0);
             }
         }
+      single2->GetYaxis()->SetRangeUser(0.,1.3);
       single2->Draw();
       double2->Draw("SAME");
-      TLegend* leg = c4->BuildLegend(0.22,0.65,0.5,0.85);
-      leg->SetFillColor(kWhite);
+      TLegend* leg = new TLegend(0.22,0.77,0.62,0.87);
+      SetLegAtt(leg);
+      leg->AddEntry(a,"","p");
+      leg->AddEntry(b,"","p");
       leg->Draw();
-      CMSPreliminary();
-      c4->SaveAs((string("plots/diff_4_")+list[i]+string(".eps")).c_str());
+      MCText(0,0);
       c4->SaveAs((string("plots/diff_4_")+list[i]+string(".pdf")).c_str());
-      c4->SaveAs((string("plots/diff_4_")+list[i]+string(".png")).c_str());
     }
 }

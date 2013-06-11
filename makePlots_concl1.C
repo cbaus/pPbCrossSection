@@ -29,13 +29,14 @@ void DataText2(const bool left, const bool top, const std::string str) {
     txt->SetTextColor(kBlack);
     txt->SetTextSize(0.066);
     txt->SetBorderSize(0);
+    txt->AddText("CMS Simulation");
     txt->AddText(str.c_str());
     txt->Draw();
 }
 
 void SetAttributes(TGraphErrors* theGraph, int colour, int marker)
 {
-  theGraph->SetMarkerSize(2);
+  theGraph->SetMarkerSize(1.5);
   theGraph->SetLineWidth(1.8);
   theGraph->SetFillColor(kWhite);
   theGraph->SetLineColor(colour);
@@ -121,7 +122,9 @@ void makePlots_concl1()
 
 
   ///RANGE
-  pp_epos->GetYaxis()->SetTitle("#sigma_{inel} / b");
+  pp_epos->GetYaxis()->SetTitle("#sigma_{inel} [b]");
+  pp_epos->GetYaxis()->SetTitleSize(pp_epos->GetYaxis()->GetTitleSize()*1.5);
+  pp_epos->GetYaxis()->SetTitleOffset(pp_epos->GetYaxis()->GetTitleOffset()/1.5);
   pp_epos->GetXaxis()->SetNdivisions(0);
   pp_epos->GetXaxis()->SetLimits(0.5,1.5);
   pp_epos->GetHistogram()->SetMaximum(0.076);
@@ -129,8 +132,8 @@ void makePlots_concl1()
 
   pb_epos->GetXaxis()->SetLimits(0.5,1.5);
   pb_epos->GetXaxis()->SetNdivisions(0);
-  pb_epos->GetHistogram()->SetMaximum(2.410);
-  pb_epos->GetHistogram()->SetMinimum(1.810);
+  pb_epos->GetHistogram()->SetMaximum(2.430);
+  pb_epos->GetHistogram()->SetMinimum(1.830);
   ///RANGE
 
   can1->cd(1);
@@ -148,23 +151,21 @@ void makePlots_concl1()
   pb_this_up->Draw("P");
   pb_this_down->Draw("P");
 
-  TLegend* leg1 = new TLegend(0.1,0.1,0.9,0.9);
-  leg1->SetFillColor(kWhite);
+  TLegend* leg1 = new TLegend(0.223,0.21,0.823,0.41);
+  SetLegAtt(leg1);
+  leg1->SetBorderSize(1);
   leg1->AddEntry(pb_epos,"EPOS","p");
   leg1->AddEntry(pb_eposlhc,"EPOS-LHC","p");
   leg1->AddEntry(pb_qgsjetii,"QGSJetII-04","p");
   leg1->AddEntry(pb_fit,"Menon et al. + Glauber","p");
-  leg1->AddEntry(pb_this,"this work","p");
+  leg1->AddEntry(pb_this,"CMS","p");
 
   can1->cd(1);
   DataText2(true,true,"pp, #sqrt{s_{_{NN}}}=5.02 TeV");
   can1->cd(2);
   DataText2(true,true);
-  CMSPreliminary();
+  leg1->Draw();
   can1->SaveAs((string("plots/concl_1")+string(".pdf")).c_str());
 
 
-  TCanvas* can2 = new TCanvas;
-  leg1->Draw();
-  can2->SaveAs((string("plots/concl_1b")+string(".pdf")).c_str());
 }

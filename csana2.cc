@@ -1,4 +1,4 @@
-#define MAXEVT -50000
+#define MAXEVT -10000
 
 #include "TChain.h"
 #include "TFile.h"
@@ -34,6 +34,7 @@ enum e_type
 using namespace std;
 
 int IetaToRing(int ring);
+void BinLogX(TH1* h);
 
 
 int main()
@@ -51,21 +52,22 @@ int main()
   vector<double> cut_energies_double(array_cuts_double,array_cuts_double+array_size);
 
   //*************************************************************INPUT***********************************************************
-  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Data210614/*_*.root"); sample_name.push_back("data210614"); sample_type.push_back(DATA);
+  // sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Data210614/*_*.root"); sample_name.push_back("data210614"); sample_type.push_back(DATA);
   sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Data210885/*_*.root"); sample_name.push_back("data210885"); sample_type.push_back(DATA);
-  sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data210998/*_*.root"); sample_name.push_back("data210998"); sample_type.push_back(DATA);
-  sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211000/*.root"); sample_name.push_back("data211000"); sample_type.push_back(DATA);
-  sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211001/*.root"); sample_name.push_back("data211001"); sample_type.push_back(DATA);
-  sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211032/*.root"); sample_name.push_back("data211032"); sample_type.push_back(DATA);
-  sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211256/*.root"); sample_name.push_back("data211256"); sample_type.push_back(DATA);
-  sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211371/*.root"); sample_name.push_back("data211371"); sample_type.push_back(DATA);
-  sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211390/*.root"); sample_name.push_back("data211390"); sample_type.push_back(DATA);
-  sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211460/*.root"); sample_name.push_back("data211460"); sample_type.push_back(DATA);
-  sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211532/*.root"); sample_name.push_back("data211532"); sample_type.push_back(DATA);
-  sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211538/*.root"); sample_name.push_back("data211538"); sample_type.push_back(DATA);
-  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Data211607/*_*.root"); sample_name.push_back("data211607"); sample_type.push_back(DATA);
+  // sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data210998/*_*.root"); sample_name.push_back("data210998"); sample_type.push_back(DATA);
+  // sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211000/*.root"); sample_name.push_back("data211000"); sample_type.push_back(DATA);
+  // sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211001/*.root"); sample_name.push_back("data211001"); sample_type.push_back(DATA);
+  // sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211032/*.root"); sample_name.push_back("data211032"); sample_type.push_back(DATA);
+  // sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211256/*.root"); sample_name.push_back("data211256"); sample_type.push_back(DATA);
+  // sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211371/*.root"); sample_name.push_back("data211371"); sample_type.push_back(DATA);
+  // sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211390/*.root"); sample_name.push_back("data211390"); sample_type.push_back(DATA);
+  // sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211460/*.root"); sample_name.push_back("data211460"); sample_type.push_back(DATA);
+  // sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211532/*.root"); sample_name.push_back("data211532"); sample_type.push_back(DATA);
+  // sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211538/*.root"); sample_name.push_back("data211538"); sample_type.push_back(DATA);
+  // sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Data211607/*_*.root"); sample_name.push_back("data211607"); sample_type.push_back(DATA);
   sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Epos/*.root"); sample_name.push_back("Epos"); sample_type.push_back(MC);
-  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Epos_SL/*.root"); sample_name.push_back("Epos_SL"); sample_type.push_back(MC);
+  // sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Epos/*.root"); sample_name.push_back("EposSDWeight2"); sample_type.push_back(MC);
+  // sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Epos_SL/*.root"); sample_name.push_back("Epos_SL"); sample_type.push_back(MC);
   sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Hijing/*.root"); sample_name.push_back("Hijing"); sample_type.push_back(MC);
   sample_fname.push_back("/afs/cern.ch/work/c/cbaus/public/castortree/pPb_QGSJetII/treeMC.root"); sample_name.push_back("QGSJetII"); sample_type.push_back(MC);
   sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/StarlightDPMjet_v2/treeMC.root"); sample_name.push_back("Starlight_DPMJet");  sample_type.push_back(MC);
@@ -90,14 +92,16 @@ int main()
 
   //**************************************************************OUTPUT*********************************************************
 
-  TFile* out_file = new TFile("histos_MC.root","RECREATE");
+  TFile* out_file = new TFile("histos.root","RECREATE");
 
   TH1D* h_zero_count_zb_coll;
   TH1D* h_zero_count_zb_no_coll;
-  TH1D* h_hf_hits_coll;
+  TH1D* h_hf_hits_coll_single;
+  TH1D* h_hf_hits_coll_double;
+  TH1D* h_hf_hits_noise_single;
+  TH1D* h_hf_hits_noise_double;
   TH1D* h_hf_hits_plus;
   TH1D* h_hf_hits_minus;
-  TH1D* h_hf_hits_noise;
   TH1D* h_castor_hf_diff_3;
   TH1D* h_castor_hf_diff_5;
   TH1D* h_castor_hf_diff_10;
@@ -111,8 +115,8 @@ int main()
 
   TH2D* h_random_trig_tracks_hf;
 
-  vector<TH1D*> v_run_events_single;
-  vector<TH1D*> v_run_events_double;
+  vector<TH1D*> v_run_events_single(array_size,NULL);
+  vector<TH1D*> v_run_events_double(array_size,NULL);
 
   TH1D* h_run_events_lumi;
 
@@ -209,6 +213,7 @@ int main()
       int zero_bias_prescale_HLT;
       int min_bias;
       int random;
+      int random_prescale_HLT;
       int bptx_p_m;
       int bptx_p_nm;
       int bptx_np_m;
@@ -220,6 +225,7 @@ int main()
           tree->SetBranchAddress("HLT_PAZeroBias_v1",&zero_bias);
           tree->SetBranchAddress("HLT_PAL1Tech53_MB_SingleTrack_v1",&min_bias);
           tree->SetBranchAddress("HLT_PARandom_v1",&random);
+          tree->SetBranchAddress("HLT_PARandom_v1_Prescl",&random_prescale_HLT);
           tree->SetBranchAddress("L1Tech_BPTX_plus_AND_minus.v0_DecisionBeforeMask",&bptx_p_m);
           tree->SetBranchAddress("L1Tech_BPTX_plus_AND_NOT_minus.v0_DecisionBeforeMask",&bptx_p_nm);
           tree->SetBranchAddress("L1Tech_BPTX_minus_AND_not_plus.v0_DecisionBeforeMask",&bptx_np_m);
@@ -236,10 +242,20 @@ int main()
 
       h_zero_count_zb_coll        = new TH1D((add + string("_h_zero_count_zb_coll")).c_str(),"",100,728,1728);
       h_zero_count_zb_no_coll     = new TH1D((add + string("_h_zero_count_zb_no_coll")).c_str(),"",100,728,1728);
-      h_hf_hits_coll              = new TH1D((add + string("_h_hf_hits_coll")).c_str(),"",200,0,200);
-      h_hf_hits_plus              = new TH1D((add + string("_h_hfp_hits_coll")).c_str(),"",200,0,200);
-      h_hf_hits_minus             = new TH1D((add + string("_h_hfm_hits_coll")).c_str(),"",200,0,200);
-      h_hf_hits_noise             = new TH1D((add + string("_h_hf_hits_noise")).c_str(),"",200,0,20);
+      h_hf_hits_coll_single       = new TH1D((add + string("_h_hf_hits_coll_single")).c_str(),"",100,log10(0.5),log10(400.));
+      h_hf_hits_coll_double       = new TH1D((add + string("_h_hf_hits_coll_double")).c_str(),"",100,log10(0.5),log10(400.));
+      h_hf_hits_noise_single      = new TH1D((add + string("_h_hf_hits_noise_single")).c_str(),"",100,log10(0.5),log10(400.));
+      h_hf_hits_noise_double      = new TH1D((add + string("_h_hf_hits_noise_double")).c_str(),"",100,log10(0.5),log10(400.));
+      h_hf_hits_plus              = new TH1D((add + string("_h_hfp_hits_coll")).c_str(),"",100,log10(0.5),log10(400.));
+      h_hf_hits_minus             = new TH1D((add + string("_h_hfm_hits_coll")).c_str(),"",100,log10(0.5),log10(400.));
+
+      BinLogX(h_hf_hits_coll_single);
+      BinLogX(h_hf_hits_coll_double);
+      BinLogX(h_hf_hits_noise_single);
+      BinLogX(h_hf_hits_noise_double);
+      BinLogX(h_hf_hits_plus);
+      BinLogX(h_hf_hits_minus);
+
       h_castor_hf_diff_3          = new TH1D((add + string("_h_castor_hf_diff_3")).c_str(),"",100,0,10000);
       h_castor_hf_diff_5          = new TH1D((add + string("_h_castor_hf_diff_5")).c_str(),"",100,0,10000);
       h_castor_hf_diff_10         = new TH1D((add + string("_h_castor_hf_diff_10")).c_str(),"",100,0,10000);
@@ -251,8 +267,8 @@ int main()
             {
               ostringstream ss_single; ss_single << add <<"_h_run_events_single_" << cut_energies_single[i];
               ostringstream ss_double; ss_double << add <<"_h_run_events_double_" << cut_energies_double[i];
-              v_run_events_single.push_back(new TH1D(ss_single.str().c_str(),run_str.str().c_str(),2000,0,2000));
-              v_run_events_double.push_back(new TH1D(ss_double.str().c_str(),run_str.str().c_str(),2000,0,2000));
+              v_run_events_single[i] = new TH1D(ss_single.str().c_str(),run_str.str().c_str(),2000,0,2000);
+              v_run_events_double[i] = new TH1D(ss_double.str().c_str(),run_str.str().c_str(),2000,0,2000);
             }
 
           h_run_events_lumi = new TProfile((add+string("_h_run_events_lumi")).c_str(),run_str.str().c_str(),2000,0,2000,"s");
@@ -301,14 +317,14 @@ int main()
           h_mc_diffraction_CD     = new TH1D((add + string("_h_mc_diffraction_CD")).c_str(),"",100,-9,2);
           h_mc_diffraction_ND     = new TH1D((add + string("_h_mc_diffraction_ND")).c_str(),"",100,-9,2);
           h_mc_diffraction_all    = new TH1D((add + string("_h_mc_diffraction_all")).c_str(),"",100,-9,2);
-          h_mc_lrg_single         = new TH1D((add + string("_h_mc_lrg_single")).c_str(),"",500,-1,100);
-          h_mc_lrg_double         = new TH1D((add + string("_h_mc_lrg_double")).c_str(),"",500,-1,100);
-          h_mc_lrg_SD1            = new TH1D((add + string("_h_mc_lrg_SD1")).c_str(),"",500,-1,100);
-          h_mc_lrg_SD2            = new TH1D((add + string("_h_mc_lrg_SD2")).c_str(),"",500,-1,100);
-          h_mc_lrg_CD             = new TH1D((add + string("_h_mc_lrg_CD")).c_str(),"",500,-1,100);
-          h_mc_lrg_DD             = new TH1D((add + string("_h_mc_lrg_DD")).c_str(),"",500,-1,100);
-          h_mc_lrg_ND             = new TH1D((add + string("_h_mc_lrg_ND")).c_str(),"",500,-1,100);
-          h_mc_lrg_all            = new TH1D((add + string("_h_mc_lrg_all")).c_str(),"",500,-1,100);
+          h_mc_lrg_single         = new TH1D((add + string("_h_mc_lrg_single")).c_str(),"",500,-1,20);
+          h_mc_lrg_double         = new TH1D((add + string("_h_mc_lrg_double")).c_str(),"",500,-1,20);
+          h_mc_lrg_SD1            = new TH1D((add + string("_h_mc_lrg_SD1")).c_str(),"",500,-1,20);
+          h_mc_lrg_SD2            = new TH1D((add + string("_h_mc_lrg_SD2")).c_str(),"",500,-1,20);
+          h_mc_lrg_CD             = new TH1D((add + string("_h_mc_lrg_CD")).c_str(),"",500,-1,20);
+          h_mc_lrg_DD             = new TH1D((add + string("_h_mc_lrg_DD")).c_str(),"",500,-1,20);
+          h_mc_lrg_ND             = new TH1D((add + string("_h_mc_lrg_ND")).c_str(),"",500,-1,20);
+          h_mc_lrg_all            = new TH1D((add + string("_h_mc_lrg_all")).c_str(),"",500,-1,20);
 
           h_mc_rapidity           = new TH1D((add + string("_h_mc_rapidity")).c_str(),"",100,-12,12);
           h_mc_eta_e              = new TH1D((add + string("_h_mc_eta_e")).c_str(),"",100,-12,12);
@@ -319,7 +335,7 @@ int main()
           h_mc_eff->GetXaxis()->SetBinLabel(4,"HF single > 6 GeV");
           h_mc_eff->GetXaxis()->SetBinLabel(5,"HF double > 2 GeV");
           h_mc_eff->GetXaxis()->SetBinLabel(6,"HF double > 3 GeV");
-          h_mc_eff->GetXaxis()->SetBinLabel(7,"nTrack #geq 1");
+          h_mc_eff->GetXaxis()->SetBinLabel(7,"no. of tracks #geq 1");
           h_mc_eff->GetXaxis()->SetBinLabel(8,"CASTOR E_{tot} > 12.5 GeV");
           h_mc_effgain_single     = new TH1D((add + string("_h_mc_effgain_single")).c_str(),"",7,-0.5,6.5);
           h_mc_effgain_single->GetXaxis()->SetBinLabel(1,"All");
@@ -327,14 +343,14 @@ int main()
           h_mc_effgain_single->GetXaxis()->SetBinLabel(3,"HF single > 4.5 GeV");
           h_mc_effgain_single->GetXaxis()->SetBinLabel(4,"HF double > 2 GeV");
           h_mc_effgain_single->GetXaxis()->SetBinLabel(5,"HF double > 3 GeV");
-          h_mc_effgain_single->GetXaxis()->SetBinLabel(6,"nTrack #geq 1");
+          h_mc_effgain_single->GetXaxis()->SetBinLabel(6,"no. of tracks #geq 1");
           h_mc_effgain_single->GetXaxis()->SetBinLabel(7,"CASTOR E_{tot} > 12.5 GeV");
           h_mc_effgain_double     = new TH1D((add + string("_h_mc_effgain_double")).c_str(),"",6,-0.5,5.5);
           h_mc_effgain_double->GetXaxis()->SetBinLabel(1,"All");
           h_mc_effgain_double->GetXaxis()->SetBinLabel(2,"HF single > 3 GeV");
           h_mc_effgain_double->GetXaxis()->SetBinLabel(3,"HF single > 4.5 GeV");
           h_mc_effgain_double->GetXaxis()->SetBinLabel(4,"HF single > 6 GeV");
-          h_mc_effgain_double->GetXaxis()->SetBinLabel(5,"nTrack #geq 1");
+          h_mc_effgain_double->GetXaxis()->SetBinLabel(5,"no. of tracks  #geq 1");
           h_mc_effgain_double->GetXaxis()->SetBinLabel(6,"CASTOR E_{tot} > 12.5 GeV");
         }
 
@@ -427,8 +443,8 @@ int main()
 
           hf_double_energy_max = TMath::Min(hf_m_energy_max,hf_p_energy_max);
           hf_single_energy_max = TMath::Max(hf_m_energy_max,hf_p_energy_max);
-          bool hf_single_tag = hf_single_energy_max > 6;
-          bool hf_double_tag = hf_double_energy_max > 2;
+          bool hf_single_tag = hf_single_energy_max >= 6;
+          bool hf_double_tag = hf_double_energy_max >= 2;
 
           bool hf_light_double_tag = hf_p_light_cut && hf_m_light_cut;
           bool hf_medium_double_tag = hf_p_medium_cut && hf_m_medium_cut;
@@ -471,7 +487,7 @@ int main()
                     continue; // skip muon + neutrinos
 
                   double Rapidity= it->GetRapidity();
-                  if (SD2) h_mc_rapidity->Fill(Rapidity); //WARNING
+                  h_mc_rapidity->Fill(Rapidity);
                   h_mc_eta_e->Fill(it->GetEta(),it->GetEnergy());
                   rapidityMassMap.insert(pair<double,GenParticle*>(it->GetRapidity(),&(*it)));
                 }
@@ -534,45 +550,52 @@ int main()
               //cout << "----------- !! M_X=" << m_x << "    M_Y=" << m_y << endl;
             }
           //Counting events
-          const int prescale      = zero_bias_prescale_L1*zero_bias_prescale_HLT;
-          const double lumiPerLS  = event->instLuminosity * event->instLuminosityCorr * 1e6;
-          const double evtWeight  = double(prescale);
+          const int prescale        = zero_bias_prescale_L1*zero_bias_prescale_HLT;
+          const double lumiPerLS    = event->instLuminosity * event->instLuminosityCorr * 1e6;
+          double evtWeight    = 1;
+          if(sample_type[sample]==DATA)
+            evtWeight = double(prescale);
+          else if(sample_name[sample]=="EposSDWeight2" && (SD1 || SD2))
+            evtWeight *= 2.;
+          const double noiseWeight = random_prescale_HLT;
 
 
           //cout << prescale << " " << event->instLuminosity << " " <<  event->instLuminosityCorr << endl;
 
           //---------------------------------------------Filling HISTOS
-          if(coll)                                                  h_zero_count_zb_coll->Fill(hf_zero_count);
-          if(noise)                                                 h_zero_count_zb_no_coll->Fill(hf_zero_count);
+          if(coll)                                                  h_zero_count_zb_coll->Fill(hf_zero_count,evtWeight);
+          if(noise)                                                 h_zero_count_zb_no_coll->Fill(hf_zero_count,noiseWeight);
 
-          if(coll)                                                  h_hf_hits_coll->Fill(hf_double_energy_max);
-          if(coll)                                                  h_hf_hits_plus->Fill(hf_p_energy_max);
-          if(coll)                                                  h_hf_hits_minus->Fill(hf_m_energy_max);
-          if(noise)                                                 h_hf_hits_noise->Fill(hf_double_energy_max);
+          if(coll)                                                  h_hf_hits_coll_single->Fill(hf_single_energy_max);
+          if(coll)                                                  h_hf_hits_coll_double->Fill(hf_double_energy_max);
+          if(noise)                                                 h_hf_hits_noise_single->Fill(hf_single_energy_max);
+          if(noise)                                                 h_hf_hits_noise_double->Fill(hf_double_energy_max);
+          if(coll)                                                  h_hf_hits_plus->Fill(hf_p_energy_max,evtWeight);
+          if(coll)                                                  h_hf_hits_minus->Fill(hf_m_energy_max,evtWeight);
 
-          if(coll && hf_double_energy_max < 3)                      h_castor_hf_diff_3->Fill(sum_cas_e);
-          if(coll && hf_double_energy_max < 5)                      h_castor_hf_diff_5->Fill(sum_cas_e);
-          if(coll && hf_double_energy_max < 10)                     h_castor_hf_diff_10->Fill(sum_cas_e);
+          if(coll && hf_double_energy_max < 3)                      h_castor_hf_diff_3->Fill(sum_cas_e,evtWeight);
+          if(coll && hf_double_energy_max < 5)                      h_castor_hf_diff_5->Fill(sum_cas_e,evtWeight);
+          if(coll && hf_double_energy_max < 10)                     h_castor_hf_diff_10->Fill(sum_cas_e,evtWeight);
 
-          if(coll && sum_cas_e <= 700)                              h_castor_gap_hf->Fill(hf_single_energy_max);
-          if(coll && sum_cas_e >  700)                              h_castor_nogap_hf->Fill(hf_single_energy_max);
+          if(coll && sum_cas_e <= 700)                              h_castor_gap_hf->Fill(hf_single_energy_max,evtWeight);
+          if(coll && sum_cas_e >  700)                              h_castor_nogap_hf->Fill(hf_single_energy_max,evtWeight);
 
-          if(coll && hf_double_tag)                                 h_hf_hits_coll_lumi->Fill(event->lumiNb,hf_double_energy_max);
-          if(coll && hf_double_tag)                                 h_hf_hits_minus_lumi->Fill(event->lumiNb,hf_m_energy_max);
-          if(coll && hf_double_tag)                                 h_hf_hits_plus_lumi->Fill(event->lumiNb,hf_p_energy_max);
-          if(noise)                                                 h_hf_hits_noise_lumi->Fill(event->lumiNb,hf_double_energy_max);
-          if(coll && hf_double_tag)                                 h_hf_totE_coll_lumi->Fill(event->lumiNb,hf_pm_energy);
-          if(coll && hf_double_tag)                                 h_hf_totE_minus_lumi->Fill(event->lumiNb,hf_m_energy);
-          if(coll && hf_double_tag)                                 h_hf_totE_plus_lumi->Fill(event->lumiNb,hf_p_energy);
-          if(noise)                                                 h_hf_totE_noise_lumi->Fill(event->lumiNb,hf_pm_energy);
-          if(coll && hf_double_tag)                                 h_lumi_3GeV->Fill(event->lumiNb);
-          if(coll)                                                  h_lumi->Fill(event->lumiNb);
+          if(coll && hf_double_tag)                                 h_hf_hits_coll_lumi->Fill(event->lumiNb,hf_double_energy_max,evtWeight);
+          if(coll && hf_double_tag)                                 h_hf_hits_minus_lumi->Fill(event->lumiNb,hf_m_energy_max,evtWeight);
+          if(coll && hf_double_tag)                                 h_hf_hits_plus_lumi->Fill(event->lumiNb,hf_p_energy_max,evtWeight);
+          if(noise)                                                 h_hf_hits_noise_lumi->Fill(event->lumiNb,hf_double_energy_max,noiseWeight);
+          if(coll && hf_double_tag)                                 h_hf_totE_coll_lumi->Fill(event->lumiNb,hf_pm_energy,evtWeight);
+          if(coll && hf_double_tag)                                 h_hf_totE_minus_lumi->Fill(event->lumiNb,hf_m_energy,evtWeight);
+          if(coll && hf_double_tag)                                 h_hf_totE_plus_lumi->Fill(event->lumiNb,hf_p_energy,evtWeight);
+          if(noise)                                                 h_hf_totE_noise_lumi->Fill(event->lumiNb,hf_pm_energy,noiseWeight);
+          if(coll && hf_double_tag)                                 h_lumi_3GeV->Fill(event->lumiNb,evtWeight);
+          if(coll)                                                  h_lumi->Fill(event->lumiNb,evtWeight);
 
-          if(coll && hf_single_tag)                                 h_perf_hf_rechits_single_3gev->Fill(hf_n);
-          if(coll && hf_double_tag)                                 h_perf_hf_rechits_double_1dot5gev->Fill(hf_n);
+          if(coll && hf_single_tag)                                 h_perf_hf_rechits_single_3gev->Fill(hf_n,evtWeight);
+          if(coll && hf_double_tag)                                 h_perf_hf_rechits_double_1dot5gev->Fill(hf_n,evtWeight);
 
-          if(coll && hf_single_tag)                                 h_perf_hf_totE_single_3gev->Fill(hf_pm_energy);
-          if(coll && hf_double_tag)                                 h_perf_hf_totE_double_1dot5gev->Fill(hf_pm_energy);
+          if(coll && hf_single_tag)                                 h_perf_hf_totE_single_3gev->Fill(hf_pm_energy,evtWeight);
+          if(coll && hf_double_tag)                                 h_perf_hf_totE_double_1dot5gev->Fill(hf_pm_energy,evtWeight);
 
           for (vector<TowerHF>::const_iterator it = event->HFtowers.begin(); it < event->HFtowers.end(); ++it)
             {
@@ -580,89 +603,96 @@ int main()
                 h_perf_hf_totE_eta_double_1dot5gev->Fill(it->Eta,it->Energy);
               if(coll && hf_single_tag)
                 h_perf_hf_totE_eta_single_3gev->Fill(it->Eta,it->Energy);
-            }
+            } //no event weight. one would need to count weighted number of events
 
-          for (double cut=0; cut <= 20; cut+=0.1)
-            {
-              if(coll && hf_double_energy_max >= cut)               h_hf_cut_double->Fill(cut);
-              if(noise && hf_double_energy_max >= cut)              h_hf_cut_double_noise->Fill(cut);
-              if(coll && hf_single_energy_max >= cut)               h_hf_cut_single->Fill(cut);
-              if(noise && hf_single_energy_max >= cut)              h_hf_cut_single_noise->Fill(cut);
-            }
-
-          if(coll)                                                  h_hf_new_cut_single->Fill(0);
-          if(coll && hf_light_single_tag)                           h_hf_new_cut_single->Fill(1);
-          if(coll && hf_medium_single_tag)                          h_hf_new_cut_single->Fill(2);
-          if(coll && hf_heavy_single_tag)                           h_hf_new_cut_single->Fill(3);
-          if(coll)                                                  h_hf_new_cut_double->Fill(0);
-          if(coll && hf_light_double_tag)                           h_hf_new_cut_double->Fill(1);
-          if(coll && hf_medium_double_tag)                          h_hf_new_cut_double->Fill(2);
-          if(coll && hf_heavy_double_tag)                           h_hf_new_cut_double->Fill(3);
+          if(coll)                                                  h_hf_new_cut_single->Fill(0.,evtWeight);
+          if(coll && hf_light_single_tag)                           h_hf_new_cut_single->Fill(1.,evtWeight);
+          if(coll && hf_medium_single_tag)                          h_hf_new_cut_single->Fill(2.,evtWeight);
+          if(coll && hf_heavy_single_tag)                           h_hf_new_cut_single->Fill(3.,evtWeight);
+          if(coll)                                                  h_hf_new_cut_double->Fill(0.,evtWeight);
+          if(coll && hf_light_double_tag)                           h_hf_new_cut_double->Fill(1.,evtWeight);
+          if(coll && hf_medium_double_tag)                          h_hf_new_cut_double->Fill(2.,evtWeight);
+          if(coll && hf_heavy_double_tag)                           h_hf_new_cut_double->Fill(3.,evtWeight);
 
           if(sample_type[sample]==DATA)
             {
 
+          for (double cut=0; cut < 20.1; cut+=0.1)
+            {
+              if(coll && hf_double_energy_max >= cut)               h_hf_cut_double->Fill(cut,evtWeight);
+              if(noise && hf_double_energy_max >= cut)              h_hf_cut_double_noise->Fill(cut,noiseWeight);
+              if(coll && hf_single_energy_max >= cut)               h_hf_cut_single->Fill(cut,evtWeight);
+              if(noise && hf_single_energy_max >= cut)              h_hf_cut_single_noise->Fill(cut,noiseWeight);
+            }
+
+
               for (int i = 0; i<array_size; i++)
                 {
                   //create new tags in loop
-                  bool hf_single_tag2 = hf_single_energy_max>cut_energies_single[i];
-                  bool hf_double_tag2 = hf_double_energy_max>cut_energies_double[i];
+                  bool hf_single_tag2 = hf_single_energy_max >= cut_energies_single[i];
+                  bool hf_double_tag2 = hf_double_energy_max >= cut_energies_double[i];
                   if(coll && hf_single_tag2)                        v_run_events_single[i]->Fill(event->lumiNb,evtWeight);
                   if(coll && hf_double_tag2)                        v_run_events_double[i]->Fill(event->lumiNb,evtWeight);
                 }
 
               if(coll)                                              h_run_events_lumi->Fill(event->lumiNb,lumiPerLS);
 
-              if(noise)                                             h_hf_noise_all_lumi            ->Fill(event->lumiNb);
-              if(noise && hf_single_tag)                            h_hf_noise_selected_single_lumi->Fill(event->lumiNb);
-              if(noise && hf_double_tag)                            h_hf_noise_selected_double_lumi->Fill(event->lumiNb);
+              if(noise)                                             h_hf_noise_all_lumi            ->Fill(event->lumiNb,noiseWeight);
+              if(noise && hf_single_tag)                            h_hf_noise_selected_single_lumi->Fill(event->lumiNb,noiseWeight);
+              if(noise && hf_double_tag)                            h_hf_noise_selected_double_lumi->Fill(event->lumiNb,noiseWeight);
             }
 
 
           if(sample_type[sample] == MC)
             {
-              if(coll)                                                  h_mc_eff->Fill(0);
-              if(coll && hf_single_energy_max > 3)                      h_mc_eff->Fill(1);
-              if(coll && hf_single_energy_max > 4.5)                    h_mc_eff->Fill(2);
-              if(coll && hf_single_energy_max > 6)                      h_mc_eff->Fill(3);
-              if(coll && hf_double_energy_max > 2)                      h_mc_eff->Fill(4);
-              if(coll && hf_double_energy_max > 3)                      h_mc_eff->Fill(5);
-              if(coll && event->Tracks.size()>=1)                       h_mc_eff->Fill(6);
-              if(coll && castor_tag)                                    h_mc_eff->Fill(7);
+              for (double cut=0; cut < 20.1; cut+=0.1)
+                {
+                  if(coll && hf_double_energy_max >= cut)               h_hf_cut_double->Fill(cut,evtWeight);
+                  if(coll && hf_single_energy_max >= cut)               h_hf_cut_single->Fill(cut,evtWeight);
+                }
 
-              if(!(hf_single_energy_max > 6))                                      h_mc_effgain_single->Fill(0);
-              if(!(hf_single_energy_max > 6) && hf_single_energy_max > 3)          h_mc_effgain_single->Fill(1);
-              if(!(hf_single_energy_max > 6) && hf_single_energy_max > 4.5)        h_mc_effgain_single->Fill(2);
-              if(!(hf_single_energy_max > 6) && hf_double_energy_max > 2)          h_mc_effgain_single->Fill(3);
-              if(!(hf_single_energy_max > 6) && hf_double_energy_max > 3)          h_mc_effgain_single->Fill(4);
-              if(!(hf_single_energy_max > 6) && event->Tracks.size()>=1)           h_mc_effgain_single->Fill(5);
-              if(!(hf_single_energy_max > 6) && castor_tag)                        h_mc_effgain_single->Fill(6);
+              if(coll)                                                  h_mc_eff->Fill(0.,evtWeight);
+              if(coll && hf_single_energy_max > 3)                      h_mc_eff->Fill(1.,evtWeight);
+              if(coll && hf_single_energy_max > 4.5)                    h_mc_eff->Fill(2.,evtWeight);
+              if(coll && hf_single_energy_max > 6)                      h_mc_eff->Fill(3.,evtWeight);
+              if(coll && hf_double_energy_max > 2)                      h_mc_eff->Fill(4.,evtWeight);
+              if(coll && hf_double_energy_max > 3)                      h_mc_eff->Fill(5.,evtWeight);
+              if(coll && event->Tracks.size()>=1)                       h_mc_eff->Fill(6.,evtWeight);
+              if(coll && castor_tag)                                    h_mc_eff->Fill(7.,evtWeight);
 
-              if(!(hf_double_energy_max > 2))                                      h_mc_effgain_double->Fill(0);
-              if(!(hf_double_energy_max > 2) && hf_single_energy_max > 3)          h_mc_effgain_double->Fill(1);
-              if(!(hf_double_energy_max > 2) && hf_single_energy_max > 4.5)        h_mc_effgain_double->Fill(2);
-              if(!(hf_double_energy_max > 2) && hf_single_energy_max > 6)          h_mc_effgain_double->Fill(3);
-              if(!(hf_double_energy_max > 2) && event->Tracks.size()>=1)           h_mc_effgain_double->Fill(4);
-              if(!(hf_double_energy_max > 2) && castor_tag)                        h_mc_effgain_double->Fill(5);
+              if(!(hf_single_energy_max > 6))                                      h_mc_effgain_single->Fill(0.,evtWeight);
+              if(!(hf_single_energy_max > 6) && hf_single_energy_max > 3)          h_mc_effgain_single->Fill(1.,evtWeight);
+              if(!(hf_single_energy_max > 6) && hf_single_energy_max > 4.5)        h_mc_effgain_single->Fill(2.,evtWeight);
+              if(!(hf_single_energy_max > 6) && hf_double_energy_max > 2)          h_mc_effgain_single->Fill(3.,evtWeight);
+              if(!(hf_single_energy_max > 6) && hf_double_energy_max > 3)          h_mc_effgain_single->Fill(4.,evtWeight);
+              if(!(hf_single_energy_max > 6) && event->Tracks.size()>=1)           h_mc_effgain_single->Fill(5.,evtWeight);
+              if(!(hf_single_energy_max > 6) && castor_tag)                        h_mc_effgain_single->Fill(6.,evtWeight);
+
+              if(!(hf_double_energy_max > 2))                                      h_mc_effgain_double->Fill(0.,evtWeight);
+              if(!(hf_double_energy_max > 2) && hf_single_energy_max > 3)          h_mc_effgain_double->Fill(1.,evtWeight);
+              if(!(hf_double_energy_max > 2) && hf_single_energy_max > 4.5)        h_mc_effgain_double->Fill(2.,evtWeight);
+              if(!(hf_double_energy_max > 2) && hf_single_energy_max > 6)          h_mc_effgain_double->Fill(3.,evtWeight);
+              if(!(hf_double_energy_max > 2) && event->Tracks.size()>=1)           h_mc_effgain_double->Fill(4.,evtWeight);
+              if(!(hf_double_energy_max > 2) && castor_tag)                        h_mc_effgain_double->Fill(5.,evtWeight);
 
 
-              if(coll && hf_single_tag)                                 h_mc_diffraction_single->Fill(log10(xi_x));
-              if(coll && hf_double_tag)                                 h_mc_diffraction_double->Fill(log10(xi_x));
-              if(coll && SD1)                                           h_mc_diffraction_SD1->Fill(log10(xi_x));
-              if(coll && SD2)                                           h_mc_diffraction_SD2->Fill(log10(xi_x)); //WARNING
-              if(coll && DD)                                            h_mc_diffraction_DD->Fill(log10(xi_x));
-              if(coll && CD)                                            h_mc_diffraction_CD->Fill(log10(xi_x));
-              if(coll && ND)                                            h_mc_diffraction_ND->Fill(log10(xi_x));
-              if(coll)                                                  h_mc_diffraction_all->Fill(log10(xi_x));
+              if(coll && hf_single_tag)                                 h_mc_diffraction_single->Fill(log10(xi_x),evtWeight);
+              if(coll && hf_double_tag)                                 h_mc_diffraction_double->Fill(log10(xi_x),evtWeight);
+              if(coll && SD1)                                           h_mc_diffraction_SD1->Fill(log10(xi_x),evtWeight);
+              if(coll && SD2)                                           h_mc_diffraction_SD2->Fill(log10(xi_x),evtWeight);
+              if(coll && DD)                                            h_mc_diffraction_DD->Fill(log10(xi_x),evtWeight);
+              if(coll && CD)                                            h_mc_diffraction_CD->Fill(log10(xi_x),evtWeight);
+              if(coll && ND)                                            h_mc_diffraction_ND->Fill(log10(xi_x),evtWeight);
+              if(coll)                                                  h_mc_diffraction_all->Fill(log10(xi_x),evtWeight);
 
-              if(coll && hf_single_tag)                                 h_mc_lrg_single->Fill(rapGap);
-              if(coll && hf_double_tag)                                 h_mc_lrg_double->Fill(rapGap);
-              if(coll && SD1)                                           h_mc_lrg_SD1->Fill(rapGap);
-              if(coll && SD2)                                           h_mc_lrg_SD2->Fill(rapGap);
-              if(coll && DD)                                            h_mc_lrg_DD->Fill(rapGap);
-              if(coll && CD)                                            h_mc_lrg_CD->Fill(rapGap);
-              if(coll && ND)                                            h_mc_lrg_ND->Fill(rapGap);
-              if(coll)                                                  h_mc_lrg_all->Fill(rapGap);
+              if(coll && hf_single_tag)                                 h_mc_lrg_single->Fill(rapGap,evtWeight);
+              if(coll && hf_double_tag)                                 h_mc_lrg_double->Fill(rapGap,evtWeight);
+              if(coll && SD1)                                           h_mc_lrg_SD1->Fill(rapGap,evtWeight);
+              if(coll && SD2)                                           h_mc_lrg_SD2->Fill(rapGap,evtWeight);
+              if(coll && DD)                                            h_mc_lrg_DD->Fill(rapGap,evtWeight);
+              if(coll && CD)                                            h_mc_lrg_CD->Fill(rapGap,evtWeight);
+              if(coll && ND)                                            h_mc_lrg_ND->Fill(rapGap,evtWeight);
+              if(coll)                                                  h_mc_lrg_all->Fill(rapGap,evtWeight);
             }
 
 
@@ -696,4 +726,23 @@ int IetaToRing(int ring)
     return ring + 41;
   else
     return ring - 30;
+}
+
+void BinLogX(TH1* h)
+{
+
+   TAxis *axis = h->GetXaxis();
+   int bins = axis->GetNbins();
+
+   Axis_t from = axis->GetXmin();
+   Axis_t to = axis->GetXmax();
+   Axis_t width = (to - from) / bins;
+   Axis_t *new_bins = new Axis_t[bins + 1];
+
+   for (int i = 0; i <= bins; i++) {
+     new_bins[i] = TMath::Power(10, from + i * width);
+
+   }
+   axis->Set(bins, new_bins);
+   delete new_bins;
 }

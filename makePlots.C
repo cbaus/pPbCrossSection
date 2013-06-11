@@ -44,8 +44,6 @@ void makePlots()
   d->Scale(1./double(d->GetBinContent(1)));
   d2->Scale(1./double(d2->GetBinContent(1)));
   e->Scale(1./double(e->GetBinContent(1)));
-  cerr << "warning" << endl;
-//   e->Scale(1./double(e->GetBinContent(1))/ 2100. * 195.);
   f->Scale(1./double(f->GetBinContent(1))/ 195. * 122.);
 
   a->SetLineWidth(3);
@@ -55,27 +53,29 @@ void makePlots()
   d->SetLineWidth(3);
   e->SetLineWidth(3);
   f->SetLineWidth(3);
-  a2->SetLineColor(kCyan-2);
-  b->SetLineColor(kRed);
+  a2->SetLineColor(kBlack);
+  b->SetLineColor(kGreen+2);
   c->SetLineColor(kBlue);
-  d->SetLineColor(kGreen+2);
-  e->SetLineColor(kMagenta+2);
-  f->SetLineColor(kMagenta-5);
+  d->SetLineColor(kRed);
+  e->SetLineColor(kRed);
+  f->SetLineColor(kBlue);
   a2->SetMarkerColor(a2->GetLineColor());
   b->SetMarkerColor(b->GetLineColor());
   c->SetMarkerColor(c->GetLineColor());
   d->SetMarkerColor(d->GetLineColor());
   e->SetMarkerColor(e->GetLineColor());
   f->SetMarkerColor(f->GetLineColor());
-  b->SetLineStyle(9);
+  b->SetLineStyle(7);
+  d->SetLineStyle(9);
+  f->SetLineStyle(9);
 
-  a->SetTitle("zero bias");
-  a2->SetTitle("noise");
-  b->SetTitle("HIJING");
-  c->SetTitle("EPOS");
-  d->SetTitle("QGSJetII");
-  e->SetTitle("SL+DPMJet");
-  f->SetTitle("SL+Pythia");
+  a->SetTitle("Data");
+  a2->SetTitle("Noise");
+  b->SetTitle("HIJING 1.383");
+  c->SetTitle("EPOS-LHC");
+  d->SetTitle("QGSJetII-04");
+  e->SetTitle("#gammaP (STARLIGHT+DPMJet)");
+  f->SetTitle("#gammaP (STARLIGHT+Pythia)");
 
 
   // a->GetXaxis()->SetLimits(a->GetBinLowEdge(3),a->GetBinLowEdge(a->GetNbinsX())); //cut away first bin
@@ -86,13 +86,13 @@ void makePlots()
   // e->GetXaxis()->SetLimits(3,e->GetBinLowEdge(e->GetNbinsX())); //cut away first bin
   // f->GetXaxis()->SetLimits(4,f->GetBinLowEdge(f->GetNbinsX())); //cut away first bin
 
-  b->GetXaxis()->SetRange(2,b->GetNbinsX());
-  a2->GetXaxis()->SetRange(2,a2->GetNbinsX());
+  b->GetXaxis()->SetRange(2,b->GetNbinsX()/2);
+  a2->GetXaxis()->SetRange(2,a2->GetNbinsX()/2);
 
   b->GetYaxis()->SetRangeUser(0.9,1.001);
-  a2->GetYaxis()->SetRangeUser(0,1.01);
+  a2->GetYaxis()->SetRangeUser(1e-4,1.01);
 
-  b->GetXaxis()->SetTitle("cut value / GeV");
+  b->GetXaxis()->SetTitle("cut value [GeV]");
   b->GetYaxis()->SetTitle("event fraction");
 
 
@@ -116,7 +116,6 @@ void makePlots()
   b->Draw("HIST L");
   c->Draw("HIST L SAME");
   d->Draw("HIST L SAME");
-  TLegend* leg = can1->BuildLegend();
 
   const double cut_value = type[n]=="single"?cut_value_single:cut_value_double;
   TLine* line = new TLine(cut_value,0.9,cut_value,1.001);
@@ -124,34 +123,40 @@ void makePlots()
   line->SetLineStyle(2);
   line->Draw("SAME");
 
+  TLegend* leg = new TLegend(0.1,0.1,0.2,0.2);
   if(type[n]=="single")
     {
-      leg->SetX1(0.24);
-      leg->SetX2(0.44);
-      leg->SetY1(0.24);
-      leg->SetY2(0.44);
+      leg->SetX1(0.21);
+      leg->SetX2(0.54);
+      leg->SetY1(0.30);
+      leg->SetY2(0.50);
+      MCText(1,0);
     }
   if(type[n]=="double")
     {
-      leg->SetX1(0.60);
-      leg->SetX2(0.80);
-      leg->SetY1(0.65);
-      leg->SetY2(0.85);
+      leg->SetX1(0.55);
+      leg->SetX2(0.85);
+      leg->SetY1(0.60);
+      leg->SetY2(0.80);
+      MCText(0);
     }
+
+  leg->AddEntry(b,"","l");
+  leg->AddEntry(c,"","l");
+  leg->AddEntry(d,"","l");
   SetLegAtt(leg);
   leg->Draw();
 
   a->GetYaxis()->SetRangeUser(0,1.01);
-  a->GetXaxis()->SetTitle("cut value / GeV");
+  a->GetXaxis()->SetTitle("cut value [GeV]");
   a->GetYaxis()->SetTitle("event fraction");
 
-  CMSPreliminary();
   can1->SaveAs((string("plots/full_p_space_eff_PAS_")+type[n]+string(".pdf")).c_str());
 
-  b3->Draw("P");
-  c3->Draw("P");
-  d3->Draw("P");
-  can1->SaveAs((string("plots/full_p_space_eff_")+type[n]+string(".pdf")).c_str());
+  // b3->Draw("P");
+  // c3->Draw("P");
+  // d3->Draw("P");
+  // can1->SaveAs((string("plots/full_p_space_eff_")+type[n]+string(".pdf")).c_str());
 
   //////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -225,25 +230,42 @@ void makePlots()
   //////////////////////////////////////////////////////////////////////////////////////////////
 
   TCanvas* can2 = new TCanvas;
-  a2->GetXaxis()->SetTitle("cut value / GeV");
+  a2->GetXaxis()->SetTitle("cut value [GeV]");
   a2->GetYaxis()->SetTitle("event fraction");
   a2->Draw("HIST l");
   e->Draw("HIST l SAME");
   f->Draw("HIST l SAME");
-  TLegend* leg2 = can2->BuildLegend();
-  leg2->SetX1(0.60);
-  leg2->SetX2(0.80);
-  leg2->SetY1(0.68);
-  leg2->SetY2(0.88);
+  TLegend* leg2 = new TLegend(0.1,0.1,0.2,0.2);
 
-  TLine* line = new TLine(cut_value,0,cut_value,1.01);
+  if(type[n]=="single")
+    {
+      leg2->SetX1(0.21);
+      leg2->SetX2(0.54);
+      leg2->SetY1(0.30);
+      leg2->SetY2(0.50);
+      DataText(1,0);
+    }
+  if(type[n]=="double")
+    {
+      leg2->SetX1(0.35);
+      leg2->SetX2(0.85);
+      leg2->SetY1(0.60);
+      leg2->SetY2(0.80);
+      DataText(0);
+    }
+  leg2->Draw();
+
+  leg2->AddEntry(a2,"","l");
+  leg2->AddEntry(e,"","l");
+  leg2->AddEntry(f,"","l");
+  SetLegAtt(leg2);
+
+  TLine* line = new TLine(cut_value,type[n]=="single"?3e-3:0,cut_value,1.01);
   line->SetLineWidth(2);
   line->SetLineStyle(2);
   line->Draw("SAME");
 
-  SetLegAtt(leg2);
-  leg2->Draw();
-  CMSPreliminary();
+  can2->SetLogy();
   can2->SaveAs((string("plots/starlight_eff_")+type[n]+string(".pdf")).c_str());
 
   //file->Close();
