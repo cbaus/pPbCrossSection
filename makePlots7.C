@@ -48,6 +48,7 @@ void makePlots7()
       f->SetLineWidth(2.5);
       g->SetLineWidth(2.5);
 
+      b->SetMarkerStyle(24);
 
       a->SetMarkerColor(kBlue-2);
       b->SetMarkerColor(kRed-2);

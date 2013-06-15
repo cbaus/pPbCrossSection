@@ -1,4 +1,5 @@
-#define MAXEVT -10000
+#define _MAXEVT 50000
+#define _SkipHFRings 1
 
 #include "TChain.h"
 #include "TFile.h"
@@ -53,7 +54,7 @@ int main()
 
   //*************************************************************INPUT***********************************************************
   // sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Data210614/*_*.root"); sample_name.push_back("data210614"); sample_type.push_back(DATA);
-  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Data210885/*_*.root"); sample_name.push_back("data210885"); sample_type.push_back(DATA);
+  // sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Data210885/*_*.root"); sample_name.push_back("data210885"); sample_type.push_back(DATA);
   // sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data210998/*_*.root"); sample_name.push_back("data210998"); sample_type.push_back(DATA);
   // sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211000/*.root"); sample_name.push_back("data211000"); sample_type.push_back(DATA);
   // sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211001/*.root"); sample_name.push_back("data211001"); sample_type.push_back(DATA);
@@ -68,10 +69,10 @@ int main()
   sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Epos/*.root"); sample_name.push_back("Epos"); sample_type.push_back(MC);
   // sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Epos/*.root"); sample_name.push_back("EposSDWeight2"); sample_type.push_back(MC);
   // sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Epos_SL/*.root"); sample_name.push_back("Epos_SL"); sample_type.push_back(MC);
-  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Hijing/*.root"); sample_name.push_back("Hijing"); sample_type.push_back(MC);
-  sample_fname.push_back("/afs/cern.ch/work/c/cbaus/public/castortree/pPb_QGSJetII/treeMC.root"); sample_name.push_back("QGSJetII"); sample_type.push_back(MC);
-  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/StarlightDPMjet_v2/treeMC.root"); sample_name.push_back("Starlight_DPMJet");  sample_type.push_back(MC);
-  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/StarlightPythia/treeMC.root"); sample_name.push_back("Starlight_Pythia");  sample_type.push_back(MC);
+  // sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Hijing/*.root"); sample_name.push_back("Hijing"); sample_type.push_back(MC);
+  // sample_fname.push_back("/afs/cern.ch/work/c/cbaus/public/castortree/pPb_QGSJetII/treeMC.root"); sample_name.push_back("QGSJetII"); sample_type.push_back(MC);
+  // sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/StarlightDPMjet_v2/treeMC.root"); sample_name.push_back("Starlight_DPMJet");  sample_type.push_back(MC);
+  // sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/StarlightPythia/treeMC.root"); sample_name.push_back("Starlight_Pythia");  sample_type.push_back(MC);
 
   TFile f("plots/hf_cuts_noise.root");
   TVectorD* hf_m_cuts_light_noise = NULL;
@@ -100,6 +101,8 @@ int main()
   TH1D* h_hf_hits_coll_double;
   TH1D* h_hf_hits_noise_single;
   TH1D* h_hf_hits_noise_double;
+  TH1D* h_hf_hits_noise_plus;
+  TH1D* h_hf_hits_noise_minus;
   TH1D* h_hf_hits_plus;
   TH1D* h_hf_hits_minus;
   TH1D* h_castor_hf_diff_3;
@@ -166,6 +169,9 @@ int main()
   TH1D* h_mc_lrg_CD;
   TH1D* h_mc_lrg_ND;
   TH1D* h_mc_lrg_all;
+  TH2D* h_mc_lrg_xi;
+  TH2D* h_mc_lrg_xiy;
+  TH2D* h_mc_xix_xiy;
   //****************************************************************LOOP*******************************************************************
 
   for (int sample=0; sample<int(sample_name.size()); sample++)
@@ -242,17 +248,21 @@ int main()
 
       h_zero_count_zb_coll        = new TH1D((add + string("_h_zero_count_zb_coll")).c_str(),"",100,728,1728);
       h_zero_count_zb_no_coll     = new TH1D((add + string("_h_zero_count_zb_no_coll")).c_str(),"",100,728,1728);
-      h_hf_hits_coll_single       = new TH1D((add + string("_h_hf_hits_coll_single")).c_str(),"",100,log10(0.5),log10(400.));
-      h_hf_hits_coll_double       = new TH1D((add + string("_h_hf_hits_coll_double")).c_str(),"",100,log10(0.5),log10(400.));
-      h_hf_hits_noise_single      = new TH1D((add + string("_h_hf_hits_noise_single")).c_str(),"",100,log10(0.5),log10(400.));
-      h_hf_hits_noise_double      = new TH1D((add + string("_h_hf_hits_noise_double")).c_str(),"",100,log10(0.5),log10(400.));
-      h_hf_hits_plus              = new TH1D((add + string("_h_hfp_hits_coll")).c_str(),"",100,log10(0.5),log10(400.));
-      h_hf_hits_minus             = new TH1D((add + string("_h_hfm_hits_coll")).c_str(),"",100,log10(0.5),log10(400.));
+      h_hf_hits_coll_single       = new TH1D((add + string("_h_hf_hits_coll_single")).c_str(),"",100,log10(0.5),log10(500.));
+      h_hf_hits_coll_double       = new TH1D((add + string("_h_hf_hits_coll_double")).c_str(),"",100,log10(0.5),log10(500.));
+      h_hf_hits_noise_single      = new TH1D((add + string("_h_hf_hits_noise_single")).c_str(),"",100,log10(0.5),log10(500.));
+      h_hf_hits_noise_double      = new TH1D((add + string("_h_hf_hits_noise_double")).c_str(),"",100,log10(0.5),log10(500.));
+      h_hf_hits_noise_plus      = new TH1D((add + string("_h_hfp_hits_noise")).c_str(),"",100,log10(0.5),log10(500.));
+      h_hf_hits_noise_minus      = new TH1D((add + string("_h_hfm_hits_noise")).c_str(),"",100,log10(0.5),log10(500.));
+      h_hf_hits_plus              = new TH1D((add + string("_h_hfp_hits_coll")).c_str(),"",100,log10(0.5),log10(500.));
+      h_hf_hits_minus             = new TH1D((add + string("_h_hfm_hits_coll")).c_str(),"",100,log10(0.5),log10(500.));
 
       BinLogX(h_hf_hits_coll_single);
       BinLogX(h_hf_hits_coll_double);
       BinLogX(h_hf_hits_noise_single);
       BinLogX(h_hf_hits_noise_double);
+      BinLogX(h_hf_hits_noise_plus);
+      BinLogX(h_hf_hits_noise_minus);
       BinLogX(h_hf_hits_plus);
       BinLogX(h_hf_hits_minus);
 
@@ -325,6 +335,9 @@ int main()
           h_mc_lrg_DD             = new TH1D((add + string("_h_mc_lrg_DD")).c_str(),"",500,-1,20);
           h_mc_lrg_ND             = new TH1D((add + string("_h_mc_lrg_ND")).c_str(),"",500,-1,20);
           h_mc_lrg_all            = new TH1D((add + string("_h_mc_lrg_all")).c_str(),"",500,-1,20);
+          h_mc_lrg_xi             = new TH2D((add + string("_h_mc_lrg_xi")).c_str(),"",200,-9.5,2,500,-1,20);
+          h_mc_lrg_xiy             = new TH2D((add + string("_h_mc_lrg_xiy")).c_str(),"",200,-9.5,2,500,-1,20);
+          h_mc_xix_xiy             = new TH2D((add + string("_h_mc_xix_xiy")).c_str(),"",200,-9.5,2,200,-9.5,2);
 
           h_mc_rapidity           = new TH1D((add + string("_h_mc_rapidity")).c_str(),"",100,-12,12);
           h_mc_eta_e              = new TH1D((add + string("_h_mc_eta_e")).c_str(),"",100,-12,12);
@@ -355,8 +368,8 @@ int main()
         }
 
       double n_total = double(tree->GetEntries());
-      if(MAXEVT<n_total && MAXEVT>0)
-        n_total = double(MAXEVT);
+      if(_MAXEVT<n_total && _MAXEVT>0)
+        n_total = double(_MAXEVT);
 
       for(int iEvent=0; iEvent<n_total; iEvent++)
         {
@@ -419,6 +432,8 @@ int main()
           bool hf_p_heavy_cut = false;
           for (vector<TowerHF>::const_iterator it = event->HFtowers.begin(); it < event->HFtowers.end(); ++it)
             {
+              if(_SkipHFRings && it->IetaAbs == 41)
+                continue;
               const int Ieta = it->Eta > 0?it->IetaAbs:-it->IetaAbs;
               //cout << it->Eta << " " << it->Energy << endl;
               if(it->Eta > 0. && it->Energy > hf_p_energy_max)
@@ -458,8 +473,8 @@ int main()
 
           //---------------------------------------------GEN Particles
           const double s = 5020*5020;
-          double m_x=0, xi_x=0;
-          double m_y=0, xi_y=0;
+          double m_m=0, m_x=0, xi_x=0;
+          double m_p=0, m_y=0, xi_y=0;
           double rapGap=-1;
           bool SD1 = event->genProcessID == 103; //lead dissociates
           bool SD2 = event->genProcessID == 104;
@@ -516,35 +531,32 @@ int main()
                     }
                   //if(SD2) cout << endl;
                 }
-              TLorentzVector vecX(0,0,0,0);
+              TLorentzVector vecM(0,0,0,0);
               multimap<double,GenParticle*>::const_iterator it = rapidityMassMap.begin();
               for (; it != thisIsIt; ++it)
                 {
                   if(it->second->GetEta() > 1e9) //skip fragments only for mass calculation
                     continue;
                   TLorentzVector vec(it->second->Px,it->second->Py,it->second->Pz,it->second->GetEnergy());
-                  vecX += vec;
+                  vecM += vec;
                 }
-              m_x = vecX.M();
+              m_m = vecM.M();
 
-              TLorentzVector vecY(0,0,0,0);
+              TLorentzVector vecP(0,0,0,0);
               multimap<double,GenParticle*>::const_iterator it2 = thisIsIt;
               for (; it2 != rapidityMassMap.end(); ++it2)
                 {
                   if(it->second->GetEta() > 1e9) //skip fragments only for mass calculation
                     continue;
                   TLorentzVector vec(it2->second->Px,it2->second->Py,it2->second->Pz,it2->second->GetEnergy());
-                  vecY += vec;
+                  vecP += vec;
                 }
-              m_y = vecY.M();
+              m_p = vecP.M();
               //if (SD2 && rapGap< 2) cout << "HERE HERE HERE " << m_x << " " << m_y << endl; //WARNING
 
-              if (m_x < m_y)
-                {
-                  double helper = m_y;
-                  m_y = m_x;
-                  m_x = helper;
-                }
+              m_x = TMath::Max(m_m,m_p);
+              m_y = TMath::Min(m_m,m_p);
+
               xi_x = m_x*m_x / s;
               xi_y = m_y*m_y / s;
               //cout << "----------- !! M_X=" << m_x << "    M_Y=" << m_y << endl;
@@ -570,8 +582,10 @@ int main()
           if(coll)                                                  h_hf_hits_coll_double->Fill(hf_double_energy_max);
           if(noise)                                                 h_hf_hits_noise_single->Fill(hf_single_energy_max);
           if(noise)                                                 h_hf_hits_noise_double->Fill(hf_double_energy_max);
-          if(coll)                                                  h_hf_hits_plus->Fill(hf_p_energy_max,evtWeight);
-          if(coll)                                                  h_hf_hits_minus->Fill(hf_m_energy_max,evtWeight);
+          if(noise)                                                 h_hf_hits_noise_plus->Fill(hf_p_energy_max);
+          if(noise)                                                 h_hf_hits_noise_minus->Fill(hf_m_energy_max);
+          if(coll)                                                  h_hf_hits_plus->Fill(hf_p_energy_max);
+          if(coll)                                                  h_hf_hits_minus->Fill(hf_m_energy_max);
 
           if(coll && hf_double_energy_max < 3)                      h_castor_hf_diff_3->Fill(sum_cas_e,evtWeight);
           if(coll && hf_double_energy_max < 5)                      h_castor_hf_diff_5->Fill(sum_cas_e,evtWeight);
@@ -693,6 +707,9 @@ int main()
               if(coll && CD)                                            h_mc_lrg_CD->Fill(rapGap,evtWeight);
               if(coll && ND)                                            h_mc_lrg_ND->Fill(rapGap,evtWeight);
               if(coll)                                                  h_mc_lrg_all->Fill(rapGap,evtWeight);
+              if(coll)                                                  h_mc_lrg_xi->Fill(log10(xi_x),rapGap);
+              if(coll)                                                  h_mc_lrg_xiy->Fill(log10(xi_y),rapGap);
+              if(coll)                                                  h_mc_xix_xiy->Fill(log10(xi_x),log10(xi_y));
             }
 
 
@@ -721,6 +738,7 @@ int main()
 }
 
 int IetaToRing(int ring)
+///converts ieta to numbers from 0 to 24
 {
   if(ring < 0)
     return ring + 41;

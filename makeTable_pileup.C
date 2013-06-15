@@ -44,7 +44,7 @@ for (int k=2; k<100; k++)
     if(add < 0.0001)
       break;
   }
-cout << "l=" <<  lumiPerLS << "   p1=" << p1 <<"    ----->  corr=" << pileupcorr *100. << "%" << endl;
+ cout << "l=" <<  lumiPerLS << "lambda=" <<  lambda << "   p1=" << p1 <<"    ----->  corr=" << pileupcorr *100. << "%" << endl;
 
 p1 = p1_double;
 lumiPerLS = lumiPerLS_end;
@@ -58,5 +58,5 @@ for (int k=2; k<100; k++)
     if(add < 0.0001)
       break;
   }
-cout << "l=" <<  lumiPerLS << "   p1=" << p1 <<"    ----->  corr=" << pileupcorr *100. << "%" << endl;  
+ cout << "l=" <<  lumiPerLS << "lambda=" <<  lambda << "   p1=" << p1 <<"    ----->  corr=" << pileupcorr *100. << "%" << endl;  
 }

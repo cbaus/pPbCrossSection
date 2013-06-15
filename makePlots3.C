@@ -1,5 +1,5 @@
-void Show(TH1D* a,TH1D* a2,TH1D* b,TH1D* c,TH1D* d,TH1D* e,TH1D* f,string prefix);
-void ShowStack(TH1D* a,TH1D* a2,TH1D* b,TH1D* c,TH1D* d,TH1D* e,TH1D* f,string prefix);
+void Show(TH1D* a,TH1D* a2,TH1D* b,TH1D* c,TH1D* d,TH1D* e,TH1D* f,string type);
+void ShowStack(TH1D* a,TH1D* a2,TH1D* b,TH1D* c,TH1D* d,TH1D* e,TH1D* f,string type);
 
 void makePlots3()
 {
@@ -10,25 +10,25 @@ void makePlots3()
   // TFile* file2 = TFile::Open("histos_old.root");
   // TFile* file = TFile::Open("histos_old.root");
   // TH1D* a=(TH1D*)file2->Get("data210885/data210885_h_hfp_hits_coll");
-  // TH1D* a2=(TH1D*)file2->Get("data210885/data210885_h_hf_hits_noise");
+  // TH1D* a2=(TH1D*)file2->Get("data210885/data210885_h_hfp_hits_noise");
   // TH1D* b=(TH1D*)file->Get("Hijing/Hijing_h_hfp_hits_coll");
   // TH1D* c=(TH1D*)file->Get("Epos/Epos_h_hfp_hits_coll");
   // TH1D* d=(TH1D*)file->Get("QGSJetII/QGSJetII_h_hfp_hits_coll");
   // TH1D* e=(TH1D*)file->Get("Starlight_DPMJet/Starlight_DPMJet_h_hfp_hits_coll");
   // TH1D* f=(TH1D*)file->Get("Starlight_Pythia/Starlight_Pythia_h_hfp_hits_coll");
-  // Show(a,a2,b,c,d,e,f,"p");
+  // ShowStack(a,a2,b,c,d,e,f,"p");
   // }
   // {
   // TFile* file2 = TFile::Open("histos_old.root");
   // TFile* file = TFile::Open("histos_old.root");
   // TH1D* a=(TH1D*)file2->Get("data210885/data210885_h_hfm_hits_coll");
-  // TH1D* a2=(TH1D*)file2->Get("data210885/data210885_h_hf_hits_noise");
+  // TH1D* a2=(TH1D*)file2->Get("data210885/data210885_h_hfm_hits_noise");
   // TH1D* b=(TH1D*)file->Get("Hijing/Hijing_h_hfm_hits_coll");
   // TH1D* c=(TH1D*)file->Get("Epos/Epos_h_hfm_hits_coll");
   // TH1D* d=(TH1D*)file->Get("QGSJetII/QGSJetII_h_hfm_hits_coll");
   // TH1D* e=(TH1D*)file->Get("Starlight_DPMJet/Starlight_DPMJet_h_hfm_hits_coll");
   // TH1D* f=(TH1D*)file->Get("Starlight_Pythia/Starlight_Pythia_h_hfm_hits_coll");
-  // Show(a,a2,b,c,d,e,f,"m");
+  // ShowStack(a,a2,b,c,d,e,f,"m");
   // }
   {
     TFile* file = TFile::Open("histos.root");
@@ -54,7 +54,7 @@ void makePlots3()
   }
 }
 
-void Show(TH1D* a,TH1D* a2,TH1D* b,TH1D* c,TH1D* d,TH1D* e,TH1D* f, string prefix)
+void Show(TH1D* a,TH1D* a2,TH1D* b,TH1D* c,TH1D* d,TH1D* e,TH1D* f, string type)
   {
   const int normbin = a->FindBin(20);
   const int normendbin = a->GetNbinsX();
@@ -141,11 +141,11 @@ void Show(TH1D* a,TH1D* a2,TH1D* b,TH1D* c,TH1D* d,TH1D* e,TH1D* f, string prefi
   c1->SetLogy();
   c1->SetLogx();
   DataText();
-  c1->SaveAs((string("plots/hf_") + prefix + string("_signal")+string(".pdf")).c_str());
+  c1->SaveAs((string("plots/hf_") + type + string("_signal")+string(".pdf")).c_str());
 
 }
 
-void ShowStack(TH1D* data,TH1D* noise,TH1D* b,TH1D* c,TH1D* d,TH1D* sl1,TH1D* sl2, string prefix)
+void ShowStack(TH1D* data,TH1D* noise,TH1D* b,TH1D* c,TH1D* d,TH1D* sl1,TH1D* sl2, string type)
   {
   const int normbin = data->FindBin(20);
   const int normendbin = data->GetNbinsX();
@@ -214,6 +214,7 @@ void ShowStack(TH1D* data,TH1D* noise,TH1D* b,TH1D* c,TH1D* d,TH1D* sl1,TH1D* sl
   data->GetYaxis()->SetRangeUser(1e-6,1.01);
   data->GetXaxis()->SetTitle("E_{HF} [GeV]");
   data->GetYaxis()->SetTitle("events (normalised)");
+  data->GetXaxis()->SetTitleOffset(data->GetXaxis()->GetTitleOffset()*1.1);
 
 //   double fac = 1.25;
 //   TH1D* bs = new TH1D ("asd","asd",data->GetNbinsX(),0,200*fac);
@@ -242,6 +243,7 @@ void ShowStack(TH1D* data,TH1D* noise,TH1D* b,TH1D* c,TH1D* d,TH1D* sl1,TH1D* sl
   h_s_c->Draw("SAME");
   h_s_d->Draw("SAME");
   data->Draw("SAME P");
+  data->Draw("SAME AXIS");
 
   TLegend* leg = new TLegend(0.6,0.67,0.78,0.88);
   SetLegAtt(leg);
@@ -255,7 +257,13 @@ void ShowStack(TH1D* data,TH1D* noise,TH1D* b,TH1D* c,TH1D* d,TH1D* sl1,TH1D* sl
   c1->SetLogy();
   c1->SetLogx();
   DataText();
-  c1->SaveAs((string("plots/hf_") + prefix + string("_signal")+string(".pdf")).c_str());
+
+  TLine* line = new TLine(type=="single"?6:2,1e-6,type=="single"?6:2,0.1);
+  line->SetLineWidth(2);
+  line->SetLineStyle(2);
+  line->Draw("SAME");
+
+  c1->SaveAs((string("plots/hf_") + type + string("_signal")+string(".pdf")).c_str());
 
 }
 

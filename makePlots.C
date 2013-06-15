@@ -71,8 +71,8 @@ void makePlots()
 
   a->SetTitle("Data");
   a2->SetTitle("Noise");
-  b->SetTitle("HIJING 1.383");
-  c->SetTitle("EPOS-LHC");
+  b->SetTitle("Epos");
+  c->SetTitle("EPOS (SDx2)");
   d->SetTitle("QGSJetII-04");
   e->SetTitle("#gammaP (STARLIGHT+DPMJet)");
   f->SetTitle("#gammaP (STARLIGHT+Pythia)");
@@ -175,8 +175,8 @@ void makePlots()
   int startPlot=0;
   for(int i=1; i<=a1->GetNbinsX(); i++)
     {
-      const double f_em     = 0.5* (e->GetBinContent(i) + f->GetBinContent(i)) * 195./2130.;
-      const double f_eme    = fabs(e->GetBinContent(i) - f->GetBinContent(i)) * 195./2130.;
+      const double f_em     = 0.5* (e->GetBinContent(i) + f->GetBinContent(i));
+      const double f_eme    = fabs(e->GetBinContent(i) - f->GetBinContent(i));
       const double f_mc     = (c->GetBinContent(i)/c->GetBinContent(1) + d->GetBinContent(i)/d->GetBinContent(1))/2.;
       const double f_mce    = fabs(c->GetBinContent(i)/c->GetBinContent(1) - d->GetBinContent(i)/d->GetBinContent(1));
       const double f_noise  = a2->GetBinContent(i)/a2->GetBinContent(1);
@@ -201,7 +201,7 @@ void makePlots()
         << setprecision(4)
         << endl << i << "(" << a1->GetBinCenter(i) << ")"
         << endl << "f_mc= " << f_mc << " ± " << f_mce << " ( " << f_mce/f_mc*100. << "%)"
-        << endl << "f_em= " << f_em << " ± " << f_eme << " ( " << f_eme/f_em*100. << "%)"
+        << endl << "f_em= " << f_em/2130.*195. << " ± " << f_eme/2130.*195. << " ( " << f_eme/f_em*100. << "%)"
         << endl << "f_noise= " << f_noise
         << endl << "n_sel_zb= " << n_sel_zb
         << endl << "n_inel= " << n_inel
@@ -213,6 +213,13 @@ void makePlots()
           corr_fac_mc[0] = f_mc;
           corr_fac_eme[0] = f_eme;
           corr_fac_mce[0] = f_mce;
+          cout << endl << endl << "Trigger & \\EPOS & \\HIJING & \\QGSJET \\\\\\hline\\hline" << endl;
+          cout <<  " single-arm & "
+               << setprecision(3)
+               << c->GetBinContent(i)/c->GetBinContent(1) << " & "
+               << b->GetBinContent(i)/b->GetBinContent(1) << " & "
+               << d->GetBinContent(i)/d->GetBinContent(1) << " & "
+               << " \\\\\\hline" << endl;
         }
       if(i==a->FindBin(cut_value_double) && type[n]==string("double"))
         {
@@ -220,6 +227,12 @@ void makePlots()
           corr_fac_mc[1] = f_mc;
           corr_fac_eme[1] = f_eme;
           corr_fac_mce[1] = f_mce;
+          cout <<  " double-arm & "
+               << setprecision(3)
+               << c->GetBinContent(i)/c->GetBinContent(1) << " & "
+               << b->GetBinContent(i)/b->GetBinContent(1) << " & "
+               << d->GetBinContent(i)/d->GetBinContent(1) << " & "
+               << " \\\\\\hline" << endl;
         }
     }
   a1->GetXaxis()->SetRange(startPlot,a1->GetNbinsX());

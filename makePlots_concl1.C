@@ -2,8 +2,12 @@
 #include "TCanvas.h"
 #include "TGraphErrors.h"
 #include "TLegend.h"
-
 #include "TROOT.h"
+
+#define CS 2.168.
+#define CSe 0.082
+#define CSe2 0.018
+
 void DataText2(const bool left=true, const bool top=true, const std::string txt="pPb, #sqrt{s_{_{NN}}}=5.02 TeV");
 
 void CMSPreliminary() {
@@ -71,7 +75,7 @@ void makePlots_concl1()
   TGraphErrors* pb_eposlhc  = new TGraphErrors(1);
   pb_eposlhc->SetName("pb_eposlhc");
   pb_eposlhc->SetTitle("EPOSLHC");
-  pb_eposlhc->SetPoint(0,0.95,2.085057);
+  pb_eposlhc->SetPoint(0,0.95,2.085703);
   SetAttributes(pb_eposlhc,kGreen-2,23);
 
 
@@ -100,23 +104,22 @@ void makePlots_concl1()
   pb_fit->SetPointError(0,0,0.04);
   SetAttributes(pb_fit,kBlack,20);
 
-  const double measured=(2.173+2.159)/2.;
   TGraphErrors* pb_this  = new TGraphErrors(1);
   pb_this->SetName("pb_this");
   pb_this->SetTitle("THIS WORK");
-  pb_this->SetPoint(0,1.1,measured);
-  pb_this->SetPointError(0,0,measured*0.081);
+  pb_this->SetPoint(0,1.1,CS);
+  pb_this->SetPointError(0,0,CS*CSe);
   SetAttributes(pb_this,kRed,21);
   TGraphErrors* pb_this_up  = new TGraphErrors(1);
   pb_this_up->SetName("pb_this_up");
   pb_this_up->SetTitle("THIS WORK");
-  pb_this_up->SetPoint(0,1.1,measured*1.012);
+  pb_this_up->SetPoint(0,1.1,CS*(1+CSe2));
   SetAttributes(pb_this_up,kRed,23);
   pb_this_up->SetMarkerSize(1.2);
   TGraphErrors* pb_this_down  = new TGraphErrors(1);
   pb_this_down->SetName("pb_this_down");
   pb_this_down->SetTitle("THIS WORK");
-  pb_this_down->SetPoint(0,1.1,measured*(1.-0.012));
+  pb_this_down->SetPoint(0,1.1,CS*(1.-CSe2));
   SetAttributes(pb_this_down,kRed,22);
   pb_this_down->SetMarkerSize(1.2);
 
