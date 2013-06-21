@@ -1,3 +1,5 @@
+#include <TColor.h>
+
 void Show(TH1D* a,TH1D* b,TH1D* c,TH1D* d,TH1D* e,TH1D* f,TH1D* g);
 
 void makePlots7()
@@ -53,10 +55,16 @@ void makePlots7()
       a->SetMarkerColor(kBlue-2);
       b->SetMarkerColor(kRed-2);
       c1->SetMarkerColor(kBlue-3);
-      c2->SetMarkerColor(kBlue-1);
+      c2->SetMarkerColor(kAzure-9);
       d->SetMarkerColor(kRed-2);
       e->SetMarkerColor(kGreen-3);
       f->SetMarkerColor(kGray);
+
+
+      e->SetMarkerColor(TColor::GetColor(120,255,120));
+      d->SetMarkerColor(TColor::GetColor(255,90,90));
+      c2->SetMarkerColor(TColor::GetColor(65,65,255));
+      c1->SetMarkerColor(TColor::GetColor(30,30,255));
 
       a->SetLineColor(a->GetMarkerColor());
       b->SetLineColor(b->GetMarkerColor());
@@ -94,7 +102,7 @@ void makePlots7()
       can1->SetLogy();
       hs->GetYaxis()->SetRangeUser(0.0001,0.03);
       hs->SetTitle(";log_{10}(#xi);events (normalised)");
-      TLegend* leg = can1->BuildLegend(0.25,0.65,0.45,0.85);
+      TLegend* leg = can1->BuildLegend(0.25,0.63,0.45,0.93);
       SetLegAtt(leg);
       leg->Draw();
       MCText(0);
@@ -109,6 +117,7 @@ void makePlots7()
       hs2->Add(e);
       hs2->Add(f);
       hs2->Draw("HIST");
+      hs2->GetYaxis()->SetRangeUser(0,5e-3);
       hs2->SetTitle(";log_{10}(#xi);events (normalised)");
       leg->Draw();
       MCText(0);
@@ -122,7 +131,7 @@ void makePlots7()
       c3->SetLogy();
       //g->GetYaxis()->SetRangeUser(0.0001,0.03);
       g->SetTitle("Inelastic events;log_{10}(#xi);events (normalised)");
-      TLegend* leg = new TLegend(0.22,0.70,0.62,0.87);
+      TLegend* leg = new TLegend(0.22,0.75,0.62,0.93);
       SetLegAtt(leg);
       leg->AddEntry(g,"","l");
       leg->AddEntry(a,"","p");
@@ -158,7 +167,7 @@ void makePlots7()
       single2->GetYaxis()->SetRangeUser(0.,1.3);
       single2->Draw();
       double2->Draw("SAME");
-      TLegend* leg = new TLegend(0.22,0.77,0.62,0.87);
+      TLegend* leg = new TLegend(0.22,0.78,0.62,0.93);
       SetLegAtt(leg);
       leg->AddEntry(a,"","p");
       leg->AddEntry(b,"","p");

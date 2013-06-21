@@ -34,6 +34,13 @@ void makePlots_cs1()
   style();
 #endif
 
+  TVectorD vec_sigma_vis(2);
+  TVectorD vec_sigma_had(2);
+  TVectorD vec_sigma_inel(3);
+  TVectorD vec_sigma_vis_e(2);
+  TVectorD vec_sigma_had_e(2);
+  TVectorD vec_sigma_inel_e(3);
+
   vector<int> run_num;
   run_num.push_back(210614);
   run_num.push_back(210885);
@@ -99,7 +106,7 @@ void makePlots_cs1()
   for (int run=0; run<int(run_num.size()); run++)
     {
       cout << endl << " Processing ... run: " << run_num[run] << endl << endl;
-      TFile* file = TFile::Open("histos_old.root");
+      TFile* file = TFile::Open("histos_skiprings.root");
       ostringstream runname_ss;
       runname_ss << run_num[run];
       string runname = runname_ss.str();
@@ -187,19 +194,45 @@ void makePlots_cs1()
           if (lumiPerLS<0.) {cerr << "lumi neg: " << i << endl; return;}
           else if (lumiPerLS==0.) {continue;}
 
+          double nbunches = run_num[run]<=210638 ? 206 : 296.;
 
           const double lambda = lumiPerLS*2.13/11246./23.31/296.;
-          double f_pileup_single = 1;
-          double f_pileup_double = 1;
-          for (int k=2; k<100; k++)
+          // double f_pileup_single = 1;
+          // double f_pileup_double = 1;
+          // for (int k=2; k<100; k++)
+          //   {
+          //     double add_single =  eff_acc_single/(1.-pow(1.-eff_acc_single,k)) * k * TMath::Poisson(k,lambda)/TMath::Poisson(1,lambda);
+          //     double add_double =  eff_acc_double/(1.-pow(1.-eff_acc_double,k)) * k * TMath::Poisson(k,lambda)/TMath::Poisson(1,lambda);
+          //     f_pileup_single += add_single;
+          //     f_pileup_double += add_double;
+          //     if(add_single < 0.0001 && add_double < 0.0001)
+          //       break;
+          //   }
+          double f_pileup_single = 0;
+          double f_pileup_double = 0;
+          double nomi_single = 0;
+          double denomi_single = 0;
+          double nomi_double = 0;
+          double denomi_double = 0;
+          for (int k=1; k<100; k++)
             {
-              double add_single =  eff_acc_single/(1.-pow(1.-eff_acc_single,k)) * k * TMath::Poisson(k,lambda)/TMath::Poisson(1,lambda);
-              double add_double =  eff_acc_double/(1.-pow(1.-eff_acc_double,k)) * k * TMath::Poisson(k,lambda)/TMath::Poisson(1,lambda);
-              f_pileup_single += add_single;
-              f_pileup_double += add_double;
-              if(add_single < 0.0001 && add_double < 0.0001)
+              double nomi_add_single =  eff_acc_single * k * TMath::Poisson(k,lambda);
+              double denomi_add_single =  (1.-pow(1.-eff_acc_single,k)) * 1 * TMath::Poisson(k,lambda);
+              double nomi_add_double =  eff_acc_double * k * TMath::Poisson(k,lambda);
+              double denomi_add_double =  (1.-pow(1.-eff_acc_double,k)) * 1 * TMath::Poisson(k,lambda);
+              nomi_single += nomi_add_single;
+              denomi_single += denomi_add_single;
+              nomi_double += nomi_add_double;
+              denomi_double += denomi_add_double;
+              if(nomi_add_single < 0.0001 && nomi_add_double < 0.0001 && denomi_add_single < 0.0001 && denomi_add_double < 0.0001)
                 break;
             }
+          if(!denomi_single || !denomi_double)
+            {
+              cerr << "Error in PU calculation" << endl; return;
+            }
+          f_pileup_single = nomi_single / denomi_single;
+          f_pileup_double = nomi_double / denomi_double;
           //cout << "lambda=" << lambda << " " << f_pileup_single << endl;
 
 
@@ -537,6 +570,34 @@ void makePlots_cs1()
        << " sigma_combine=" << fabs(fit_runs_single->Parameter(0)-fit_runs_double->Parameter(0))/2./sigmainel*100 << "%"
        << " sigma_lumi=" << sigmainel * 0.08 << " b" << endl << endl;
 
+
+  //Write to files
+  vec_sigma_inel[0] = sigmainel;
+  vec_sigma_inel[1] = sigmainel_single;
+  vec_sigma_inel[2] = sigmainel_double;
+  vec_sigma_inel_e[0] = runrun;
+  vec_sigma_inel_e[1] = run1;
+  vec_sigma_inel_e[2] = run2;
+
+  vec_sigma_vis[0] = fit_runs_vis_single->Parameter(0);
+  vec_sigma_vis[1] = fit_runs_vis_double->Parameter(0);
+  vec_sigma_vis_e[0] = fit_runs_vis_single->ParError(0);
+  vec_sigma_vis_e[1] = fit_runs_vis_double->ParError(0);
+
+  vec_sigma_had[0] = fit_runs_had_single->Parameter(0);
+  vec_sigma_had[1] = fit_runs_had_double->Parameter(0);
+  vec_sigma_had_e[0] = fit_runs_had_single->ParError(0);
+  vec_sigma_had_e[1] = fit_runs_had_double->ParError(0);
+
+  TFile outfile("plots/final_values.root","recreate");
+  vec_sigma_vis.Write("vec_sigma_vis");
+  vec_sigma_vis_e.Write("vec_sigma_vis_e");
+  vec_sigma_had.Write("vec_sigma_had");
+  vec_sigma_had_e.Write("vec_sigma_had_e");
+  vec_sigma_inel.Write("vec_sigma_inel");
+  vec_sigma_inel_e.Write("vec_sigma_inel_e");
+  outfile.Close();
+
   ///////////////////////////////////////////////////////////////////////
   //Drawing cs over run plot
   TCanvas* can3 = new TCanvas;
@@ -566,6 +627,7 @@ void makePlots_cs1()
       ostringstream ss_bin; ss_bin << bin;
       h_runs_double_pPb->GetXaxis()->SetBinLabel(bin,ss_bin.str().c_str());
     }
+  h_runs_double_pPb->GetXaxis()->SetLabelSize(0.07);
   can3->SaveAs((string("plots/CS_runs_pas")+string(".pdf")).c_str());
 
 
@@ -593,7 +655,7 @@ void makePlots_cs1()
   h_pull_single->Draw("HIST");
   h_pull_single->GetYaxis()->SetRangeUser(0,h_pull_double->GetMaximum()*1.45);
   h_pull_double->Draw("HIST SAME");
-  TLegend* leg5 = can5->BuildLegend(0.4,0.67,0.85,0.82);
+  TLegend* leg5 = can5->BuildLegend(0.47,0.74,0.92,0.88);
 #ifdef __CINT__
   SetLegAtt(leg5);
 #endif
@@ -608,8 +670,10 @@ void makePlots_cs1()
   DataText(true,true);
 #endif
   cout << "GAUSSIAN FITS (Pull)" << endl
-       << "single: " << fit_pull_single->Parameter(0) << " +- " << fit_pull_single->ParError(0) << endl
-       << "double: " << fit_pull_double->Parameter(0) << " +- " << fit_pull_double->ParError(0) << endl;
+       << "single: mean=" << fit_pull_single->Parameter(1) << " +- " << fit_pull_single->ParError(1) << " "
+       << "sigma=" << fit_pull_single->Parameter(2) << " +- " << fit_pull_single->ParError(2) << endl
+       << "double: mean=" << fit_pull_double->Parameter(1) << " +- " << fit_pull_double->ParError(1) << " "
+       << "sigma=" << fit_pull_double->Parameter(2) << " +- " << fit_pull_double->ParError(2) << endl;
   can5->SaveAs((string("plots/CS_pull")+string(".pdf")).c_str());
 
 }

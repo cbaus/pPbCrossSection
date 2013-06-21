@@ -6,18 +6,27 @@ void makePlots5()
   style();
 
   TFile* file = TFile::Open("histos_old.root");
-  TH1D* a=file->Get("data/data_h_perf_hf_totE_eta_single_3gev");
-  TH1D* b=file->Get("Hijing/Hijing_h_perf_hf_totE_eta_single_3gev");
-  TH1D* c=file->Get("Epos/Epos_h_perf_hf_totE_eta_single_3gev");
-  TH1D* d=file->Get("QGSJetII/QGSJetII_h_perf_hf_totE_eta_single_3gev");
+  TH1D* a= (TH1D*)file->Get("data210885/data210885_h_perf_hf_totE_eta_single_3gev");
+  TH1D* b= (TH1D*)file->Get("Hijing/Hijing_h_perf_hf_totE_eta_single_3gev");
+  TH1D* c= (TH1D*)file->Get("Epos/Epos_h_perf_hf_totE_eta_single_3gev");
+  TH1D* d= (TH1D*)file->Get("QGSJetII/QGSJetII_h_perf_hf_totE_eta_single_3gev");
 
   Show(a,b,c,d,"single");
 
+  TFile* file = TFile::Open("histos_skiprings.root");
+  TH1D* a= (TH1D*)file->Get("data210885/data210885_h_perf_hf_totE_eta_single_3gev");
+  TH1D* b= (TH1D*)file->Get("Epos/Epos_h_perf_hf_totE_eta_single_3gev");
+  TH1D* c= (TH1D*)file->Get("Epos_SL/Epos_SL_h_perf_hf_totE_eta_single_3gev");
+  TH1D* d= (TH1D*)file->Get("QGSJetII/QGSJetII_h_perf_hf_totE_eta_double_1dot5gev");
+
+  //Show(a,b,c,d,"single");
+
   TFile* file = TFile::Open("histos_old.root");
-  TH1D* e=file->Get("data/data_h_perf_hf_totE_eta_double_1dot5gev");
-  TH1D* f=file->Get("Hijing/Hijing_h_perf_hf_totE_eta_double_1dot5gev");
-  TH1D* g=file->Get("Epos/Epos_h_perf_hf_totE_eta_double_1dot5gev");
-  TH1D* h=file->Get("QGSJetII/QGSJetII_h_perf_hf_totE_eta_double_1dot5gev");
+  TFile* file2 = TFile::Open("histos.root");
+  TH1D* e= (TH1D*)file->Get("data210885/data210885_h_perf_hf_totE_eta_double_1dot5gev");
+  TH1D* f= (TH1D*)file->Get("Hijing/Hijing_h_perf_hf_totE_eta_double_1dot5gev");
+  TH1D* g= (TH1D*)file->Get("Epos/Epos_h_perf_hf_totE_eta_double_1dot5gev");
+  TH1D* h= (TH1D*)file->Get("QGSJetII/QGSJetII_h_perf_hf_totE_eta_double_1dot5gev");
 
   Show(e,f,g,h,"double");
 }
@@ -51,7 +60,8 @@ void Show(TH1D* a,TH1D* b,TH1D* c,TH1D* d, string type)
   c->SetTitle("EPOS");
   d->SetTitle("QGSJetII");
 
-  //a->GetYaxis()->SetRangeUser(1e-6,1.01);
+  double maximumy = 1.2 * TMath::Max(TMath::Max(a->GetMaximum(),b->GetMaximum()),TMath::Max(c->GetMaximum(),d->GetMaximum()));
+  a->GetYaxis()->SetRangeUser(0,maximumy);
   a->GetXaxis()->SetTitle("#eta");
   a->GetYaxis()->SetTitle("E / a.u.");
 
@@ -60,11 +70,14 @@ void Show(TH1D* a,TH1D* b,TH1D* c,TH1D* d, string type)
   b->Draw("HIST SAME");
   c->Draw("HIST SAME");
   d->Draw("HIST SAME");
-  TLegend* leg = c1->BuildLegend();
+  TLegend* leg = new TLegend(0.3,0.7,0.7,0.9);
+  leg->AddEntry(a,"","P");
+  leg->AddEntry(b,"","L");
+  leg->AddEntry(c,"","L");
+  leg->AddEntry(d,"","L");
+  SetLegAtt(leg);
   leg->SetFillColor(kWhite);
   leg->Draw();
-  c1->SaveAs((string("plots/hf_perf_2_")+type+string(".eps")).c_str());
   c1->SaveAs((string("plots/hf_perf_2_")+type+string(".pdf")).c_str());
-  c1->SaveAs((string("plots/hf_perf_2_")+type+string(".png")).c_str());
-  
+
 }

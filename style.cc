@@ -15,6 +15,10 @@ void style() {
   gStyle->SetPadLeftMargin(0.20);
   gStyle->SetPadTopMargin(0.10);
   gStyle->SetPadBottomMargin(0.20);
+  gStyle->SetPadRightMargin(0.05); //0.40
+  gStyle->SetPadLeftMargin(0.20);
+  gStyle->SetPadTopMargin(0.05);
+  gStyle->SetPadBottomMargin(0.15);
   //gStyle->SetStatH(0.4);
   gStyle->SetStatY(0.82);
   gStyle->SetStatX(0.9);

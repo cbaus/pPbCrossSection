@@ -1,0 +1,13 @@
+--ORDER TO RUN
+
+Reco
+CastorTreeProducer2 -> creates tree
+
+noiseana.cc -> creates set of histos
+csana.cc -> creates set of histos
+
+makePlots_noise* -> generates ring cuts in root file
+makePlots.C -> generates MC efficiencies in root file
+makePlots_cs1.C -> generates CS values in root file
+makePlots_concl* -> final histograms
+makePlots*.C --> all the other plots

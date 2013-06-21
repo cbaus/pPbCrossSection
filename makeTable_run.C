@@ -47,7 +47,7 @@ void makeTable_run()
 
 
   double totallumi = 0;
-  cout << "\\hlineRun number & Intgrated luminosity (nb^-1) & Peak Pileup (\\%)\\\\\\hline\\hline" << endl; 
+  cout << "\\hlineRun number & Intgrated luminosity (nb$^{-1}$) & Peak Pileup (\\%)\\\\\\hline\\hline" << endl; 
   for (int run=0; run<int(run_num.size()); run++)
     {
       TFile* file = TFile::Open("histos_old.root");

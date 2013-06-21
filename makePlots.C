@@ -19,12 +19,14 @@ void makePlots()
   for(int n=0; n<int(type.size()); n++)
     {
 
-  TFile* file = TFile::Open("histos_old.root");
+  TFile* file = TFile::Open("histos_skiprings.root");
   TFile* file2 = TFile::Open("histos_mc.root");
   TFile* file3 = TFile::Open("plots/hf_cuts_noise.root");
 
   TH1D* a=(TH1D*)file->Get((string("data210885/data210885_h_hf_cut_") + type[n]).c_str());
   TH1D* a2=(TH1D*)file->Get((string("data210885/data210885_h_hf_cut_") + type[n] + string("_noise")).c_str());
+  //TH1D* b=(TH1D*)file->Get((string("EposSDWeight2/EposSDWeight2_h_hf_cut_") + type[n]).c_str());
+  //TH1D* b2=(TH1D*)file->Get((string("EposSDWeight2/EposSDWeight2_h_hf_new_cut_")+ type[n]).c_str());
   TH1D* b=(TH1D*)file->Get((string("Hijing/Hijing_h_hf_cut_") + type[n]).c_str());
   TH1D* b2=(TH1D*)file->Get((string("Hijing/Hijing_h_hf_new_cut_")+ type[n]).c_str());
   TH1D* c=(TH1D*)file->Get((string("Epos/Epos_h_hf_cut_")+ type[n]).c_str());
@@ -71,11 +73,12 @@ void makePlots()
 
   a->SetTitle("Data");
   a2->SetTitle("Noise");
-  b->SetTitle("Epos");
-  c->SetTitle("EPOS (SDx2)");
+  //b->SetTitle("EPOS (SDx2)");
+  b->SetTitle("Hijing 1.383");
+  c->SetTitle("EPOS-LHC");
   d->SetTitle("QGSJetII-04");
-  e->SetTitle("#gammaP (STARLIGHT+DPMJet)");
-  f->SetTitle("#gammaP (STARLIGHT+Pythia)");
+  e->SetTitle("#gamma-p (STARLIGHT+DPMJet)");
+  f->SetTitle("#gamma-p (STARLIGHT+Pythia)");
 
 
   // a->GetXaxis()->SetLimits(a->GetBinLowEdge(3),a->GetBinLowEdge(a->GetNbinsX())); //cut away first bin
@@ -92,7 +95,7 @@ void makePlots()
   b->GetYaxis()->SetRangeUser(0.9,1.001);
   a2->GetYaxis()->SetRangeUser(1e-4,1.01);
 
-  b->GetXaxis()->SetTitle("cut value [GeV]");
+  b->GetXaxis()->SetTitle("E_{HF} tower threshold [GeV]");
   b->GetYaxis()->SetTitle("event fraction");
 
 
@@ -134,8 +137,8 @@ void makePlots()
     }
   if(type[n]=="double")
     {
-      leg->SetX1(0.55);
-      leg->SetX2(0.85);
+      leg->SetX1(0.65);
+      leg->SetX2(0.93);
       leg->SetY1(0.60);
       leg->SetY2(0.80);
       MCText(0);
@@ -148,15 +151,15 @@ void makePlots()
   leg->Draw();
 
   a->GetYaxis()->SetRangeUser(0,1.01);
-  a->GetXaxis()->SetTitle("cut value [GeV]");
+  a->GetXaxis()->SetTitle("E_{HF} tower threshold [GeV]");
   a->GetYaxis()->SetTitle("event fraction");
 
   can1->SaveAs((string("plots/full_p_space_eff_PAS_")+type[n]+string(".pdf")).c_str());
 
-  // b3->Draw("P");
-  // c3->Draw("P");
-  // d3->Draw("P");
-  // can1->SaveAs((string("plots/full_p_space_eff_")+type[n]+string(".pdf")).c_str());
+  b3->Draw("P");
+  c3->Draw("P");
+  d3->Draw("P");
+  can1->SaveAs((string("plots/full_p_space_eff_")+type[n]+string(".pdf")).c_str());
 
   //////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -170,7 +173,7 @@ void makePlots()
   a->Copy(*copy2);
   TH1D* h_corr = copy2;
   h_corr->SetName("correctionfactor");
-  h_corr->SetTitle("correction factor;cut value / GeV;correction factor");
+  h_corr->SetTitle("correction factor;E_{HF} tower threshold [GeV];correction factor");
 
   int startPlot=0;
   for(int i=1; i<=a1->GetNbinsX(); i++)
@@ -218,7 +221,7 @@ void makePlots()
                << setprecision(3)
                << c->GetBinContent(i)/c->GetBinContent(1) << " & "
                << b->GetBinContent(i)/b->GetBinContent(1) << " & "
-               << d->GetBinContent(i)/d->GetBinContent(1) << " & "
+               << d->GetBinContent(i)/d->GetBinContent(1)
                << " \\\\\\hline" << endl;
         }
       if(i==a->FindBin(cut_value_double) && type[n]==string("double"))
@@ -231,7 +234,7 @@ void makePlots()
                << setprecision(3)
                << c->GetBinContent(i)/c->GetBinContent(1) << " & "
                << b->GetBinContent(i)/b->GetBinContent(1) << " & "
-               << d->GetBinContent(i)/d->GetBinContent(1) << " & "
+               << d->GetBinContent(i)/d->GetBinContent(1)
                << " \\\\\\hline" << endl;
         }
     }
@@ -243,7 +246,7 @@ void makePlots()
   //////////////////////////////////////////////////////////////////////////////////////////////
 
   TCanvas* can2 = new TCanvas;
-  a2->GetXaxis()->SetTitle("cut value [GeV]");
+  a2->GetXaxis()->SetTitle("E_{HF} tower threshold [GeV]");
   a2->GetYaxis()->SetTitle("event fraction");
   a2->Draw("HIST l");
   e->Draw("HIST l SAME");
@@ -260,8 +263,8 @@ void makePlots()
     }
   if(type[n]=="double")
     {
-      leg2->SetX1(0.35);
-      leg2->SetX2(0.85);
+      leg2->SetX1(0.45);
+      leg2->SetX2(0.93);
       leg2->SetY1(0.60);
       leg2->SetY2(0.80);
       DataText(0);

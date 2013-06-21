@@ -1,5 +1,6 @@
 #define _MAXEVT 50000
-#define _SkipHFRings 1
+#define _SkipHFRings 0
+#define _HFEnergyScale 0.8 //0.8
 
 #include "TChain.h"
 #include "TFile.h"
@@ -66,11 +67,11 @@ int main()
   // sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211532/*.root"); sample_name.push_back("data211532"); sample_type.push_back(DATA);
   // sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211538/*.root"); sample_name.push_back("data211538"); sample_type.push_back(DATA);
   // sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Data211607/*_*.root"); sample_name.push_back("data211607"); sample_type.push_back(DATA);
-  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Epos/*.root"); sample_name.push_back("Epos"); sample_type.push_back(MC);
+  // sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Epos/*.root"); sample_name.push_back("Epos"); sample_type.push_back(MC);
   // sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Epos/*.root"); sample_name.push_back("EposSDWeight2"); sample_type.push_back(MC);
   // sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Epos_SL/*.root"); sample_name.push_back("Epos_SL"); sample_type.push_back(MC);
   // sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Hijing/*.root"); sample_name.push_back("Hijing"); sample_type.push_back(MC);
-  // sample_fname.push_back("/afs/cern.ch/work/c/cbaus/public/castortree/pPb_QGSJetII/treeMC.root"); sample_name.push_back("QGSJetII"); sample_type.push_back(MC);
+  sample_fname.push_back("/afs/cern.ch/work/c/cbaus/public/castortree/pPb_QGSJetII/treeMC.root"); sample_name.push_back("QGSJetII"); sample_type.push_back(MC);
   // sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/StarlightDPMjet_v2/treeMC.root"); sample_name.push_back("Starlight_DPMJet");  sample_type.push_back(MC);
   // sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/StarlightPythia/treeMC.root"); sample_name.push_back("Starlight_Pythia");  sample_type.push_back(MC);
 
@@ -432,26 +433,27 @@ int main()
           bool hf_p_heavy_cut = false;
           for (vector<TowerHF>::const_iterator it = event->HFtowers.begin(); it < event->HFtowers.end(); ++it)
             {
-              if(_SkipHFRings && it->IetaAbs == 41)
+              if(_SkipHFRings && (it->IetaAbs == 41 || it->IetaAbs == 29))
                 continue;
               const int Ieta = it->Eta > 0?it->IetaAbs:-it->IetaAbs;
-              //cout << it->Eta << " " << it->Energy << endl;
-              if(it->Eta > 0. && it->Energy > hf_p_energy_max)
-                hf_p_energy_max = it->Energy;
-              if(it->Eta <= 0. && it->Energy > hf_m_energy_max)
-                hf_m_energy_max = it->Energy;
+              const double tower_e = it->Energy * _HFEnergyScale;
+              cout << it->IetaAbs << " " << it->Eta << " " << tower_e << endl;
+              if(it->Eta > 0. && tower_e > hf_p_energy_max)
+                hf_p_energy_max = tower_e;
+              if(it->Eta <= 0. && tower_e > hf_m_energy_max)
+                hf_m_energy_max = tower_e;
 
               if(it->Eta > 0.)
-                hf_p_energy += it->Energy;
+                hf_p_energy += tower_e;
               else
-                hf_m_energy += it->Energy;
+                hf_m_energy += tower_e;
 
-              if(Ieta < 0 && it->Energy >= (*hf_m_cuts_light_noise)[IetaToRing(Ieta)])  hf_m_light_cut = true;
-              if(Ieta < 0 && it->Energy >= (*hf_m_cuts_medium_noise)[IetaToRing(Ieta)]) hf_m_medium_cut = true;
-              if(Ieta < 0 && it->Energy >= (*hf_m_cuts_heavy_noise)[IetaToRing(Ieta)])  hf_m_heavy_cut = true;
-              if(Ieta > 0 && it->Energy >= (*hf_p_cuts_light_noise)[IetaToRing(Ieta)])  hf_p_light_cut = true;
-              if(Ieta > 0 && it->Energy >= (*hf_p_cuts_medium_noise)[IetaToRing(Ieta)]) hf_p_medium_cut = true;
-              if(Ieta > 0 && it->Energy >= (*hf_p_cuts_heavy_noise)[IetaToRing(Ieta)])  hf_p_heavy_cut = true;
+              if(Ieta < 0 && tower_e >= (*hf_m_cuts_light_noise)[IetaToRing(Ieta)])  hf_m_light_cut = true;
+              if(Ieta < 0 && tower_e >= (*hf_m_cuts_medium_noise)[IetaToRing(Ieta)]) hf_m_medium_cut = true;
+              if(Ieta < 0 && tower_e >= (*hf_m_cuts_heavy_noise)[IetaToRing(Ieta)])  hf_m_heavy_cut = true;
+              if(Ieta > 0 && tower_e >= (*hf_p_cuts_light_noise)[IetaToRing(Ieta)])  hf_p_light_cut = true;
+              if(Ieta > 0 && tower_e >= (*hf_p_cuts_medium_noise)[IetaToRing(Ieta)]) hf_p_medium_cut = true;
+              if(Ieta > 0 && tower_e >= (*hf_p_cuts_heavy_noise)[IetaToRing(Ieta)])  hf_p_heavy_cut = true;
             }
           double hf_pm_energy = hf_p_energy + hf_m_energy;
           //cout << "rechit: " << hf_pm_energy << endl;
@@ -613,6 +615,9 @@ int main()
 
           for (vector<TowerHF>::const_iterator it = event->HFtowers.begin(); it < event->HFtowers.end(); ++it)
             {
+              if(_SkipHFRings && (it->IetaAbs == 41 || it->IetaAbs == 29))
+                continue;
+
               if(coll && hf_double_tag)
                 h_perf_hf_totE_eta_double_1dot5gev->Fill(it->Eta,it->Energy);
               if(coll && hf_single_tag)
