@@ -1,14 +1,18 @@
-#include "TFitResultPtr.h"
-#include "TFitResult.h"
-#include "TLegend.h"
 #include "TCanvas.h"
 #include "TF1.h"
-#include "TH1D.h"
 #include "TFile.h"
+#include "TFitResult.h"
+#include "TFitResultPtr.h"
+#include "TGraph.h"
+#include "TGraphErrors.h"
+#include "TH1D.h"
+#include "TH2D.h"
+#include "TLegend.h"
+#include "TLine.h"
 #include "TMarker.h"
-#include "TVectorD.h"
-#include "TROOT.h"
 #include "TMath.h"
+#include "TROOT.h"
+#include "TVectorD.h"
 
 #ifndef __CINT__
 #include "style.h"
@@ -17,22 +21,34 @@
 #include <iostream>
 #include <iomanip>
 #include <sstream>
+#include <utility>
 
 using namespace std;
 
 #define _LumiCorr 1.0925
+#define _LumiError 0.08
+#define _CSEstimate 2.122
+#define _CSEstimate_e 0.02
 
-const double fac_error = 1.0;
-const double cut_value_single = 6.*fac_error;
-const double cut_value_double = 2.*fac_error;
+string cutToString(double cut);
+void makePlots_cs1(bool draw = 1,double cut_value_single = 8., double cut_value_double = 2.5);
 
-void makePlots_cs1()
+//available cuts single 5, 6.4, 7.2, 8, 8.8, 9.6, 10, 15, 20
+//available cuts double 1.5, 2, 2.25, 2.5, 2.75, 3, 3.5, 4, 5
+
+void makePlots_cs1(bool draw,double cut_value_single, double cut_value_double)
 {
   TH1::SetDefaultSumw2();
   gROOT->ProcessLine(" .L style.cc+");
 #ifdef __CINT__
   style();
 #endif
+
+
+  // gROOT->ProcessLine(" .L makePlots.C+");
+  // gROOT->SetBatch(kTRUE);
+  // makePlots(0,cut_value_single, cut_value_double);
+  // gROOT->SetBatch(kFALSE);
 
   TVectorD vec_sigma_vis(2);
   TVectorD vec_sigma_had(2);
@@ -68,6 +84,8 @@ void makePlots_cs1()
   TH1D* h_runs_single_Pbp = new TH1D("h_runs_single_Pbp","",run_num.size(),-0.5,run_num.size()-0.5);// h_runs_single->SetName("h_runs_single");
   TH1D* h_runs_double_Pbp = new TH1D("h_runs_double_Pbp","",run_num.size(),-0.5,run_num.size()-0.5);// h_runs_single->SetName("h_runs_double");
 
+  TH1D* h_runs_fnoise_single = new TH1D("h_runs_fnoise_single","",run_num.size(),-0.5,run_num.size()-0.5);
+  TH1D* h_runs_fnoise_double = new TH1D("h_runs_fnoise_double","",run_num.size(),-0.5,run_num.size()-0.5);
 
   TFile f("plots/corr_factors.root");
   TVectorD* f_em = NULL;
@@ -96,6 +114,8 @@ void makePlots_cs1()
   double n_em_runs_double=0;
   double A_runs_double=0;
   double A_runs_vis_double=0;
+  double f_pileup_runs_single=0;
+  double f_pileup_runs_double=0;
   double sigma_em_runs_single=0;
   double sigma_mc_runs_single=0;
   double sigma_pu_runs_single=0;
@@ -106,14 +126,14 @@ void makePlots_cs1()
   for (int run=0; run<int(run_num.size()); run++)
     {
       cout << endl << " Processing ... run: " << run_num[run] << endl << endl;
-      TFile* file = TFile::Open("histos_skiprings.root");
+      TFile* file = TFile::Open("histos_old.root");
       ostringstream runname_ss;
       runname_ss << run_num[run];
       string runname = runname_ss.str();
       ostringstream filename_ss;
-      filename_ss.str(""); filename_ss << "data" << runname << "/data" << runname << "_h_run_events_single_6";
+      filename_ss.str(""); filename_ss << "data" << runname << "/data" << runname << "_h_run_events_single_" << cutToString(cut_value_single);
       TH1D* h_single=(TH1D*)file->Get(filename_ss.str().c_str());
-      filename_ss.str(""); filename_ss << "data" << runname << "/data" << runname << "_h_run_events_double_2";
+      filename_ss.str(""); filename_ss << "data" << runname << "/data" << runname << "_h_run_events_double_"  << cutToString(cut_value_double);
       TH1D* h_double=(TH1D*)file->Get(filename_ss.str().c_str());
       filename_ss.str(""); filename_ss << "data" << runname << "/data" << runname << "_h_run_events_lumi";
       TH1D* h_lumi=(TH1D*)file->Get(filename_ss.str().c_str());
@@ -159,6 +179,8 @@ void makePlots_cs1()
       //Noise
       double f_noise_single = h_noise_single->GetBinContent(h_noise_single->FindBin(cut_value_single))/h_noise_single->GetBinContent(1);
       double f_noise_double = h_noise_double->GetBinContent(h_noise_double->FindBin(cut_value_double))/h_noise_double->GetBinContent(1);
+      h_runs_fnoise_single->Fill(run,f_noise_single);
+      h_runs_fnoise_double->Fill(run,f_noise_double);
 
       ///////////////////////////////////////////////////////////////////////
       //ZB
@@ -174,6 +196,8 @@ void makePlots_cs1()
       double n_em_run_double=0;
       double A_run_double=0;
       double A_run_vis_double=0;
+      double f_pileup_run_single=0;
+      double f_pileup_run_double=0;
       double sigma_em_run_single=0;
       double sigma_mc_run_single=0;
       double sigma_pu_run_single=0;
@@ -194,9 +218,9 @@ void makePlots_cs1()
           if (lumiPerLS<0.) {cerr << "lumi neg: " << i << endl; return;}
           else if (lumiPerLS==0.) {continue;}
 
-          double nbunches = run_num[run]<=210638 ? 206 : 296.;
+          double nbunches = run_num[run]<=210638 ? 206 : 296.; //this covers most of the runs
 
-          const double lambda = lumiPerLS*2.13/11246./23.31/296.;
+          const double lambda = lumiPerLS*_CSEstimate/11246./23.31/nbunches;
           // double f_pileup_single = 1;
           // double f_pileup_double = 1;
           // for (int k=2; k<100; k++)
@@ -272,8 +296,8 @@ void makePlots_cs1()
           double sigma_mc_double = fabs(-1 * n_double / ( eff_acc_double - f_noise_double * f_pileup_double) * eff_acc_double_e);
           double sigma_em_single = fabs(n_em_single / (eff_acc_single / f_pileup_single - f_noise_single) * eff_em_single_e);
           double sigma_em_double = fabs(n_em_double / (eff_acc_double / f_pileup_double - f_noise_double) * eff_em_double_e);
-          double sigma_pu_single = fabs(n_single / (f_pileup_single - pow(f_pileup_single,2) * f_noise_single / eff_acc_single) * 0.2*(f_pileup_single-1));
-          double sigma_pu_double = fabs(n_double / (f_pileup_double - pow(f_pileup_double,2) * f_noise_double / eff_acc_double) * 0.2*(f_pileup_double-1));
+          double sigma_pu_single = fabs(n_single / (f_pileup_single - pow(f_pileup_single,2) * f_noise_single / eff_acc_single) * _CSEstimate_e *(f_pileup_single-1));
+          double sigma_pu_double = fabs(n_double / (f_pileup_double - pow(f_pileup_double,2) * f_noise_double / eff_acc_double) * _CSEstimate_e *(f_pileup_double-1));
 
           h_single->SetBinContent(i, n_single);
           h_double->SetBinContent(i, n_double);
@@ -307,6 +331,8 @@ void makePlots_cs1()
           n_em_run_double    += n_em_double;
           A_run_double       += A_double;
           A_run_vis_double   += A_vis_double;
+          f_pileup_run_single+= f_pileup_single;
+          f_pileup_run_double+= f_pileup_double;
           sigma_mc_run_single += sigma_mc_single;
           sigma_mc_run_double += sigma_mc_double;
           sigma_em_run_single += sigma_em_single;
@@ -323,6 +349,8 @@ void makePlots_cs1()
       n_em_run_double    /= double(n);
       A_run_double       /= double(n);
       A_run_vis_double   /= double(n);
+      f_pileup_run_single/= double(n);
+      f_pileup_run_double/= double(n);
 
       n_noise_runs_single += n_noise_run_single;
       n_em_runs_single    += n_em_run_single;
@@ -332,6 +360,8 @@ void makePlots_cs1()
       n_em_runs_double    += n_em_run_double;
       A_runs_double       += A_run_double;
       A_runs_vis_double   += A_run_vis_double;
+      f_pileup_runs_single+= f_pileup_run_single;
+      f_pileup_runs_double+= f_pileup_run_double;
 
       sigma_em_run_single /= double(n);
       sigma_em_run_double /= double(n);
@@ -347,12 +377,12 @@ void makePlots_cs1()
       sigma_pu_runs_single += sigma_pu_run_single;
       sigma_pu_runs_double += sigma_pu_run_double;
 
-      cout << "sigma_em_single=" << sigma_em_run_single/2.16*100 << "%"
-           << " sigma_mc_single=" << sigma_mc_run_single/2.16*100 << "%"
-           << " sigma_pu_single=" << sigma_pu_run_single/2.16*100  << "%"<< endl;
-      cout << "sigma_em_double=" << sigma_em_run_double/2.16*100 << "%"
-           << " sigma_mc_double=" << sigma_mc_run_double/2.16*100 << "%"
-           << " sigma_pu_single=" << sigma_pu_run_double/2.16*100  << "%"<< endl;
+      cout << "sigma_em_single=" << sigma_em_run_single/_CSEstimate*100 << "%"
+           << " sigma_mc_single=" << sigma_mc_run_single/_CSEstimate*100 << "%"
+           << " sigma_pu_single=" << sigma_pu_run_single/_CSEstimate*100  << "%"<< endl;
+      cout << "sigma_em_double=" << sigma_em_run_double/_CSEstimate*100 << "%"
+           << " sigma_mc_double=" << sigma_mc_run_double/_CSEstimate*100 << "%"
+           << " sigma_pu_single=" << sigma_pu_run_double/_CSEstimate*100  << "%"<< endl;
 
       h_double->SetMarkerColor(kRed);
       h_double->SetLineColor(kRed);
@@ -360,16 +390,20 @@ void makePlots_cs1()
       h_single->SetLineWidth(2);
       h_double->SetLineWidth(2);
 
-      h_single->SetTitle("E>6 GeV (single-arm);lumisection;#sigma_{inel} [b]");
-      h_double->SetTitle("E>2 GeV (double-arm);lumisection;#sigma_{inel} [b]");
+      h_single->SetTitle("E>8 GeV (single-arm);lumisection;#sigma_{inel} [b]");
+      h_double->SetTitle("E>2.5 GeV (double-arm);lumisection;#sigma_{inel} [b]");
 
       TH1D* projection_single =  new TH1D("projection_single","",50,0,5);
       TH1D* projection_double =  new TH1D("projection_double","",50,0,5);
       projection_double->SetLineColor(kRed);
       projection_double->SetMarkerColor(kRed);
+
       TCanvas* c1 = NULL;
-      if(run_num[run] == 210885)
-        c1 = new TCanvas;
+      if(draw)
+        {
+          if(run_num[run] == 210885)
+            c1 = new TCanvas;
+        }
 
       TFitResultPtr fit_single = h_single->Fit("pol0","QS");
       TFitResultPtr fit_double = h_double->Fit("pol0","QS");
@@ -385,47 +419,51 @@ void makePlots_cs1()
 
       if(run_num[run] == 210885)
         {
-          h_single->Draw();
-          h_double->Draw("SAME");
-#ifdef __CINT__
-          DataText(false,true,"run #210885");
-#endif
-          c1->SaveAs((string("plots/CS_run")+string(".pdf")).c_str());
-
-          for(int bin=1; bin<=h_single->GetNbinsX(); bin++)
+          if(draw)
             {
-              if(h_single->GetBinError(bin) > 0)
-                projection_single->Fill(h_single->GetBinContent(bin),1./pow(h_single->GetBinError(bin),2));
-              if(h_double->GetBinError(bin) > 0)
-                projection_double->Fill(h_double->GetBinContent(bin),1./pow(h_double->GetBinError(bin),2));
-            }
-          c1 = new TCanvas;
-          projection_single->GetYaxis()->SetRangeUser(0,TMath::Max(projection_single->GetMaximum(),projection_double->GetMaximum())*1.4);
-          projection_single->GetXaxis()->SetRangeUser(0,fit_double->Parameter(0)*2.);
-          projection_single->SetMarkerStyle(21);
-          projection_double->SetMarkerStyle(22);
-          projection_single->SetTitle("E>6 GeV (single-arm);#sigma_{inel} [b];weighted count");
-          projection_double->SetTitle("E>2 GeV (double-arm);#sigma_{inel} [b];weighted count");
-
-          TLegend* leg = new TLegend(0.4,0.75,0.85,0.9);
-          leg->AddEntry(projection_single,"","lp");
-          leg->AddEntry(projection_double,"","lp");
+              h_single->Draw();
+              h_double->Draw("SAME");
 #ifdef __CINT__
-          DataText(true,true);
-          SetLegAtt(leg);
+              CMSText(true,false,true,"run #210885");
 #endif
-          TMarker *m_single = new TMarker(fit_single->Parameter(0),0.1,projection_single->GetMarkerStyle());
-          TMarker *m_double = new TMarker(fit_double->Parameter(0),0,projection_double->GetMarkerStyle());
+              c1->SaveAs((string("plots/CS_run")+string(".pdf")).c_str());
 
-          m_single->SetMarkerColor(projection_single->GetMarkerColor());
-          m_double->SetMarkerColor(projection_double->GetMarkerColor());
 
-          projection_single->Draw("HIST");
-          projection_double->Draw("HIST SAME");
-          m_single->Draw("SAME");
-          m_double->Draw("SAME");
-          leg->Draw();
-          c1->SaveAs((string("plots/CS_run_proj")+string(".pdf")).c_str());
+              for(int bin=1; bin<=h_single->GetNbinsX(); bin++)
+                {
+                  if(h_single->GetBinError(bin) > 0)
+                    projection_single->Fill(h_single->GetBinContent(bin),1./pow(h_single->GetBinError(bin),2));
+                  if(h_double->GetBinError(bin) > 0)
+                    projection_double->Fill(h_double->GetBinContent(bin),1./pow(h_double->GetBinError(bin),2));
+                }
+              c1 = new TCanvas;
+              projection_single->GetYaxis()->SetRangeUser(0,TMath::Max(projection_single->GetMaximum(),projection_double->GetMaximum())*1.4);
+              projection_single->GetXaxis()->SetRangeUser(0,fit_double->Parameter(0)*2.);
+              projection_single->SetMarkerStyle(21);
+              projection_double->SetMarkerStyle(22);
+              projection_single->SetTitle("E>8 GeV (single-arm);#sigma_{inel} [b];weighted count");
+              projection_double->SetTitle("E>2.5 GeV (double-arm);#sigma_{inel} [b];weighted count");
+
+              TLegend* leg = new TLegend(0.4,0.75,0.85,0.9);
+              leg->AddEntry(projection_single,"","lp");
+              leg->AddEntry(projection_double,"","lp");
+#ifdef __CINT__
+              CMSText(true,true);
+              SetLegAtt(leg);
+#endif
+              TMarker *m_single = new TMarker(fit_single->Parameter(0),0.1,projection_single->GetMarkerStyle());
+              TMarker *m_double = new TMarker(fit_double->Parameter(0),0,projection_double->GetMarkerStyle());
+
+              m_single->SetMarkerColor(projection_single->GetMarkerColor());
+              m_double->SetMarkerColor(projection_double->GetMarkerColor());
+
+              projection_single->Draw("HIST");
+              projection_double->Draw("HIST SAME");
+              m_single->Draw("SAME");
+              m_double->Draw("SAME");
+              leg->Draw();
+              c1->SaveAs((string("plots/CS_run_proj")+string(".pdf")).c_str());
+            }
         }
 
       double weight = 1./pow(fit_double->ParError(0),2);
@@ -471,7 +509,7 @@ void makePlots_cs1()
       cout << "Single: " << fit_single->Parameter(0) << " " << fit_single->ParError(0) << " --- "
            << "Double: " << fit_double->Parameter(0) << " " << fit_double->ParError(0) << endl;
 
-      if(run_num[run] == 210885)
+      if(draw && run_num[run] == 210885)
         c1 = new TCanvas; //please use a new one to paint your fit crap
     }
   double sigma = sqrt(1./w);
@@ -487,6 +525,8 @@ void makePlots_cs1()
   n_em_runs_double /= double(n);
   A_runs_double /= double(n);
   A_runs_vis_double /= double(n);
+  f_pileup_runs_single /= double(n);
+  f_pileup_runs_double /= double(n);
 
   sigma_em_runs_single /= double(n);
   sigma_em_runs_double /= double(n);
@@ -498,21 +538,21 @@ void makePlots_cs1()
   h_runs_double_pPb->GetYaxis()->SetRangeUser(1.9,2.7);
   h_runs_double_pPb->SetLineColor(kRed);
   h_runs_double_pPb->SetMarkerColor(kRed);
-  h_runs_double_pPb->SetTitle("E>2 GeV (double-arm) (pPb);run number;#sigma_{inel} [b]");
+  h_runs_double_pPb->SetTitle("E>2.5 GeV (double-arm) (pPb);run number;#sigma_{inel} [b]");
 
   h_runs_single_pPb->SetLineColor(kBlue);
   h_runs_single_pPb->SetMarkerColor(kBlue);
   h_runs_single_pPb->SetMarkerStyle(34);
-  h_runs_single_pPb->SetTitle("E>6 GeV (single-arm) (pPb)");
+  h_runs_single_pPb->SetTitle("E>8 GeV (single-arm) (pPb)");
 
   h_runs_double_Pbp->SetLineColor(kRed-1);
   h_runs_double_Pbp->SetMarkerColor(kRed-1);
-  h_runs_double_Pbp->SetTitle("E>2 GeV (double-arm) (Pbp);run number;#sigma_{inel} [b]");
+  h_runs_double_Pbp->SetTitle("E>2.5 GeV (double-arm) (Pbp);run number;#sigma_{inel} [b]");
 
   h_runs_single_Pbp->SetLineColor(kBlue-1);
   h_runs_single_Pbp->SetMarkerColor(kBlue-1);
   h_runs_single_Pbp->SetMarkerStyle(34);
-  h_runs_single_Pbp->SetTitle("E>6 GeV (single-arm) (Pbp)");
+  h_runs_single_Pbp->SetTitle("E>8 GeV (single-arm) (Pbp)");
 
 
 
@@ -540,44 +580,40 @@ void makePlots_cs1()
   double sigmainel_double = fit_runs_double->Parameter(0);
   double sigmainel_single = fit_runs_single->Parameter(0);
   double sigmainel = (sigmainel_single + sigmainel_double)/2.;
-  double run1=fit_runs_single->ParError(0);
-  double run2=fit_runs_double->ParError(0);
-  double runrun = (run1 + run2)/2.;
-  cout << endl << endl
-       << " !!! sigma_inel_single: " << sigmainel_single << " b +- (" << run1 << " = " << run1/sigmainel_single*100 << "% (stat))" << endl
-       << " !!! sigma_inel_double: " << sigmainel_double << " b +- (" << run2 << " = " << run2/sigmainel_double*100 << "% (stat))" << endl
-       << " !!! sigma_inel       : " << sigmainel << " b +- (" << runrun << " = " << runrun/sigmainel*100 << "% (stat))" << endl << endl;
+  double staterr1=fit_runs_single->ParError(0);
+  double staterr2=fit_runs_double->ParError(0);
+  double staterr = (staterr1 + staterr2)/2.;
+  cout << endl << endl << " !!! CROSS SECTION" << endl << fixed << setprecision(5)
+       << " !!! sigma_inel_single: " << sigmainel_single << " b +- (" << staterr1 << " = " << staterr1/sigmainel_single*100 << "% (stat)) " << sigmainel_single * _LumiError << " (lumi)" << endl
+       << " !!! sigma_inel_double: " << sigmainel_double << " b +- (" << staterr2 << " = " << staterr2/sigmainel_double*100 << "% (stat)) " << sigmainel_double * _LumiError << " (lumi)" << endl
+       << " !!! sigma_inel       : " << sigmainel << " b +- (" << staterr << " = " << staterr/sigmainel*100 << "% (stat)) " << sigmainel * _LumiError << " (lumi)" << endl << endl;
 
-  cout << " !! corr_acc_single=" << sigmainel_single << " b "
-       << " !! corr_acc_double=" << n_em_runs_double/A_runs_double << " b " << endl << endl;
-  cout << " !! corr_noise_single=" << n_noise_runs_single/A_runs_single << " b "
-       << " !! corr_em_single=" << n_em_runs_single/A_runs_single<< " b " << endl;
-  cout << " !! corr_noise_double=" << n_noise_runs_double/A_runs_double << " b "
-       << " !! corr_em_double=" << n_em_runs_double/A_runs_double << " b " << endl << endl;
+  cout << " !! corr_noise_single =" << n_noise_runs_single << "/" << A_runs_single << "=" << n_noise_runs_single/A_runs_single << " b "
+       << " !! corr_f_pilup    =" << f_pileup_runs_single << endl;
+  cout << " !! corr_noise_double =" << n_noise_runs_double << "/" << A_runs_double << "=" << n_noise_runs_double/A_runs_double << " b "
+       << " !! corr_f_pilup    =" << f_pileup_runs_double << endl << endl;
 
+  cout << endl << " ! SYSTEMATIC UNCERTAINTY" << endl << endl;
 
-  cout << " ! sigma_em_single=" << sigma_em_runs_single/fit_runs_single->Parameter(0)*100 << "%"
-       << " sigma_mc_single=" << sigma_mc_runs_single/fit_runs_single->Parameter(0)*100 << "%"
-       << " sigma_pu_single=" << sigma_pu_runs_single/fit_runs_single->Parameter(0)*100  << "%"
-       << " sigma_lumi=" << sigmainel_single * 0.08 << " b" << endl << endl;
-  cout << " ! sigma_em_double=" << sigma_em_runs_double/fit_runs_double->Parameter(0)*100 << "%"
-       << " sigma_mc_double=" << sigma_mc_runs_double/fit_runs_double->Parameter(0)*100 << "%"
-       << " sigma_pu_double=" << sigma_pu_runs_double/fit_runs_double->Parameter(0)*100  << "%"
-       << " sigma_lumi=" << sigmainel_double * 0.08 << " b" << endl << endl;
-  cout << " ! sigma_em=" << (sigma_em_runs_single+sigma_em_runs_double)/2./sigmainel*100 << "%"
-       << " sigma_mc=" << (sigma_mc_runs_single+sigma_mc_runs_double)/2./sigmainel*100 << "%"
-       << " sigma_pu=" << (sigma_pu_runs_single+sigma_pu_runs_double)/2./sigmainel*100  << "%"
-       << " sigma_combine=" << fabs(fit_runs_single->Parameter(0)-fit_runs_double->Parameter(0))/2./sigmainel*100 << "%"
-       << " sigma_lumi=" << sigmainel * 0.08 << " b" << endl << endl;
+  cout << " ! sigma_em_single=" << sigma_em_runs_single/fit_runs_single->Parameter(0)*100 << "%" << endl
+       << " ! sigma_mc_single=" << sigma_mc_runs_single/fit_runs_single->Parameter(0)*100 << "%" << endl
+       << " ! sigma_pu_single=" << sigma_pu_runs_single/fit_runs_single->Parameter(0)*100  << "%" << endl <<endl;
+  cout << " ! sigma_em_double=" << sigma_em_runs_double/fit_runs_double->Parameter(0)*100 << "%" << endl
+       << " ! sigma_mc_double=" << sigma_mc_runs_double/fit_runs_double->Parameter(0)*100 << "%" << endl
+       << " ! sigma_pu_double=" << sigma_pu_runs_double/fit_runs_double->Parameter(0)*100  << "%" << endl << endl;
+  cout << " ! sigma_em=" << (sigma_em_runs_single+sigma_em_runs_double)/2./sigmainel*100 << "%" << endl
+       << " ! sigma_mc=" << (sigma_mc_runs_single+sigma_mc_runs_double)/2./sigmainel*100 << "%" << endl
+       << " ! sigma_pu=" << (sigma_pu_runs_single+sigma_pu_runs_double)/2./sigmainel*100  << "%" << endl
+       << " ! sigma_combine=" << fabs(fit_runs_single->Parameter(0)-fit_runs_double->Parameter(0))/2./sigmainel*100 << "%" << endl << endl;
 
 
   //Write to files
   vec_sigma_inel[0] = sigmainel;
   vec_sigma_inel[1] = sigmainel_single;
   vec_sigma_inel[2] = sigmainel_double;
-  vec_sigma_inel_e[0] = runrun;
-  vec_sigma_inel_e[1] = run1;
-  vec_sigma_inel_e[2] = run2;
+  vec_sigma_inel_e[0] = staterr;
+  vec_sigma_inel_e[1] = staterr1;
+  vec_sigma_inel_e[2] = staterr2;
 
   vec_sigma_vis[0] = fit_runs_vis_single->Parameter(0);
   vec_sigma_vis[1] = fit_runs_vis_double->Parameter(0);
@@ -600,80 +636,141 @@ void makePlots_cs1()
 
   ///////////////////////////////////////////////////////////////////////
   //Drawing cs over run plot
-  TCanvas* can3 = new TCanvas;
-  h_runs_double_pPb->Draw("P");
-  h_runs_single->GetFunction("pol0")->SetLineColor(kBlue);
-  h_runs_double->GetFunction("pol0")->SetLineColor(kRed);
-  h_runs_single->GetFunction("pol0")->Draw("SAME");
-  h_runs_double->GetFunction("pol0")->Draw("SAME");
-  h_runs_single_pPb->Draw("PSAME");
-  h_runs_double_Pbp->Draw("PSAME");
-  h_runs_single_Pbp->Draw("PSAME");
-  TLegend* leg3 = new TLegend(0.3,0.60,0.8,0.80);
-  leg3->AddEntry(h_runs_single_pPb,"","pl");
-  leg3->AddEntry(h_runs_single_Pbp,"","pl");
-  leg3->AddEntry(h_runs_double_pPb,"","pl");
-  leg3->AddEntry(h_runs_double_Pbp,"","pl");
-#ifdef __CINT__
-  SetLegAtt(leg3);
-#endif
-  leg3->Draw();
-#ifdef __CINT__
-  DataText(true,true);
-#endif
-  can3->SaveAs((string("plots/CS_runs")+string(".pdf")).c_str());
-  for(int bin=1; bin <= h_runs_double_pPb->GetNbinsX(); bin++)
+  if(draw)
     {
-      ostringstream ss_bin; ss_bin << bin;
-      h_runs_double_pPb->GetXaxis()->SetBinLabel(bin,ss_bin.str().c_str());
-    }
-  h_runs_double_pPb->GetXaxis()->SetLabelSize(0.07);
-  can3->SaveAs((string("plots/CS_runs_pas")+string(".pdf")).c_str());
-
-
-
-  ///////////////////////////////////////////////////////////////////////
-  //PULL Distribution
-  TH1D* h_pull_single = new TH1D("h_pull_single","E>6 GeV (single-arm);#frac{x-#mu}{#sigma};N_{run}",19,-8,8);
-  TH1D* h_pull_double = new TH1D("h_pull_double","E>2 GeV (double-arm);#frac{x-#mu}{#sigma};N_{run}",19,-8,8);
-  for (int run=0; run<int(run_num.size()); run++)
-    {
-      const double pull_single = (h_runs_single->GetBinContent(run+1) - fit_runs_single->Parameter(0) ) / h_runs_single->GetBinError(run+1);
-      const double pull_double = (h_runs_double->GetBinContent(run+1) - fit_runs_double->Parameter(0) ) / h_runs_double->GetBinError(run+1);
-      h_pull_single->Fill(pull_single);
-      h_pull_double->Fill(pull_double);
-    }
-  h_pull_double->SetLineColor(kRed);
-  h_pull_single->SetLineColor(kBlack);
-  h_pull_double->SetMarkerColor(kRed);
-  h_pull_single->SetMarkerColor(kBlack);
-  TCanvas* can5 = new TCanvas;
-  TF1* f_pull_single = new TF1("pull_single","gaus",-20,20);
-  TF1* f_pull_double = new TF1("pull_double","gaus",-20,20);
-  TFitResultPtr fit_pull_single = h_pull_single->Fit(f_pull_single,"QSWL");
-  TFitResultPtr fit_pull_double = h_pull_double->Fit(f_pull_double,"QSWL");
-  h_pull_single->Draw("HIST");
-  h_pull_single->GetYaxis()->SetRangeUser(0,h_pull_double->GetMaximum()*1.45);
-  h_pull_double->Draw("HIST SAME");
-  TLegend* leg5 = can5->BuildLegend(0.47,0.74,0.92,0.88);
+      TCanvas* can3 = new TCanvas;
+      h_runs_double_pPb->Draw("P");
+      h_runs_single->GetFunction("pol0")->SetLineColor(kBlue);
+      h_runs_double->GetFunction("pol0")->SetLineColor(kRed);
+      h_runs_single->GetFunction("pol0")->Draw("SAME");
+      h_runs_double->GetFunction("pol0")->Draw("SAME");
+      h_runs_single_pPb->Draw("PSAME");
+      h_runs_double_Pbp->Draw("PSAME");
+      h_runs_single_Pbp->Draw("PSAME");
+      TLegend* leg3 = new TLegend(0.3,0.60,0.8,0.80);
+      leg3->AddEntry(h_runs_single_pPb,"","pl");
+      leg3->AddEntry(h_runs_single_Pbp,"","pl");
+      leg3->AddEntry(h_runs_double_pPb,"","pl");
+      leg3->AddEntry(h_runs_double_Pbp,"","pl");
 #ifdef __CINT__
-  SetLegAtt(leg5);
+      SetLegAtt(leg3);
 #endif
-  f_pull_single->SetLineWidth(2);
-  f_pull_double->SetLineWidth(2);
-  f_pull_single->SetLineColor(kBlack);
-  f_pull_double->SetLineColor(kRed);
-  f_pull_single->Draw("SAME L");
-  f_pull_double->Draw("SAME L");
-  leg5->Draw();
+      leg3->Draw();
 #ifdef __CINT__
-  DataText(true,true);
+      CMSText(true,true);
 #endif
-  cout << "GAUSSIAN FITS (Pull)" << endl
-       << "single: mean=" << fit_pull_single->Parameter(1) << " +- " << fit_pull_single->ParError(1) << " "
-       << "sigma=" << fit_pull_single->Parameter(2) << " +- " << fit_pull_single->ParError(2) << endl
-       << "double: mean=" << fit_pull_double->Parameter(1) << " +- " << fit_pull_double->ParError(1) << " "
-       << "sigma=" << fit_pull_double->Parameter(2) << " +- " << fit_pull_double->ParError(2) << endl;
-  can5->SaveAs((string("plots/CS_pull")+string(".pdf")).c_str());
+      can3->SaveAs((string("plots/CS_runs")+string(".pdf")).c_str());
+      for(int bin=1; bin <= h_runs_double_pPb->GetNbinsX(); bin++)
+        {
+          ostringstream ss_bin; ss_bin << bin;
+          h_runs_double_pPb->GetXaxis()->SetBinLabel(bin,ss_bin.str().c_str());
+        }
+      h_runs_double_pPb->GetXaxis()->SetLabelSize(0.07);
+      can3->SaveAs((string("plots/CS_runs_pas")+string(".pdf")).c_str());
 
+      ///////////////////////////////////////////////////////////////////////
+      //Noise Systematic Uncertainty
+      if(draw)
+        {
+          TCanvas* can4 = new TCanvas;
+          h_runs_fnoise_single->SetMarkerStyle(21);
+          h_runs_fnoise_single->SetMarkerColor(kRed);
+          h_runs_fnoise_double->SetMarkerColor(kBlue);
+          h_runs_fnoise_single->SetLineColor(kRed);
+          h_runs_fnoise_double->SetLineColor(kBlue);
+          h_runs_fnoise_single->GetYaxis()->SetRangeUser(TMath::Min(h_runs_fnoise_single->GetMinimum(),h_runs_fnoise_double->GetMinimum())/3.,TMath::Max(h_runs_fnoise_single->GetMaximum(),h_runs_fnoise_double->GetMaximum())*3.);
+          h_runs_fnoise_single->Draw("HIST P");
+          h_runs_fnoise_double->Draw("HIST P SAME");
+          TLegend* leg4 = new TLegend(0.3,0.60,0.8,0.80);
+          leg4->AddEntry(h_runs_fnoise_single,"","pl");
+          leg4->AddEntry(h_runs_fnoise_double,"","pl");
+#ifdef __CINT__
+          SetLegAtt(leg4);
+#endif
+          leg4->Draw();
+#ifdef __CINT__
+          CMSText(true,true);
+#endif
+        }
+
+      ///////////////////////////////////////////////////////////////////////
+      //PULL Distribution
+      TH1D* h_pull_single = new TH1D("h_pull_single","E>8 GeV (single-arm);#frac{x-#mu}{#sigma};N_{run}",19,-8,8);
+      TH1D* h_pull_double = new TH1D("h_pull_double","E>2.5 GeV (double-arm);#frac{x-#mu}{#sigma};N_{run}",19,-8,8);
+      double pull2_avg_single = 0;
+      double pull_avg_single = 0;
+      double pull2_avg_double = 0;
+      double pull_avg_double = 0;
+      for (int run=0; run<int(run_num.size()); run++)
+        {
+          const double pull_single = (h_runs_single->GetBinContent(run+1) - fit_runs_single->Parameter(0) ) / h_runs_single->GetBinError(run+1);
+          const double pull_double = (h_runs_double->GetBinContent(run+1) - fit_runs_double->Parameter(0) ) / h_runs_double->GetBinError(run+1);
+          pull2_avg_single += pull_single * pull_single;
+          pull2_avg_double += pull_double * pull_double;
+          pull_avg_single += pull_single;
+          pull_avg_double += pull_double;
+          h_pull_single->Fill(pull_single);
+          h_pull_double->Fill(pull_double);
+        }
+
+      double N = double(run_num.size());
+      double sigma_pull_single = sqrt( (pull2_avg_single - pull_avg_single*pull_avg_single/N)/(N-1) );
+      double sigma_pull_double = sqrt( (pull2_avg_double - pull_avg_double*pull_avg_double/N)/(N-1) );
+
+
+
+      h_pull_double->SetLineColor(kRed);
+      h_pull_single->SetLineColor(kBlack);
+      h_pull_double->SetMarkerColor(kRed);
+      h_pull_single->SetMarkerColor(kBlack);
+      TCanvas* can5 = new TCanvas;
+      TF1* f_pull_single = new TF1("pull_single","gaus",-20,20);
+      TF1* f_pull_double = new TF1("pull_double","gaus",-20,20);
+      TFitResultPtr fit_pull_single = h_pull_single->Fit(f_pull_single,"QSWL");
+      TFitResultPtr fit_pull_double = h_pull_double->Fit(f_pull_double,"QSWL");
+      h_pull_single->Draw("HIST");
+      h_pull_single->GetYaxis()->SetRangeUser(0,h_pull_double->GetMaximum()*1.45);
+      h_pull_double->Draw("HIST SAME");
+      TLegend* leg5 = can5->BuildLegend(0.47,0.74,0.92,0.88);
+#ifdef __CINT__
+      SetLegAtt(leg5);
+#endif
+      f_pull_single->SetLineWidth(2);
+      f_pull_double->SetLineWidth(2);
+      f_pull_single->SetLineColor(kBlack);
+      f_pull_double->SetLineColor(kRed);
+      f_pull_single->Draw("SAME L");
+      f_pull_double->Draw("SAME L");
+      leg5->Draw();
+#ifdef __CINT__
+      CMSText(true,true);
+#endif
+      cout << "Calculated Mean and RMS" << endl
+           << "mean = " << pull_avg_single/N << " sigma = " << sigma_pull_single << " " << h_runs_fnoise_single->GetRMS() << endl
+           << "mean = " << pull_avg_double/N << " sigma = " << sigma_pull_double << endl << endl;
+
+      cout << "GAUSSIAN FITS (Pull)" << endl
+           << "single: mean=" << fit_pull_single->Parameter(1) << " +- " << fit_pull_single->ParError(1) << " "
+           << "sigma=" << fit_pull_single->Parameter(2) << " +- " << fit_pull_single->ParError(2) << endl
+           << "double: mean=" << fit_pull_double->Parameter(1) << " +- " << fit_pull_double->ParError(1) << " "
+           << "sigma=" << fit_pull_double->Parameter(2) << " +- " << fit_pull_double->ParError(2) << endl;
+      can5->SaveAs((string("plots/CS_pull")+string(".pdf")).c_str());
+    }
+
+}
+
+
+
+string cutToString(double cut)
+{
+  ostringstream ss_cut;
+  int precision;
+  if (fmod(cut,1.) < 1e-10)
+    precision = 0;
+  else if (fmod(cut,0.1) < 1e-10 || fmod(cut,0.1) - 0.1 > -1e-10)
+    precision = 1;
+  else
+    precision = 2;
+  ss_cut << fixed << setprecision(precision) << cut;
+  return ss_cut.str();
 }
