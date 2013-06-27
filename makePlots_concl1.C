@@ -5,7 +5,7 @@
 #include "TROOT.h"
 
 #define CSe 0.082
-#define CSe2 0.017
+#define CSe2 0.020
 
 
 
@@ -84,46 +84,46 @@ void makePlots_concl1()
   pp_epos->SetName("pp_epos");
   pp_epos->SetTitle("EPOS");
   pp_epos->SetPoint(0,1.15,0.064783);
-  SetAttributes(pp_epos,kBlue,22);
+  SetAttributes(pp_epos,kGreen-2,26);
   TGraphErrors* pb_epos  = new TGraphErrors(1);
   pb_epos->SetName("pb_epos");
   pb_epos->SetTitle("EPOS");
   pb_epos->SetPoint(0,1.15,2.096168);
-  SetAttributes(pb_epos,kBlue,22);
+  SetAttributes(pb_epos,kGreen-2,26);
 
   TGraphErrors* pp_eposlhc  = new TGraphErrors(1);
   pp_eposlhc->SetName("pp_eposlhc");
   pp_eposlhc->SetTitle("EPOSLHC");
   pp_eposlhc->SetPoint(0,1.1,0.067448);
-  SetAttributes(pp_eposlhc,kGreen-2,23);
+  SetAttributes(pp_eposlhc,kGreen-1,22);
   TGraphErrors* pb_eposlhc  = new TGraphErrors(1);
   pb_eposlhc->SetName("pb_eposlhc");
   pb_eposlhc->SetTitle("EPOSLHC");
   pb_eposlhc->SetPoint(0,1.1,2.085703);
-  SetAttributes(pb_eposlhc,kGreen-2,23);
+  SetAttributes(pb_eposlhc,kGreen-1,22);
 
 
   TGraphErrors* pp_qgsjetii03  = new TGraphErrors(1);
   pp_qgsjetii03->SetName("pp_qgsjetii03");
   pp_qgsjetii03->SetTitle("QGSJETII-03");
   pp_qgsjetii03->SetPoint(0,1,0.073279);
-  SetAttributes(pp_qgsjetii03,kMagenta-2,25);
+  SetAttributes(pp_qgsjetii03,kBlue-2,28);
   TGraphErrors* pb_qgsjetii03  = new TGraphErrors(1);
   pb_qgsjetii03->SetName("pb_qgsjetii03");
   pb_qgsjetii03->SetTitle("QGSJETII-03");
   pb_qgsjetii03->SetPoint(0,1,2.094112);
-  SetAttributes(pb_qgsjetii03,kMagenta-2,25);
+  SetAttributes(pb_qgsjetii03,kBlue-2,28);
 
   TGraphErrors* pp_qgsjetii  = new TGraphErrors(1);
   pp_qgsjetii->SetName("pp_qgsjetii");
   pp_qgsjetii->SetTitle("QGSJETII-04");
   pp_qgsjetii->SetPoint(0,1.05,0.069422);
-  SetAttributes(pp_qgsjetii,kMagenta,24);
+  SetAttributes(pp_qgsjetii,kBlue,34);
   TGraphErrors* pb_qgsjetii  = new TGraphErrors(1);
   pb_qgsjetii->SetName("pb_qgsjetii");
   pb_qgsjetii->SetTitle("QGSJETII-04");
   pb_qgsjetii->SetPoint(0,1.05,2.176422);
-  SetAttributes(pb_qgsjetii,kMagenta,24);
+  SetAttributes(pb_qgsjetii,kBlue,34);
 
 
   TGraphErrors* pp_fit  = new TGraphErrors(1);
@@ -131,29 +131,29 @@ void makePlots_concl1()
   pp_fit->SetTitle("COMPETE and Glauber");
   pp_fit->SetPoint(0,0.95,0.070);
   pp_fit->SetPointError(0,0,0.070*0.04);
-  SetAttributes(pp_fit,kBlack,20);
+  SetAttributes(pp_fit,kBlack,21);
   TGraphErrors* pb_fit  = new TGraphErrors(1);
   pb_fit->SetName("pb_fit");
   pb_fit->SetTitle("COMPETE and Glauber");
   pb_fit->SetPoint(0,0.95,2.130);
   pb_fit->SetPointError(0,0,0.04);
-  SetAttributes(pb_fit,kBlack,20);
+  SetAttributes(pb_fit,kBlack,21);
 
   TGraphErrors* pb_this  = new TGraphErrors(1);
   pb_this->SetName("pb_this");
-  pb_this->SetTitle("THIS WORK");
+  pb_this->SetTitle("CMS");
   pb_this->SetPoint(0,0.9,CS);
   pb_this->SetPointError(0,0,CS*CSe);
-  SetAttributes(pb_this,kRed,21);
+  SetAttributes(pb_this,kRed,20);
   TGraphErrors* pb_this_up  = new TGraphErrors(1);
   pb_this_up->SetName("pb_this_up");
-  pb_this_up->SetTitle("THIS WORK");
+  pb_this_up->SetTitle("CMS");
   pb_this_up->SetPoint(0,0.9,CS*(1+CSe2));
   SetAttributes(pb_this_up,kRed,23);
   pb_this_up->SetMarkerSize(1.2);
   TGraphErrors* pb_this_down  = new TGraphErrors(1);
   pb_this_down->SetName("pb_this_down");
-  pb_this_down->SetTitle("THIS WORK");
+  pb_this_down->SetTitle("CMS");
   pb_this_down->SetPoint(0,0.9,CS*(1.-CSe2));
   SetAttributes(pb_this_down,kRed,22);
   pb_this_down->SetMarkerSize(1.2);
@@ -170,8 +170,8 @@ void makePlots_concl1()
 
   pb_epos->GetXaxis()->SetLimits(0.6,1.4);
   pb_epos->GetXaxis()->SetNdivisions(0);
-  pb_epos->GetHistogram()->SetMaximum(2.430);
-  pb_epos->GetHistogram()->SetMinimum(1.830);
+  pb_epos->GetHistogram()->SetMaximum(2.350);
+  pb_epos->GetHistogram()->SetMinimum(1.750);
   ///RANGE
 
   can1->cd(1);
@@ -194,7 +194,7 @@ void makePlots_concl1()
   TLegend* leg1 = new TLegend(0.283,0.157,0.884,0.357);
   SetLegAtt(leg1);
   leg1->AddEntry(pb_this,"CMS","p");
-  leg1->AddEntry(pb_fit,"Menon et al. + Glauber","p");
+  leg1->AddEntry(pb_fit,"(COMPETE+TOTEM) + Glauber","p");
   leg1->AddEntry(pb_epos,"EPOS","p");
   leg1->AddEntry(pb_eposlhc,"EPOS-LHC","p");
   leg1->AddEntry(pb_qgsjetii03,"QGSJetII-03","p");
@@ -212,8 +212,8 @@ void makePlots_concl1()
   pb_epos->GetYaxis()->SetTitle("#sigma_{inel} [b]");
   pb_epos->GetXaxis()->SetLimits(0.8,1.25);
   pb_epos->GetXaxis()->SetNdivisions(0);
-  pb_epos->GetHistogram()->SetMaximum(2.40);
-  pb_epos->GetHistogram()->SetMinimum(1.95);
+  pb_epos->GetHistogram()->SetMaximum(CS*1.2); //SetRangeUser does not work here
+  pb_epos->GetHistogram()->SetMinimum(CS*0.9);
 
   pb_epos->Draw("AP");
   pb_eposlhc->Draw("P");
@@ -224,12 +224,12 @@ void makePlots_concl1()
   pb_this_up->Draw("P");
   pb_this_down->Draw("P");
 
-  leg1->SetX1NDC(0.5);
+  leg1->SetX1NDC(0.28);
   leg1->SetY1NDC(0.72);
-  leg1->SetX2NDC(0.915);
+  leg1->SetX2NDC(0.88);
   leg1->SetY2NDC(0.943);
   leg1->Draw();
-  DataText(0,0);
+  CMSText(1,0,0);
   can2->SaveAs((string("plots/concl_1_PAS")+string(".pdf")).c_str());
 
 

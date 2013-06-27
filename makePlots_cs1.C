@@ -28,7 +28,9 @@ using namespace std;
 #define _LumiCorr 1.0925
 #define _LumiError 0.08
 #define _CSEstimate 2.122
-#define _CSEstimate_e 0.02
+#define _CSEstimate_single 2.117
+#define _CSEstimate_double 2.127
+#define _CSEstimate_e 0.03
 
 string cutToString(double cut);
 void makePlots_cs1(bool draw = 1,double cut_value_single = 8., double cut_value_double = 2.5);
@@ -84,8 +86,11 @@ void makePlots_cs1(bool draw,double cut_value_single, double cut_value_double)
   TH1D* h_runs_single_Pbp = new TH1D("h_runs_single_Pbp","",run_num.size(),-0.5,run_num.size()-0.5);// h_runs_single->SetName("h_runs_single");
   TH1D* h_runs_double_Pbp = new TH1D("h_runs_double_Pbp","",run_num.size(),-0.5,run_num.size()-0.5);// h_runs_single->SetName("h_runs_double");
 
-  TH1D* h_runs_fnoise_single = new TH1D("h_runs_fnoise_single","",run_num.size(),-0.5,run_num.size()-0.5);
-  TH1D* h_runs_fnoise_double = new TH1D("h_runs_fnoise_double","",run_num.size(),-0.5,run_num.size()-0.5);
+  TH1D* h_runs_fnoise_single = new TH1D("h_runs_fnoise_single","E_{HF}>8 GeV (single-arm);run;f_{noise}",run_num.size(),-0.5,run_num.size()-0.5);
+  TH1D* h_runs_fnoise_double = new TH1D("h_runs_fnoise_double","E_{HF}>2.5 GeV (double-arm);run;f_{noise}",run_num.size(),-0.5,run_num.size()-0.5);
+
+  TH1D* h_runs_pull_single = new TH1D("h_runs_pull_single","E_{HF}>8 GeV (single-arm);#frac{x-#mu}{#sigma}",49,-7,7);
+  TH1D* h_runs_pull_double = new TH1D("h_runs_pull_double","E_{HF}>2.5 GeV (double-arm);#frac{x-#mu}{#sigma}",49,-7,7);
 
   TFile f("plots/corr_factors.root");
   TVectorD* f_em = NULL;
@@ -119,9 +124,84 @@ void makePlots_cs1(bool draw,double cut_value_single, double cut_value_double)
   double sigma_em_runs_single=0;
   double sigma_mc_runs_single=0;
   double sigma_pu_runs_single=0;
+  double sigma_oi_runs_single=0;
   double sigma_em_runs_double=0;
   double sigma_mc_runs_double=0;
   double sigma_pu_runs_double=0;
+  double sigma_oi_runs_double=0;
+
+  ///////////////////////////////////////////////////////////////////////
+  //Noise Systematic Uncertainty
+  double f_noise_avg_single=0;
+  double f_noise_avg_double=0;
+  double f_noise2_avg_single=0;
+  double f_noise2_avg_double=0;
+  for (int run=0; run<int(run_num.size()); run++)
+    {
+      TFile* file = TFile::Open("histos_old.root");
+      ostringstream runname_ss;
+      runname_ss << run_num[run];
+      string runname = runname_ss.str();
+      ostringstream filename_ss;
+      filename_ss.str(""); filename_ss << "data" << runname << "/data" << runname << "_h_hf_cut_single_noise";
+      TH1D* h_noise_single=(TH1D*)file->Get(filename_ss.str().c_str());
+      filename_ss.str(""); filename_ss << "data" << runname << "/data" << runname << "_h_hf_cut_double_noise";
+      TH1D* h_noise_double=(TH1D*)file->Get(filename_ss.str().c_str());
+
+
+
+      ///////////////////////////////////////////////////////////////////////
+      //Noise
+      double f_noise_single = h_noise_single->GetBinContent(h_noise_single->FindBin(cut_value_single))/h_noise_single->GetBinContent(1);
+      double f_noise_double = h_noise_double->GetBinContent(h_noise_double->FindBin(cut_value_double))/h_noise_double->GetBinContent(1);
+      h_runs_fnoise_single->Fill(run,f_noise_single);
+      h_runs_fnoise_double->Fill(run,f_noise_double);
+      f_noise_avg_single += f_noise_single;
+      f_noise2_avg_single += pow(f_noise_single,2);
+      f_noise_avg_double += f_noise_double;
+      f_noise2_avg_double += pow(f_noise_double,2);
+    }
+      double N = double(run_num.size());
+      double fnoise_e_single = sqrt( (f_noise2_avg_single - f_noise_avg_single*f_noise_avg_single/N)/(N-1) );
+      double fnoise_e_double = sqrt( (f_noise2_avg_double - f_noise_avg_double*f_noise_avg_double/N)/(N-1) );
+  cout << "Noise Uncertainty" << endl
+       << "single: mean=" << f_noise_avg_single/N << " rms=" << fnoise_e_single << endl
+       << "double: mean=" << f_noise_avg_double/N << " rms=" << fnoise_e_double << endl
+       << endl;
+  if(draw)
+    {
+      TCanvas* can4 = new TCanvas;
+      h_runs_fnoise_single->SetMarkerStyle(21);
+      h_runs_fnoise_single->SetMarkerColor(kRed);
+      h_runs_fnoise_double->SetMarkerColor(kBlue);
+      h_runs_fnoise_single->SetLineColor(kRed);
+      h_runs_fnoise_double->SetLineColor(kBlue);
+      h_runs_fnoise_single->GetYaxis()->SetRangeUser(TMath::Min(h_runs_fnoise_single->GetMinimum(),h_runs_fnoise_double->GetMinimum())/3.,TMath::Max(h_runs_fnoise_single->GetMaximum(),h_runs_fnoise_double->GetMaximum())*3.);
+      h_runs_fnoise_single->Draw("HIST P");
+      h_runs_fnoise_double->Draw("HIST P SAME");
+      TLegend* leg4 = new TLegend(0.3,0.60,0.8,0.80);
+      leg4->AddEntry(h_runs_fnoise_single,h_runs_fnoise_single->GetTitle(),"pl");
+      leg4->AddEntry(h_runs_fnoise_double,h_runs_fnoise_double->GetTitle(),"pl");
+#ifdef __CINT__
+      SetLegAtt(leg4);
+#endif
+      leg4->Draw();
+#ifdef __CINT__
+      CMSText(true,true);
+#endif
+      TMarker *m_single = new TMarker(run_num.size(),f_noise_avg_single/N,5);
+      TMarker *m_double = new TMarker(run_num.size(),f_noise_avg_double/N,5);
+
+      m_single->SetMarkerColor(h_runs_fnoise_single->GetMarkerColor());
+      m_double->SetMarkerColor(h_runs_fnoise_double->GetMarkerColor());
+
+      m_single->SetMarkerSize(1.5);
+      m_double->SetMarkerSize(1.5);
+
+      m_single->Draw("SAME");
+      m_double->Draw("SAME");
+      can4->SaveAs("plots/noise_runs_final.pdf");
+    }
 
   for (int run=0; run<int(run_num.size()); run++)
     {
@@ -179,8 +259,6 @@ void makePlots_cs1(bool draw,double cut_value_single, double cut_value_double)
       //Noise
       double f_noise_single = h_noise_single->GetBinContent(h_noise_single->FindBin(cut_value_single))/h_noise_single->GetBinContent(1);
       double f_noise_double = h_noise_double->GetBinContent(h_noise_double->FindBin(cut_value_double))/h_noise_double->GetBinContent(1);
-      h_runs_fnoise_single->Fill(run,f_noise_single);
-      h_runs_fnoise_double->Fill(run,f_noise_double);
 
       ///////////////////////////////////////////////////////////////////////
       //ZB
@@ -201,9 +279,11 @@ void makePlots_cs1(bool draw,double cut_value_single, double cut_value_double)
       double sigma_em_run_single=0;
       double sigma_mc_run_single=0;
       double sigma_pu_run_single=0;
+      double sigma_oi_run_single=0;
       double sigma_em_run_double=0;
       double sigma_mc_run_double=0;
       double sigma_pu_run_double=0;
+      double sigma_oi_run_double=0;
       int n = 0;
 
 
@@ -298,6 +378,8 @@ void makePlots_cs1(bool draw,double cut_value_single, double cut_value_double)
           double sigma_em_double = fabs(n_em_double / (eff_acc_double / f_pileup_double - f_noise_double) * eff_em_double_e);
           double sigma_pu_single = fabs(n_single / (f_pileup_single - pow(f_pileup_single,2) * f_noise_single / eff_acc_single) * _CSEstimate_e *(f_pileup_single-1));
           double sigma_pu_double = fabs(n_double / (f_pileup_double - pow(f_pileup_double,2) * f_noise_double / eff_acc_double) * _CSEstimate_e *(f_pileup_double-1));
+          double sigma_oi_single = fabs((n_zb_single/f_pileup_single - n_single) / pow(1/f_pileup_single - f_noise_single,2) * fnoise_e_single);
+          double sigma_oi_double = fabs((n_zb_double/f_pileup_double - n_double) / pow(1/f_pileup_double - f_noise_double,2) * fnoise_e_double);
 
           h_single->SetBinContent(i, n_single);
           h_double->SetBinContent(i, n_double);
@@ -311,6 +393,9 @@ void makePlots_cs1(bool draw,double cut_value_single, double cut_value_double)
           h_vis_double->SetBinError(i, error_double);
           h_had_single->SetBinError(i, error_single);
           h_had_double->SetBinError(i, error_double);
+
+          h_runs_pull_single->Fill((n_single-_CSEstimate_single)/error_single);
+          h_runs_pull_double->Fill((n_double-_CSEstimate_double)/error_double);
 
           if(i<00)
             {
@@ -339,6 +424,8 @@ void makePlots_cs1(bool draw,double cut_value_single, double cut_value_double)
           sigma_em_run_double += sigma_em_double;
           sigma_pu_run_single += sigma_pu_single;
           sigma_pu_run_double += sigma_pu_double;
+          sigma_oi_run_single += sigma_oi_single;
+          sigma_oi_run_double += sigma_oi_double;
         }//Loop over LumiSections
 
       n_noise_run_single /= double(n);
@@ -369,6 +456,8 @@ void makePlots_cs1(bool draw,double cut_value_single, double cut_value_double)
       sigma_mc_run_double /= double(n);
       sigma_pu_run_single /= double(n);
       sigma_pu_run_double /= double(n);
+      sigma_oi_run_single /= double(n);
+      sigma_oi_run_double /= double(n);
 
       sigma_em_runs_single += sigma_em_run_single;
       sigma_em_runs_double += sigma_em_run_double;
@@ -376,13 +465,17 @@ void makePlots_cs1(bool draw,double cut_value_single, double cut_value_double)
       sigma_mc_runs_double += sigma_mc_run_double;
       sigma_pu_runs_single += sigma_pu_run_single;
       sigma_pu_runs_double += sigma_pu_run_double;
+      sigma_oi_runs_single += sigma_oi_run_single;
+      sigma_oi_runs_double += sigma_oi_run_double;
 
       cout << "sigma_em_single=" << sigma_em_run_single/_CSEstimate*100 << "%"
            << " sigma_mc_single=" << sigma_mc_run_single/_CSEstimate*100 << "%"
-           << " sigma_pu_single=" << sigma_pu_run_single/_CSEstimate*100  << "%"<< endl;
+           << " sigma_pu_single=" << sigma_pu_run_single/_CSEstimate*100  << "%"
+           << " sigma_noise_single=" << sigma_oi_run_single/_CSEstimate*100  << "%"<< endl;
       cout << "sigma_em_double=" << sigma_em_run_double/_CSEstimate*100 << "%"
            << " sigma_mc_double=" << sigma_mc_run_double/_CSEstimate*100 << "%"
-           << " sigma_pu_single=" << sigma_pu_run_double/_CSEstimate*100  << "%"<< endl;
+           << " sigma_pu_single=" << sigma_pu_run_double/_CSEstimate*100  << "%"
+           << " sigma_oi_single=" << sigma_oi_run_double/_CSEstimate*100  << "%"<< endl;
 
       h_double->SetMarkerColor(kRed);
       h_double->SetLineColor(kRed);
@@ -534,6 +627,8 @@ void makePlots_cs1(bool draw,double cut_value_single, double cut_value_double)
   sigma_mc_runs_double /= double(n);
   sigma_pu_runs_single /= double(n);
   sigma_pu_runs_double /= double(n);
+  sigma_oi_runs_single /= double(n);
+  sigma_oi_runs_double /= double(n);
 
   h_runs_double_pPb->GetYaxis()->SetRangeUser(1.9,2.7);
   h_runs_double_pPb->SetLineColor(kRed);
@@ -597,14 +692,13 @@ void makePlots_cs1(bool draw,double cut_value_single, double cut_value_double)
 
   cout << " ! sigma_em_single=" << sigma_em_runs_single/fit_runs_single->Parameter(0)*100 << "%" << endl
        << " ! sigma_mc_single=" << sigma_mc_runs_single/fit_runs_single->Parameter(0)*100 << "%" << endl
-       << " ! sigma_pu_single=" << sigma_pu_runs_single/fit_runs_single->Parameter(0)*100  << "%" << endl <<endl;
+       << " ! sigma_pu_single=" << sigma_pu_runs_single/fit_runs_single->Parameter(0)*100  << "%" << endl
+       << " ! sigma_oi_single=" << sigma_oi_runs_single/fit_runs_single->Parameter(0)*100  << "%" << endl <<endl;
   cout << " ! sigma_em_double=" << sigma_em_runs_double/fit_runs_double->Parameter(0)*100 << "%" << endl
        << " ! sigma_mc_double=" << sigma_mc_runs_double/fit_runs_double->Parameter(0)*100 << "%" << endl
-       << " ! sigma_pu_double=" << sigma_pu_runs_double/fit_runs_double->Parameter(0)*100  << "%" << endl << endl;
-  cout << " ! sigma_em=" << (sigma_em_runs_single+sigma_em_runs_double)/2./sigmainel*100 << "%" << endl
-       << " ! sigma_mc=" << (sigma_mc_runs_single+sigma_mc_runs_double)/2./sigmainel*100 << "%" << endl
-       << " ! sigma_pu=" << (sigma_pu_runs_single+sigma_pu_runs_double)/2./sigmainel*100  << "%" << endl
-       << " ! sigma_combine=" << fabs(fit_runs_single->Parameter(0)-fit_runs_double->Parameter(0))/2./sigmainel*100 << "%" << endl << endl;
+       << " ! sigma_pu_double=" << sigma_pu_runs_double/fit_runs_double->Parameter(0)*100  << "%" << endl
+       << " ! sigma_oi_double=" << sigma_oi_runs_double/fit_runs_double->Parameter(0)*100  << "%" << endl << endl;
+  cout << " ! sigma_combine=" << fabs(fit_runs_single->Parameter(0)-fit_runs_double->Parameter(0))/2./sigmainel*100 << "%" << endl << endl;
 
 
   //Write to files
@@ -668,35 +762,11 @@ void makePlots_cs1(bool draw,double cut_value_single, double cut_value_double)
       h_runs_double_pPb->GetXaxis()->SetLabelSize(0.07);
       can3->SaveAs((string("plots/CS_runs_pas")+string(".pdf")).c_str());
 
-      ///////////////////////////////////////////////////////////////////////
-      //Noise Systematic Uncertainty
-      if(draw)
-        {
-          TCanvas* can4 = new TCanvas;
-          h_runs_fnoise_single->SetMarkerStyle(21);
-          h_runs_fnoise_single->SetMarkerColor(kRed);
-          h_runs_fnoise_double->SetMarkerColor(kBlue);
-          h_runs_fnoise_single->SetLineColor(kRed);
-          h_runs_fnoise_double->SetLineColor(kBlue);
-          h_runs_fnoise_single->GetYaxis()->SetRangeUser(TMath::Min(h_runs_fnoise_single->GetMinimum(),h_runs_fnoise_double->GetMinimum())/3.,TMath::Max(h_runs_fnoise_single->GetMaximum(),h_runs_fnoise_double->GetMaximum())*3.);
-          h_runs_fnoise_single->Draw("HIST P");
-          h_runs_fnoise_double->Draw("HIST P SAME");
-          TLegend* leg4 = new TLegend(0.3,0.60,0.8,0.80);
-          leg4->AddEntry(h_runs_fnoise_single,"","pl");
-          leg4->AddEntry(h_runs_fnoise_double,"","pl");
-#ifdef __CINT__
-          SetLegAtt(leg4);
-#endif
-          leg4->Draw();
-#ifdef __CINT__
-          CMSText(true,true);
-#endif
-        }
 
       ///////////////////////////////////////////////////////////////////////
       //PULL Distribution
-      TH1D* h_pull_single = new TH1D("h_pull_single","E>8 GeV (single-arm);#frac{x-#mu}{#sigma};N_{run}",19,-8,8);
-      TH1D* h_pull_double = new TH1D("h_pull_double","E>2.5 GeV (double-arm);#frac{x-#mu}{#sigma};N_{run}",19,-8,8);
+      TH1D* h_pull_single = new TH1D("h_pull_single","E_{HF}>8 GeV (single-arm);#frac{x-#mu}{#sigma};N_{run}",19,-8,8);
+      TH1D* h_pull_double = new TH1D("h_pull_double","E_{HF}>2.5 GeV (double-arm);#frac{x-#mu}{#sigma};N_{run}",19,-8,8);
       double pull2_avg_single = 0;
       double pull_avg_single = 0;
       double pull2_avg_double = 0;
@@ -746,7 +816,7 @@ void makePlots_cs1(bool draw,double cut_value_single, double cut_value_double)
       CMSText(true,true);
 #endif
       cout << "Calculated Mean and RMS" << endl
-           << "mean = " << pull_avg_single/N << " sigma = " << sigma_pull_single << " " << h_runs_fnoise_single->GetRMS() << endl
+           << "mean = " << pull_avg_single/N << " sigma = " << sigma_pull_single << endl
            << "mean = " << pull_avg_double/N << " sigma = " << sigma_pull_double << endl << endl;
 
       cout << "GAUSSIAN FITS (Pull)" << endl
@@ -755,6 +825,30 @@ void makePlots_cs1(bool draw,double cut_value_single, double cut_value_double)
            << "double: mean=" << fit_pull_double->Parameter(1) << " +- " << fit_pull_double->ParError(1) << " "
            << "sigma=" << fit_pull_double->Parameter(2) << " +- " << fit_pull_double->ParError(2) << endl;
       can5->SaveAs((string("plots/CS_pull")+string(".pdf")).c_str());
+
+
+      TCanvas* can6 = new TCanvas;
+      h_runs_pull_double->SetLineColor(kRed);
+      h_runs_pull_single->SetLineColor(kBlack);
+      h_runs_pull_double->SetMarkerColor(kRed);
+      h_runs_pull_single->SetMarkerColor(kBlack);
+      h_runs_pull_single->Draw("HIST");
+      h_runs_pull_single->GetYaxis()->SetRangeUser(0,TMath::Max(h_runs_pull_single->GetMaximum(),h_runs_pull_double->GetMaximum())*1.7);
+      h_runs_pull_double->Draw("HIST SAME");
+      TLegend* leg6 = new TLegend(0.3,0.65,0.8,0.80);
+      ostringstream title;
+      title.str(""); title << fixed << setprecision(1) << "E_{HF}>8 GeV (single-arm) " << "#mu=" << h_runs_pull_single->GetMean() << " #sigma=" << h_runs_pull_single->GetRMS();
+      leg6->AddEntry(h_runs_pull_single,title.str().c_str(),"l");
+      title.str(""); title << fixed << setprecision(1) << "E_{HF}>2.5 GeV (double-arm) " << "#mu=" << h_runs_pull_double->GetMean() << " #sigma=" << h_runs_pull_double->GetRMS();
+      leg6->AddEntry(h_runs_pull_double,title.str().c_str(),"l");
+#ifdef __CINT__
+      SetLegAtt(leg6);
+#endif
+      leg6->Draw();
+#ifdef __CINT__
+      CMSText(true,true);
+#endif
+      can6->SaveAs((string("plots/CS_runs_pull")+string(".pdf")).c_str());
     }
 
 }

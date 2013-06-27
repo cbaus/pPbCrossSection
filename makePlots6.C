@@ -24,25 +24,27 @@ void makePlots6()
   style();
 
   TFile* file = TFile::Open("histos_old.root");
+  TFile* file2 = TFile::Open("histos_mc.root");
   TH1D* a=(TH1D*)file->Get("data210885/data210885_h_perf_hf_totE_single_3gev");
-  TH1D* b=(TH1D*)file->Get("Hijing/Hijing_h_perf_hf_totE_single_3gev");
-  TH1D* c=(TH1D*)file->Get("Epos/Epos_h_perf_hf_totE_single_3gev");
-  TH1D* d=(TH1D*)file->Get("QGSJetII/QGSJetII_h_perf_hf_totE_single_3gev");
+  TH1D* b=(TH1D*)file2->Get("Hijing/Hijing_h_perf_hf_totE_single_3gev");
+  TH1D* c=(TH1D*)file2->Get("Epos/Epos_h_perf_hf_totE_single_3gev");
+  TH1D* d=(TH1D*)file2->Get("QGSJetII/QGSJetII_h_perf_hf_totE_single_3gev");
 
   Show(a,b,c,d,"single");
 
   TFile* file = TFile::Open("histos_old.root");
+  TFile* file2 = TFile::Open("histos_mc.root");
   TH1D* e=(TH1D*)file->Get("data210885/data210885_h_perf_hf_totE_double_1dot5gev");
-  TH1D* f=(TH1D*)file->Get("Hijing/Hijing_h_perf_hf_totE_double_1dot5gev");
-  TH1D* g=(TH1D*)file->Get("Epos/Epos_h_perf_hf_totE_double_1dot5gev");
-  TH1D* h=(TH1D*)file->Get("QGSJetII/QGSJetII_h_perf_hf_totE_double_1dot5gev");
+  TH1D* f=(TH1D*)file2->Get("Hijing/Hijing_h_perf_hf_totE_double_1dot5gev");
+  TH1D* g=(TH1D*)file2->Get("Epos/Epos_h_perf_hf_totE_double_1dot5gev");
+  TH1D* h=(TH1D*)file2->Get("QGSJetII/QGSJetII_h_perf_hf_totE_double_1dot5gev");
 
   Show(e,f,g,h,"double");
 }
 
 void Show(TH1D* a,TH1D* b,TH1D* c,TH1D* d, string type)
 {
-  const int normbin1 = a->FindBin(1000);
+  const int normbin1 = a->FindBin(200);
   const int normbin2 = a->FindBin(1500);
   a->Scale(1./double(a->GetEntries()));
   b->Scale(a->Integral(normbin1,normbin2)/b->Integral(normbin1,normbin2));
@@ -75,6 +77,7 @@ void Show(TH1D* a,TH1D* b,TH1D* c,TH1D* d, string type)
   a->GetYaxis()->SetRangeUser(0.5,5000);
   a->GetXaxis()->SetTitle("_{#sumE_{HF} [GeV]}");
   a->GetYaxis()->SetTitle("events (normalised)");
+  a->GetXaxis()->SetTitleOffset(a->GetXaxis()->GetTitleOffset()*1.1);
 
   a->GetXaxis()->SetNdivisions(505);
 
@@ -83,26 +86,14 @@ void Show(TH1D* a,TH1D* b,TH1D* c,TH1D* d, string type)
   b->Draw("HIST SAME");
   c->Draw("HIST SAME");
   d->Draw("HIST SAME");
-  TLegend* leg = new TLegend(0.1,0.1,0.2,0.2);
-  leg->SetX1(0.55);
-  leg->SetX2(0.85);
-  leg->SetY1(0.67);
-  leg->SetY2(0.87);
+  TLegend* leg = new TLegend(0.24,0.20,0.54,0.4);
   leg->AddEntry(a,"","p");
   leg->AddEntry(b,"","l");
   leg->AddEntry(c,"","l");
   leg->AddEntry(d,"","l");
   SetLegAtt(leg);
-  DataText(1,1);
+  CMSText(1,0,1,type=="single"?"E_{HF} > 8 GeV (single-arm)":"E_{HF} > 2.5 GeV (double-arm)");
   leg->Draw();
-
-
-  TPaveText* text = new TPaveText(0.23,0.23,0.58,0.28,"NDC b t l");
-  text->SetBorderSize(0);
-  text->SetFillStyle(0);
-  text->AddText(type=="single"?"E > 6 GeV (single-arm)":"E > 2 GeV (double-arm)");
-  text->SetTextSize(0.033);
-  text->Draw();
 
   c1->SetLogy();
   c1->SaveAs((string("plots/hf_perf_3_")+type+string(".pdf")).c_str());

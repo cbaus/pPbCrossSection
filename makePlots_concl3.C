@@ -96,8 +96,8 @@ void makePlots_concl3()
   h_qgsjet->SetBinContent(4,2.176422);
   h_qgsjet->SetBinContent(5,2.176422*eff_qgsjet_double);
 
-  SetAttributes(h_data,kRed,21);
-  SetAttributes(h_epos,kGreen-2,22);
+  SetAttributes(h_data,kRed,20);
+  SetAttributes(h_epos,kGreen-1,22);
   SetAttributes(h_qgsjet,kBlue,34);
 
   TCanvas* can1 = new TCanvas;
@@ -138,7 +138,7 @@ void makePlots_concl3()
   double_arm->SetTextSize(0.04);
   double_arm->Draw();
 
-  DataText(0,1);
+  CMSText(1,0,1);
 
   can1->SaveAs((string("plots/concl_3")+string(".pdf")).c_str());
 

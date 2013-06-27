@@ -1,60 +1,22 @@
-void Show(TH1D* a,TH1D* a2,TH1D* b,TH1D* c,TH1D* d,TH1D* e,TH1D* f,string type);
 void ShowStack(TH1D* a,TH1D* a2,TH1D* b,TH1D* c,TH1D* d,TH1D* e,TH1D* f,string type);
 
-void makePlots3()
+void makePlots_crosscheck2()
 {
   gROOT->ProcessLine(" .L style.cc+");
   style();
 
-  // {
-  // TFile* file2 = TFile::Open("histos_old.root");
-  // TFile* file = TFile::Open("histos_old.root");
-  // TH1D* a=(TH1D*)file2->Get("data210885/data210885_h_hfp_hits_coll");
-  // TH1D* a2=(TH1D*)file2->Get("data210885/data210885_h_hfp_hits_noise");
-  // TH1D* b=(TH1D*)file->Get("Hijing/Hijing_h_hfp_hits_coll");
-  // TH1D* c=(TH1D*)file->Get("Epos/Epos_h_hfp_hits_coll");
-  // TH1D* d=(TH1D*)file->Get("QGSJetII/QGSJetII_h_hfp_hits_coll");
-  // TH1D* e=(TH1D*)file->Get("Starlight_DPMJet/Starlight_DPMJet_h_hfp_hits_coll");
-  // TH1D* f=(TH1D*)file->Get("Starlight_Pythia/Starlight_Pythia_h_hfp_hits_coll");
-  // ShowStack(a,a2,b,c,d,e,f,"p");
-  // }
-  // {
-  // TFile* file2 = TFile::Open("histos_old.root");
-  // TFile* file = TFile::Open("histos_old.root");
-  // TH1D* a=(TH1D*)file2->Get("data210885/data210885_h_hfm_hits_coll");
-  // TH1D* a2=(TH1D*)file2->Get("data210885/data210885_h_hfm_hits_noise");
-  // TH1D* b=(TH1D*)file->Get("Hijing/Hijing_h_hfm_hits_coll");
-  // TH1D* c=(TH1D*)file->Get("Epos/Epos_h_hfm_hits_coll");
-  // TH1D* d=(TH1D*)file->Get("QGSJetII/QGSJetII_h_hfm_hits_coll");
-  // TH1D* e=(TH1D*)file->Get("Starlight_DPMJet/Starlight_DPMJet_h_hfm_hits_coll");
-  // TH1D* f=(TH1D*)file->Get("Starlight_Pythia/Starlight_Pythia_h_hfm_hits_coll");
-  // ShowStack(a,a2,b,c,d,e,f,"m");
-  // }
   {
     TFile* file2 = TFile::Open("histos_old.root");
     TFile* file = TFile::Open("histos_mc.root");
-  TH1D* a=(TH1D*)file2->Get("data210885/data210885_h_hf_hits_coll_single");
-  TH1D* a2=(TH1D*)file2->Get("data210885/data210885_h_hf_hits_noise_single");
-  TH1D* b=(TH1D*)file->Get("Hijing/Hijing_h_hf_hits_coll_single");
-  TH1D* c=(TH1D*)file->Get("Epos/Epos_h_hf_hits_coll_single");
-  //TH1D* c=(TH1D*)file->Get("Epos_SL/Epos_SL_h_hf_hits_coll_single");
-  TH1D* d=(TH1D*)file->Get("QGSJetII/QGSJetII_h_hf_hits_coll_single");
-  TH1D* e=(TH1D*)file->Get("Starlight_DPMJet/Starlight_DPMJet_h_hf_hits_coll_single");
-  TH1D* f=(TH1D*)file->Get("Starlight_Pythia/Starlight_Pythia_h_hf_hits_coll_single");
-  ShowStack(a,a2,b,c,d,e,f,"single");
-  }
-  {
-  TFile* file2 = TFile::Open("histos_old.root");
-  TFile* file = TFile::Open("histos_mc.root");
-  TH1D* a=(TH1D*)file2->Get("data210885/data210885_h_hf_hits_coll_double");
-  TH1D* a2=(TH1D*)file2->Get("data210885/data210885_h_hf_hits_noise_double");
-  TH1D* b=(TH1D*)file->Get("Hijing/Hijing_h_hf_hits_coll_double");
-  TH1D* c=(TH1D*)file->Get("Epos/Epos_h_hf_hits_coll_double");
-  //TH1D* c=(TH1D*)file->Get("Epos_SL/Epos_SL_h_hf_hits_coll_double");
-  TH1D* d=(TH1D*)file->Get("QGSJetII/QGSJetII_h_hf_hits_coll_double");
-  TH1D* e=(TH1D*)file->Get("Starlight_DPMJet/Starlight_DPMJet_h_hf_hits_coll_double");
-  TH1D* f=(TH1D*)file->Get("Starlight_Pythia/Starlight_Pythia_h_hf_hits_coll_double");
-  ShowStack(a,a2,b,c,d,e,f,"double");
+  TH1D* a=(TH1D*)file2->Get("data210885/data210885_h_hf_hitdistr_coll");
+  TH1D* a2=(TH1D*)file2->Get("data210885/data210885_h_hf_hitdistr_noise");
+  TH1D* b=(TH1D*)file->Get("Hijing/Hijing_h_hf_hitdistr_coll");
+  TH1D* c=(TH1D*)file->Get("Epos/Epos_h_hf_hitdistr_coll");
+  //TH1D* c=(TH1D*)file->Get("Epos_SL/Epos_SL_h_hf_hitdistr_coll");
+  TH1D* d=(TH1D*)file->Get("QGSJetII/QGSJetII_h_hf_hitdistr_coll");
+  TH1D* e=(TH1D*)file->Get("Starlight_DPMJet/Starlight_DPMJet_h_hf_hitdistr_coll");
+  TH1D* f=(TH1D*)file->Get("Starlight_Pythia/Starlight_Pythia_h_hf_hitdistr_coll");
+  ShowStack(a,a2,b,c,d,e,f,"both");
   }
 }
 
@@ -77,11 +39,22 @@ void ShowStack(TH1D* data,TH1D* noise,TH1D* b,TH1D* c,TH1D* d,TH1D* sl1,TH1D* sl
   //(*toBeRescaled)=bs;
   //RESCALING-------------------------------
 
-  const int normbin = data->FindBin(20);
+    for(int k=0; k<=data->GetNbinsX();k++)
+      {
+        data->SetBinContent(k,data->GetBinContent(k)/data->GetBinWidth(k));
+        noise->SetBinContent(k,noise->GetBinContent(k)/noise->GetBinWidth(k));
+        b->SetBinContent(k,b->GetBinContent(k)/b->GetBinWidth(k));
+        c->SetBinContent(k,c->GetBinContent(k)/c->GetBinWidth(k));
+        d->SetBinContent(k,d->GetBinContent(k)/d->GetBinWidth(k));
+        sl1->SetBinContent(k,sl1->GetBinContent(k)/sl1->GetBinWidth(k));
+        sl2->SetBinContent(k,sl2->GetBinContent(k)/sl2->GetBinWidth(k));
+      }
+
+  const int normbin = data->FindBin(3);
   const int normendbin = data->GetNbinsX();
-  double eposscale=double(c->Integral())/double(sl1->Integral());
+  double eposscale=double(c->Integral())/double(sl1->Integral()); //scale number of events in the two samples
   double eposscale2=double(c->Integral())/double(sl2->Integral());
-  noise->Scale(1./double(data->Integral()) * 48.216 / (9.9845*(1.-(84.+296.)/3568.))); //HLT PAAccept rate is 48.2216HZ compared to 9.9845Hz of noise //(84+296)/3568 get skipped because pf BPTX_quiet
+  noise->Scale(1./double(data->Integral()) * 48.2 / 9.98); //HLT PAAccept rate is 48.2HZ compared to 9.98Hz of noise
   data->Scale(1./double(data->Integral()));
   b->Scale(data->Integral(normbin,normendbin)/b->Integral(normbin,normendbin));
   double eposnorm=data->Integral(normbin,normendbin)/c->Integral(normbin,normendbin);
@@ -94,7 +67,6 @@ void ShowStack(TH1D* data,TH1D* noise,TH1D* b,TH1D* c,TH1D* d,TH1D* sl1,TH1D* sl
   if(sl1->Add(sl2) == kFALSE) {new TCanvas; sl1->Draw(); new TCanvas; sl2->Draw(); cerr << "add failed" << endl; return;}
   TH1D* sl = sl1;
 
-  //data->Add(noise,-1);
   data->SetMarkerSize(1);
 
   // data->SetLineWidth(2);
@@ -141,9 +113,9 @@ void ShowStack(TH1D* data,TH1D* noise,TH1D* b,TH1D* c,TH1D* d,TH1D* sl1,TH1D* sl
   sl->SetTitle("#gamma-p (STARLIGHT+DPMJET/PYTHIA)");
 
   data->GetXaxis()->SetLimits(1,200);
-  data->GetYaxis()->SetRangeUser(1e-6,5e1);
+  data->GetYaxis()->SetRangeUser(1e-9,5e1);
   data->GetXaxis()->SetTitle("E_{HF} [GeV]");
-  data->GetYaxis()->SetTitle("events (normalised)");
+  data->GetYaxis()->SetTitle("#frac{1}{N}#frac{dN}{dE_{HF}}");
   data->GetXaxis()->SetTitleOffset(data->GetXaxis()->GetTitleOffset()*1.1);
 
 
@@ -159,12 +131,12 @@ void ShowStack(TH1D* data,TH1D* noise,TH1D* b,TH1D* c,TH1D* d,TH1D* sl1,TH1D* sl
 
   TCanvas* c1 = new TCanvas;
   data->Draw("P");
-  h_s_bg->Draw("SAME");
+  //h_s_bg->Draw("SAME");
   b->Draw("SAME");
   c->Draw("SAME");
   d->Draw("SAME");
   data->Draw("SAME P");
-  data->Draw("SAME AXIS");
+  //data->Draw("SAME AXIS");
 
   TLegend* leg = new TLegend(0.23,0.72,0.43,0.93);
   SetLegAtt(leg);
@@ -172,19 +144,14 @@ void ShowStack(TH1D* data,TH1D* noise,TH1D* b,TH1D* c,TH1D* d,TH1D* sl1,TH1D* sl
   leg->AddEntry(b,"","p");
   leg->AddEntry(c,"","p");
   leg->AddEntry(d,"","p");
-  leg->AddEntry(sl,"","f");
-  leg->AddEntry(noise,"","f");
+  //leg->AddEntry(sl,"","f");
+  //leg->AddEntry(noise,"","f");
   leg->Draw();
   c1->SetLogy();
   c1->SetLogx();
-  CMSText(1,0,1,type=="single"?"single-arm selection":"double-arm selection");
+  CMSText(1,0,1,"HF+ and HF-");
 
-  TLine* line = new TLine(type=="single"?8:2.5,1e-6,type=="single"?8:2.5,0.1);
-  line->SetLineWidth(2);
-  line->SetLineStyle(2);
-  line->Draw("SAME");
-
-  c1->SaveAs((string("plots/hf_") + type + string("_signal")+string(".pdf")).c_str());
+  c1->SaveAs((string("plots/hf_hitdistr_") + type + string(".pdf")).c_str());
 
 }
 

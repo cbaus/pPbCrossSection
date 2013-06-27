@@ -6,27 +6,20 @@ void makePlots5()
   style();
 
   TFile* file = TFile::Open("histos_old.root");
+  TFile* file2 = TFile::Open("histos_mc.root");
   TH1D* a= (TH1D*)file->Get("data210885/data210885_h_perf_hf_totE_eta_single_3gev");
-  TH1D* b= (TH1D*)file->Get("Hijing/Hijing_h_perf_hf_totE_eta_single_3gev");
-  TH1D* c= (TH1D*)file->Get("Epos/Epos_h_perf_hf_totE_eta_single_3gev");
-  TH1D* d= (TH1D*)file->Get("QGSJetII/QGSJetII_h_perf_hf_totE_eta_single_3gev");
+  TH1D* b= (TH1D*)file2->Get("Hijing/Hijing_h_perf_hf_totE_eta_single_3gev");
+  TH1D* c= (TH1D*)file2->Get("Epos/Epos_h_perf_hf_totE_eta_single_3gev");
+  TH1D* d= (TH1D*)file2->Get("QGSJetII/QGSJetII_h_perf_hf_totE_eta_single_3gev");
 
   Show(a,b,c,d,"single");
 
-  TFile* file = TFile::Open("histos_skiprings.root");
-  TH1D* a= (TH1D*)file->Get("data210885/data210885_h_perf_hf_totE_eta_single_3gev");
-  TH1D* b= (TH1D*)file->Get("Epos/Epos_h_perf_hf_totE_eta_single_3gev");
-  TH1D* c= (TH1D*)file->Get("Epos_SL/Epos_SL_h_perf_hf_totE_eta_single_3gev");
-  TH1D* d= (TH1D*)file->Get("QGSJetII/QGSJetII_h_perf_hf_totE_eta_double_1dot5gev");
-
-  //Show(a,b,c,d,"single");
-
   TFile* file = TFile::Open("histos_old.root");
-  TFile* file2 = TFile::Open("histos.root");
+  TFile* file2 = TFile::Open("histos_mc.root");
   TH1D* e= (TH1D*)file->Get("data210885/data210885_h_perf_hf_totE_eta_double_1dot5gev");
-  TH1D* f= (TH1D*)file->Get("Hijing/Hijing_h_perf_hf_totE_eta_double_1dot5gev");
-  TH1D* g= (TH1D*)file->Get("Epos/Epos_h_perf_hf_totE_eta_double_1dot5gev");
-  TH1D* h= (TH1D*)file->Get("QGSJetII/QGSJetII_h_perf_hf_totE_eta_double_1dot5gev");
+  TH1D* f= (TH1D*)file2->Get("Hijing/Hijing_h_perf_hf_totE_eta_double_1dot5gev");
+  TH1D* g= (TH1D*)file2->Get("Epos/Epos_h_perf_hf_totE_eta_double_1dot5gev");
+  TH1D* h= (TH1D*)file2->Get("QGSJetII/QGSJetII_h_perf_hf_totE_eta_double_1dot5gev");
 
   Show(e,f,g,h,"double");
 }

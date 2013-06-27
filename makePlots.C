@@ -124,11 +124,17 @@ void makePlots(bool draw, double cut_value_single, double cut_value_double)
       b->GetXaxis()->SetRange(2,b->GetNbinsX()*(type[n]=="double"?0.5:0.75));
       a2->GetXaxis()->SetRange(2,a2->GetNbinsX()*(type[n]=="double"?0.5:0.75));
 
-      b->GetYaxis()->SetRangeUser(type[n]=="double"?0.8:0.9,1.001);
-      a2->GetYaxis()->SetRangeUser(type[n]=="double"?5e-5:1e-4,1.01);
+      b->GetYaxis()->SetRangeUser(0.8,1.001);
+      a2->GetYaxis()->SetRangeUser(type[n]=="double"?1e-5:1e-5,1.01);
 
       b->GetXaxis()->SetTitle("E_{HF} tower threshold [GeV]");
       b->GetYaxis()->SetTitle("event fraction");
+      b->GetXaxis()->SetLabelSize(b->GetXaxis()->GetLabelSize()*1.2);
+      b->GetYaxis()->SetLabelSize(b->GetYaxis()->GetLabelSize()*1.2);
+      b->GetXaxis()->SetTitleSize(b->GetXaxis()->GetTitleSize()*1.1);
+      b->GetYaxis()->SetTitleSize(b->GetYaxis()->GetTitleSize()*1.1);
+      b->GetXaxis()->SetTitleOffset(b->GetXaxis()->GetTitleOffset()*1.1);
+      b->GetYaxis()->SetTitleOffset(b->GetYaxis()->GetTitleOffset()*1.1);
 
 
       TGraphErrors* b3 = new TGraphErrors(3);
@@ -156,7 +162,7 @@ void makePlots(bool draw, double cut_value_single, double cut_value_double)
           c->Draw("HIST L SAME");
           d->Draw("HIST L SAME");
 
-          TLine* line = new TLine(cut_value,type[n]=="single"?0.9:0.8,cut_value,1.001);
+          TLine* line = new TLine(cut_value,0.8,cut_value,1.001);
           line->SetLineWidth(2);
           line->SetLineStyle(2);
           line->Draw("SAME");
@@ -164,20 +170,20 @@ void makePlots(bool draw, double cut_value_single, double cut_value_double)
           TLegend* leg = new TLegend(0.1,0.1,0.2,0.2);
           if(type[n]=="single")
             {
-              leg->SetX1(0.21);
-              leg->SetX2(0.54);
-              leg->SetY1(0.30);
-              leg->SetY2(0.50);
+              leg->SetX1(0.22);
+              leg->SetX2(0.56);
+              leg->SetY1(0.35);
+              leg->SetY2(0.58);
 #ifdef __CINT__
               CMSText(1,1,0,"single-arm selection");
 #endif
             }
           if(type[n]=="double")
             {
-              leg->SetX1(0.56);
-              leg->SetX2(0.89);
-              leg->SetY1(0.16);
-              leg->SetY2(0.36);
+              leg->SetX1(0.41);
+              leg->SetX2(0.74);
+              leg->SetY1(0.21);
+              leg->SetY2(0.44);
 #ifdef __CINT__
               CMSText(1,0,1,"double-arm selection");
 #endif
@@ -187,7 +193,7 @@ void makePlots(bool draw, double cut_value_single, double cut_value_double)
           leg->AddEntry(c,"","l");
           leg->AddEntry(d,"","l");
 #ifdef __CINT__
-          SetLegAtt(leg);
+          SetLegAtt(leg,1.3);
 #endif
           leg->Draw();
 
@@ -288,6 +294,12 @@ void makePlots(bool draw, double cut_value_single, double cut_value_double)
           TCanvas* can2 = new TCanvas;
           a2->GetXaxis()->SetTitle("E_{HF} tower threshold [GeV]");
           a2->GetYaxis()->SetTitle("event fraction");
+          a2->GetXaxis()->SetLabelSize(a2->GetXaxis()->GetLabelSize()*1.2);
+          a2->GetYaxis()->SetLabelSize(a2->GetYaxis()->GetLabelSize()*1.2);
+          a2->GetXaxis()->SetTitleSize(a2->GetXaxis()->GetTitleSize()*1.1);
+          a2->GetYaxis()->SetTitleSize(a2->GetYaxis()->GetTitleSize()*1.1);
+          a2->GetXaxis()->SetTitleOffset(a2->GetXaxis()->GetTitleOffset()*1.1);
+          a2->GetYaxis()->SetTitleOffset(a2->GetYaxis()->GetTitleOffset()*1.05);
           a2->Draw("HIST l");
           e->Draw("HIST l SAME");
           f->Draw("HIST l SAME");
@@ -295,17 +307,17 @@ void makePlots(bool draw, double cut_value_single, double cut_value_double)
 
           if(type[n]=="single")
             {
-              leg2->SetX1(0.21);
-              leg2->SetX2(0.54);
-              leg2->SetY1(0.25);
-              leg2->SetY2(0.45);
+              leg2->SetX1(0.22);
+              leg2->SetY1(0.32);
+              leg2->SetX2(0.56);
+              leg2->SetY2(0.52);
 #ifdef __CINT__
               CMSText(1,1,0,"single-arm selection");
 #endif
             }
           if(type[n]=="double")
             {
-              leg2->SetX1(0.45);
+              leg2->SetX1(0.42);
               leg2->SetX2(0.93);
               leg2->SetY1(0.60);
               leg2->SetY2(0.80);
@@ -319,7 +331,7 @@ void makePlots(bool draw, double cut_value_single, double cut_value_double)
           leg2->AddEntry(e,"","l");
           leg2->AddEntry(f,"","l");
 #ifdef __CINT__
-          SetLegAtt(leg2);
+          SetLegAtt(leg2,1.1);
 #endif
 
           TLine* line = new TLine(cut_value,type[n]=="single"?15e-4:0,cut_value,1.01);

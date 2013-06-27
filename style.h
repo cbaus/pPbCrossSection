@@ -5,21 +5,12 @@
 
 void style();
 
-
 // #################################################################################
 // helper function to specify that lead lead data is used
-void DataText(const bool left=true, const bool top=true, const std::string txt="pPb, #sqrt{s_{_{NN}}}=5.02 TeV");
-
-// #################################################################################
-// helper function to specify that lead lead data is used
-void MCText(const bool left=true, const bool top=true, const std::string txt="pPb, #sqrt{s_{_{NN}}}=5.02 TeV");
-
-// #################################################################################
-// helper function to specify that lead lead data is used
-void EnergyText(const bool left=true, const bool top=true, const std::string txt="pPb, #sqrt{s_{_{NN}}}=5.02 TeV");
+void CMSText(const bool data=1, const bool left=true, const bool top=true, const std::string str3="", const std::string str2="", const std::string str1="pPb, #sqrt{s_{_{NN}}}=5.02 TeV");
 
 // #################################################################################
 // helper function for legend
-void SetLegAtt(TLegend* leg, const double txtsize = 0.033);
+void SetLegAtt(TLegend* leg, const double txtsize = 1.);
 
 #endif

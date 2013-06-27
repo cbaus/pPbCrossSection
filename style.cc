@@ -45,14 +45,26 @@ void style() {
 
 // #################################################################################
 // helper function to specify that proton/lead data is used
-void DataText(const bool left, const bool top, const std::string str) {
+void CMSText(const bool data, const bool left, const bool top, const std::string str3, const std::string str2, const std::string str1) {
   const double marg = 0.005, margY = 0.03;
-  std::string text("CMS Preliminary");
+  std::string text;
+  if(data)
+    text=std::string("CMS Preliminary");
+  else
+    text=std::string("CMS Simulation");
+  double size = 0.05;
+  if(str1.length() != 0)
+    size += 0.05;
+  if(str2.length() != 0)
+    size += 0.05;
+  if(str3.length() != 0)
+    size += 0.05;
+
   TPaveText* txt
     = new TPaveText(left ? gStyle->GetPadLeftMargin()+marg : 1-gStyle->GetPadRightMargin()-marg-0.30, //xlow
-                    top ? 1-gStyle->GetPadTopMargin()-margY-0.08 : gStyle->GetPadBottomMargin() + margY+0.04, //ylow
+                    top ? 1-gStyle->GetPadTopMargin()-margY-size : gStyle->GetPadBottomMargin() + margY, //ylow
                     left ? gStyle->GetPadLeftMargin()+marg+0.30 : 1-gStyle->GetPadRightMargin()-marg, //xhigh
-                    top ? 1-gStyle->GetPadTopMargin()-margY-0.04 : gStyle->GetPadBottomMargin() + margY + 0.08, //yhigh
+                    top ? 1-gStyle->GetPadTopMargin()-margY : gStyle->GetPadBottomMargin() + margY + size, //yhigh
                     "NDC b t l");
     txt->SetTextAlign(10*(left ? 1 : 3) + (top ? 1 : 3));
     txt->SetTextFont(42);
@@ -60,52 +72,18 @@ void DataText(const bool left, const bool top, const std::string str) {
     txt->SetTextColor(kBlack);
     txt->SetTextSize(0.033);
     txt->SetBorderSize(0);
+
     txt->AddText(text.c_str());
+    if(str1.length()!=0)
+      txt->AddText(str1.c_str());
+    if(str3.length()!=0)
+      txt->AddText(str3.c_str());
+    if(str2.length()!=0)
+      txt->AddText(str2.c_str());
+
     txt->Draw();
-    EnergyText(left,top,str);
 }
 
-// #################################################################################
-// helper function to specify that proton/lead data is used
-void MCText(const bool left, const bool top, const std::string str) {
-  const double marg = 0.005, margY = 0.03;
-  std::string text("CMS Simulation");
-  TPaveText* txt
-    = new TPaveText(left ? gStyle->GetPadLeftMargin()+marg : 1-gStyle->GetPadRightMargin()-marg-0.30, //xlow
-                    top ? 1-gStyle->GetPadTopMargin()-margY-0.08 : gStyle->GetPadBottomMargin() + margY+0.04, //ylow
-                    left ? gStyle->GetPadLeftMargin()+marg+0.30 : 1-gStyle->GetPadRightMargin()-marg, //xhigh
-                    top ? 1-gStyle->GetPadTopMargin()-margY-0.04 : gStyle->GetPadBottomMargin() + margY + 0.08, //yhigh
-                    "NDC b t l");
-    txt->SetTextAlign(10*(left ? 1 : 3) + (top ? 1 : 3));
-    txt->SetTextFont(42);
-    txt->SetFillStyle(0);
-    txt->SetTextColor(kBlack);
-    txt->SetTextSize(0.033);
-    txt->SetBorderSize(0);
-    txt->AddText(text.c_str());
-    txt->Draw();
-    EnergyText(left,top,str);
-}
-
-// #################################################################################
-// helper function to specify that proton/lead data is used
-void EnergyText(const bool left, const bool top, const std::string str) {
-  const double marg = 0.005, margY = 0.03;
-  TPaveText* txt
-    = new TPaveText(left ? gStyle->GetPadLeftMargin()+marg : 1-gStyle->GetPadRightMargin()-marg-0.30,
-                    top ? 1-gStyle->GetPadTopMargin()-margY-0.04 : gStyle->GetPadBottomMargin() + margY,
-                    left ? gStyle->GetPadLeftMargin()+marg+0.30 : 1-gStyle->GetPadRightMargin()-marg,
-                    top ? 1-gStyle->GetPadTopMargin()-margY : gStyle->GetPadBottomMargin() + margY + 0.04,
-                    "NDC b t l");
-    txt->SetTextAlign(10*(left ? 1 : 3) + (top ? 1 : 3));
-    txt->SetTextFont(42);
-    txt->SetFillStyle(0);
-    txt->SetTextColor(kBlack);
-    txt->SetTextSize(0.033);
-    txt->SetBorderSize(0);
-    txt->AddText(str.c_str());
-    txt->Draw();
-}
 // #################################################################################
 // helper function for legend
 void SetLegAtt(TLegend* leg,const double txtsize)
@@ -114,5 +92,5 @@ void SetLegAtt(TLegend* leg,const double txtsize)
   leg->SetBorderSize(0);
   leg->SetFillStyle(0);
   leg->SetTextFont(42);
-  leg->SetTextSize(txtsize);
+  leg->SetTextSize(0.033*txtsize);
 }

@@ -9,25 +9,29 @@ void makePlots7()
 
   vector<string> list;
   list.push_back(string("Epos"));
-  list.push_back(string("Hijing"));
-  list.push_back(string("QGSJetII"));
+  //list.push_back(string("Hijing"));
+  //list.push_back(string("QGSJetII"));
+  vector<string> name;
+  name.push_back(string("EPOS-LHC"));
+  //name.push_back(string("HIJING 1.383"));
+  //name.push_back(string("QGSJetII-04"));
 
 
   for(int i=0; i<int(list.size()); i++)
     {
       cout << i << " " << int(list.size()) << endl;
-      TFile* file = TFile::Open("histos_old.root");
+      TFile* file = TFile::Open("histos.root");
       file->cd();
 
-      cout << string(list[i]+string("/")+list[i]+string("_h_mc_diffraction_single")) << endl;
-      TH1D* a=(TH1D*)file->Get(string(list[i]+string("/")+list[i]+string("_h_mc_diffraction_single")).c_str());
-      TH1D* b=(TH1D*)file->Get(string(list[i]+string("/")+list[i]+string("_h_mc_diffraction_double")).c_str());
-      TH1D* c1=(TH1D*)file->Get(string(list[i]+string("/")+list[i]+string("_h_mc_diffraction_SD1")).c_str());
-      TH1D* c2=(TH1D*)file->Get(string(list[i]+string("/")+list[i]+string("_h_mc_diffraction_SD2")).c_str());
-      TH1D* d=(TH1D*)file->Get(string(list[i]+string("/")+list[i]+string("_h_mc_diffraction_DD")).c_str());
-      TH1D* e=(TH1D*)file->Get(string(list[i]+string("/")+list[i]+string("_h_mc_diffraction_CD")).c_str());
-      TH1D* f=(TH1D*)file->Get(string(list[i]+string("/")+list[i]+string("_h_mc_diffraction_ND")).c_str());
-      TH1D* g=(TH1D*)file->Get(string(list[i]+string("/")+list[i]+string("_h_mc_diffraction_all")).c_str());
+      cout << string(list[i]+string("/")+list[i]+string("_h_mc_diff_energy_single")) << endl;
+      TH1D* a=(TH1D*)file->Get(string(list[i]+string("/")+list[i]+string("_h_mc_diff_energy_single")).c_str());
+      TH1D* b=(TH1D*)file->Get(string(list[i]+string("/")+list[i]+string("_h_mc_diff_energy_double")).c_str());
+      TH1D* c1=(TH1D*)file->Get(string(list[i]+string("/")+list[i]+string("_h_mc_diff_energy_SD1")).c_str());
+      TH1D* c2=(TH1D*)file->Get(string(list[i]+string("/")+list[i]+string("_h_mc_diff_energy_SD2")).c_str());
+      TH1D* d=(TH1D*)file->Get(string(list[i]+string("/")+list[i]+string("_h_mc_diff_energy_DD")).c_str());
+      TH1D* e=(TH1D*)file->Get(string(list[i]+string("/")+list[i]+string("_h_mc_diff_energy_CD")).c_str());
+      TH1D* f=(TH1D*)file->Get(string(list[i]+string("/")+list[i]+string("_h_mc_diff_energy_ND")).c_str());
+      TH1D* g=(TH1D*)file->Get(string(list[i]+string("/")+list[i]+string("_h_mc_diff_energy_all")).c_str());
 
 
       a->Scale(1./double(g->GetEntries()));
@@ -38,6 +42,16 @@ void makePlots7()
       e->Scale(1./double(g->GetEntries()));
       f->Scale(1./double(g->GetEntries()));
       g->Scale(1./double(g->GetEntries()));
+
+      //a->SetBinLabel(1,"E=0 in acceptance");
+      //b->SetBinLabel(1,"E=0 in acceptance");
+      //c1->SetBinLabel(1,"E=0 in acceptance");
+      //c2->SetBinLabel(1,"E=0 in acceptance");
+      //d->SetBinLabel(1,"E=0 in acceptance");
+      //e->SetBinLabel(1,"E=0 in acceptance");
+      //f->SetBinLabel(1,"E=0 in acceptance");
+      //g->SetBinLabel(1,"E=0 in acceptance");
+
 
       a->SetMarkerSize(1.2);
       b->SetMarkerSize(1.2);
@@ -54,17 +68,11 @@ void makePlots7()
 
       a->SetMarkerColor(kBlue-2);
       b->SetMarkerColor(kRed-2);
-      c1->SetMarkerColor(kBlue-3);
-      c2->SetMarkerColor(kAzure-9);
-      d->SetMarkerColor(kRed-2);
-      e->SetMarkerColor(kGreen-3);
-      f->SetMarkerColor(kGray);
-
-
       e->SetMarkerColor(TColor::GetColor(120,255,120));
       d->SetMarkerColor(TColor::GetColor(255,90,90));
       c2->SetMarkerColor(TColor::GetColor(65,65,255));
-      c1->SetMarkerColor(TColor::GetColor(30,30,255));
+      c1->SetMarkerColor(TColor::GetColor(10,10,255));
+      f->SetMarkerColor(kGray);
 
       a->SetLineColor(a->GetMarkerColor());
       b->SetLineColor(b->GetMarkerColor());
@@ -99,13 +107,18 @@ void makePlots7()
       hs->Add(e);
       hs->Add(f);
       hs->Draw("HIST");
+      hs->GetXaxis()->SetBinLabel(1,"E=0 in acceptance");
+      hs->GetXaxis()->SetBinLabel(hs->GetXaxis()->FindBin(0),"0");
+      hs->GetXaxis()->SetBinLabel(hs->GetXaxis()->FindBin(1),"1");
+      hs->GetXaxis()->SetBinLabel(hs->GetXaxis()->FindBin(2),"2");
+      hs->GetXaxis()->SetBinLabel(hs->GetXaxis()->FindBin(3),"3");
       can1->SetLogy();
-      hs->GetYaxis()->SetRangeUser(0.0001,0.03);
+      hs->GetYaxis()->SetRangeUser(0.000001,0.03);
       hs->SetTitle(";log_{10}(#xi);events (normalised)");
       TLegend* leg = can1->BuildLegend(0.25,0.63,0.45,0.93);
       SetLegAtt(leg);
       leg->Draw();
-      MCText(0);
+      CMSText(0,0,1,);
       can1->SaveAs((string("plots/diff_1_")+list[i]+string(".pdf")).c_str());
 
 
@@ -145,18 +158,29 @@ void makePlots7()
       TH1D* single2 = (TH1D*)a->Clone("single2");
       TH1D* double2 = (TH1D*)b->Clone("double2");
 
-      single2->SetTitle("single-arm E>6 GeV;log_{10}(#xi);efficiency #epsilon");
-      double2->SetTitle("double-arm E>2 GeV;log_{10}(#xi);efficiency #epsilon");
+      single2->SetTitle("single-arm E>8 GeV;log_{10}(#xi);efficiency #epsilon");
+      double2->SetTitle("double-arm E>2.5 GeV;log_{10}(#xi);efficiency #epsilon");
 
       for(int n=0; n<=single2->GetNbinsX(); n++)
         {
           double ys = single2->GetBinContent(n);
           double yd = double2->GetBinContent(n);
           double y = g->GetBinContent(n);
+          double ys_e = a->GetBinError(n);
+          double yd_e = b->GetBinError(n);
+          double y_e = g->GetBinError(n);
           if(y)
             {
+              double eff_single = ys/y;
+              double eff_double = yd/y;
+              double error_single=sqrt(pow(ys_e/y,2) + pow(y_e*ys/y/y,2));
+              double error_double=sqrt(pow(yd_e/y,2) + pow(y_e*yd/y/y,2));
               single2->SetBinContent(n,ys/y);
               double2->SetBinContent(n,yd/y);
+              if(eff_single < 0.99)
+                single2->SetBinError(n,error_single);
+              if(eff_single < 0.99)
+                double2->SetBinError(n,error_double);
             }
           else
             {
@@ -164,6 +188,17 @@ void makePlots7()
               double2->SetBinContent(n,0);
             }
         }
+
+      double thres_single=-10;
+      double thres_double=-10;
+      for (double x=0; x<single2->GetBinLowEdge(single2->GetNbinsX()); x+=0.001)
+        {
+          if(single2->Interpolate(x) > 0.95 && thres_single == -10)
+            thres_single = x;
+          if(double2->Interpolate(x) > 0.95 && thres_double == -10)
+            thres_double = x;
+        }
+
       single2->GetYaxis()->SetRangeUser(0.,1.3);
       single2->Draw();
       double2->Draw("SAME");
@@ -172,7 +207,7 @@ void makePlots7()
       leg->AddEntry(a,"","p");
       leg->AddEntry(b,"","p");
       leg->Draw();
-      MCText(0,0);
+      CMSText(0,0,0,name[i]);
       c4->SaveAs((string("plots/diff_4_")+list[i]+string(".pdf")).c_str());
     }
 }
