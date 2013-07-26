@@ -70,7 +70,7 @@ int main()
 
       
       TH2D* h_length_scale_x;
-      h_length_scale_x = new TH2D((add + string("_h_length_scale_x")).c_str(),"",200,-9.5,2,200,-9.5,2);
+      h_length_scale_x = new TH2D((add + string("_h_length_scale_x")).c_str(),"",100,195000000,210000000,30,0.06,0.07);
 
 
       for(int iEvent=0; iEvent<n_total; iEvent++)
