@@ -1,0 +1,10 @@
+*.o
+*.so
+*.root
+*.d
+\#*
+*.__*
+*~
+plots*
+corr*
+*Dict*
