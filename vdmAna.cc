@@ -1,10 +1,9 @@
-#define _MAXEVT -50000
+#define _MAXEVT -500000
 #define _SkipHFRings 1
 #define _HFEnergyScale 1.0 //0.8
 
 #include "TChain.h"
 #include "TFile.h"
-#include "TFitResultPtr.h"
 #include "TH1D.h"
 #include "TH2D.h"
 #include "TLorentzVector.h"
@@ -22,8 +21,9 @@
 #include <sstream>
 #include <utility>
 
-#include <CastorTreeVariables.h>
-#include <ParticleInfo.h>
+#include "corr/CastorCorrFactorpPb2013.h"
+#include "CastorTreeVariables.h"
+#include "ParticleInfo.h"
 
 //#include "style.h"
 
@@ -34,13 +34,13 @@ int main()
 
   vector<string> sample_fname;
   vector<string> sample_name;
-  vector<e_type> sample_type;
 
   //*************************************************************INPUT***********************************************************
-  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/VDM210986/*.root"); sample_name.push_back("pPb"); sample_type.push_back(DATA);
+  //sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/VDM210986/*.root"); sample_name.push_back("pPb");
+  sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/VDM"); sample_name.push_back("pPb");
 
   //**************************************************************OUTPUT*********************************************************
-  TFile* out_file = new TFile("histos.root","RECREATE");
+  TFile* out_file = new TFile("histos_vdm.root","RECREATE");
 
   //****************************************************************LOOP*******************************************************************
 
@@ -48,7 +48,10 @@ int main()
     {
 
       TChain* tree = new TChain("cAnalyzer/ikCastorTree");
-      const int nFiles = tree->Add(sample_fname[sample].c_str()); // file name(s)
+      int nFiles = tree->Add((sample_fname[sample]+string("4/*.root")).c_str()); // file name(s)
+      nFiles += tree->Add((sample_fname[sample]+string("3/*.root")).c_str()); // file name(s)
+      nFiles += tree->Add((sample_fname[sample]+string("2/*.root")).c_str()); // file name(s)
+      nFiles += tree->Add((sample_fname[sample]+string("/*.root")).c_str()); // file name(s)
 
       if (nFiles == 0) {
         cout << "No tree files have been found \"" << sample_fname[sample] << "\"" << endl;
@@ -60,6 +63,14 @@ int main()
         return 0;
       }
 
+      tree->SetBranchStatus("*", 0);
+      tree->SetBranchStatus("event*", 1);
+      tree->SetBranchStatus("orbit*", 1);
+      tree->SetBranchStatus("CASTOR.Sector", 1);
+      tree->SetBranchStatus("CASTOR.Module", 1);
+      tree->SetBranchStatus("CASTOR.Energy", 1);
+      tree->SetBranchStatus("*ertex*", 1);
+
       AnalysisEvent* event = 0;
       tree->SetBranchAddress("event", &event);
       //________________________________________________________________________________
@@ -68,62 +79,55 @@ int main()
       out_file->cd(sample_name[sample].c_str());
       string add = sample_name[sample];
 
-      
+      TH1D* h_rate_ls;
+      h_rate_ls = new TH1D("h_rate_ls","",250,192000000,212000000);
       TH2D* h_length_scale_x;
-      h_length_scale_x = new TH2D((add + string("_h_length_scale_x")).c_str(),"",100,195000000,210000000,30,0.06,0.07);
+      h_length_scale_x = new TH2D("h_length_scale_X","",250,192000000,212000000,200,-0.02,0.16);
+      TH2D* h_length_scale_y;
+      h_length_scale_y = new TH2D("h_length_scale_Y","",250,192000000,212000000,200,-0.02,0.16);
+      TProfile* h_vdm_castor_e;
+      h_vdm_castor_e = new TProfile("h_vdm_castor_e","",1000,135e6,192e6);//option s std dev, no option sigma/sqrt(mu)
 
+      double n_total = double(tree->GetEntries());
+      if(_MAXEVT<n_total && _MAXEVT>0)
+        n_total = double(_MAXEVT);
 
       for(int iEvent=0; iEvent<n_total; iEvent++)
         {
-          if(iEvent % 10000 == 0) cout << sample+1 << "/" << sample_name.size() << " -- " << sample_name[sample].c_str() << " -- Entry: " << iEvent << " / " << n_total << endl;
+          if(iEvent % 50000 == 0) cout << sample+1 << "/" << sample_name.size() << " -- " << sample_name[sample].c_str() << " -- Entry: " << iEvent << " / " << n_total << endl;
           tree->GetEntry(iEvent);
 
           const double orbitNb = event->orbitNb;
           const double nVertex = event->nVertex;
           const double vertexX = event->vertexX;
           const double vertexY = event->vertexY;
-
-          if(195000000 < orbitNb && orbitNb<201512861 && nVertex==1 && !(0.06688 < vertexX && vertexX<0.0669))
-            h_length_scale_x->Fill(vertexX,orbitNb);
-
-          vector<double> sectionXBegin;
-          vector<double> sectionXEnd;
-          int nSec = int(sectionXBegin.size());
-
-
-          vector<double> sectionYBegin;
-          vector<double> sectionYEnd;
-
-          vector<TF1*> sectionXFunc; sectionXFunc.resize(sectionXBegin.size());
-          vector<TFitResultPtr> sectionXFuncPtr; sectionXFuncPtr.resize(sectionXBegin.size());
-          vector<TF1*> sectionYFunc; sectionYFunc.resize(sectionYBegin.size());
-          vector<TFitResultPtr> sectionYFuncPtr; sectionYFuncPtr.resize(sectionYBegin.size());
-
-
-          for (int i=0; i<nSec; i++)
+          const bool vertexIsFake = event->vertexIsFake;
+          
+          if(192000000 < orbitNb && orbitNb<212000000 && nVertex==1)
             {
-              ostringstream funcTitle;
-              funcTitle << "sectionXFunc_" << i;
-              sectionXFunc = new TF1(funcTitle.str().c_str(),"pol0",sectionXBegin[i],sectionXEnd[i]);
-              sectionXFunc->SetLineWidth(2);
-              sectionXFunc->SetLineColor(kRed);
-              sectionXFunc->SetLineStyle(9);
-              
-              TFitResultPtr sectionXFuncPtr = h_length_scale_x->Fit(sectionXFunc[i],"QWSL",sectionXBegin[i],sectionXEnd[i]);
-              sectionXFunc[i]->Draw("SAME");
+              if(vertexIsFake)
+                continue;
 
-              ostringstream text;
-              double size = 0.02;
-              double y = sectionXFuncPtr->Parameter(0)
-              text << "#DeltaX_{Fit}=" << y;
-              TPaveText* txt = new TPaveText(sectionXBegin[i],y+size,sectionXEnd[i],y+2*size,"b t l");
-              txt->SetTextFont(42);
-              txt->SetFillStyle(0);
-              txt->SetTextColor(kRed);
-              txt->SetTextSize(0.033);
-              txt->SetBorderSize(0);
-              txt->AddText(text.c_str());
-              txt->Draw("SAME");
+              h_length_scale_x->Fill(orbitNb,vertexX);
+              h_length_scale_y->Fill(orbitNb,vertexY);
+              h_rate_ls->Fill(orbitNb);
+            }
+
+          
+
+          if(orbitNb)
+            {
+              double sumCastorE = 0;
+              for (vector<RecHitCASTOR>::const_iterator it = event->CASTOR.begin(); it != event->CASTOR.end(); ++it)
+                {
+                  const int secNb = it->GetSectorId();
+                  const int modNb = it->GetModuleId();
+                  if(castor::channelQuality[secNb-1][modNb-1] == false)
+                    continue;
+                  double corrFactor = castor::channelGainQE[secNb-1][modNb-1] * castor::absEscaleFactor;
+                  sumCastorE += it->Energy * corrFactor;
+                }
+              h_vdm_castor_e->Fill(orbitNb,sumCastorE);
             }
         }
 
