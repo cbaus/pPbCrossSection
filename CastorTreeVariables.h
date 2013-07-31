@@ -281,11 +281,12 @@ class AnalysisEvent {
   AnalysisEvent();
 
   // event variables
-  unsigned int runNb ;
-  unsigned int evtNb ;
-  unsigned int bxNb ;
-  unsigned int orbitNb ;
-  unsigned int lumiNb ;
+  unsigned int runNb;
+  unsigned int evtNb;
+  unsigned int bxNb;
+  unsigned int orbitNb;
+  unsigned int lumiNb;
+  unsigned long long time;
 
   // centralities
   float cenHf;
@@ -332,6 +333,7 @@ class AnalysisEvent {
   float vertexX;
   float vertexY;
   float vertexZ;
+  bool vertexIsFake;
 
   // --------- Monte Carlo information ------------
   bool   isMC;
@@ -361,7 +363,7 @@ class AnalysisEvent {
   float instLuminosity;
   float instLuminosityCorr;
   
-  ClassDef(AnalysisEvent, 8);
+  ClassDef(AnalysisEvent, 9);
 };
 
 //}

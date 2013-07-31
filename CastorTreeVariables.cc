@@ -239,11 +239,12 @@ GenParticle::GetTransverseMomentum() const
 
 
 AnalysisEvent::AnalysisEvent()
-: runNb (0),
-  evtNb (0),
-  bxNb (0),
-  orbitNb (0),
-  lumiNb (0),
+: runNb(0),
+  evtNb(0),
+  bxNb(0),
+  orbitNb(0),
+  lumiNb(0),
+  time(0),
   // centrality
   cenHf(0),
   cenHft(0),
@@ -269,6 +270,7 @@ AnalysisEvent::AnalysisEvent()
   vertexX(0),
   vertexY(0),
   vertexZ(0),
+  vertexIsFake(0),
   isMC(0),
   genImpactParameter(0),
   genNpart(0),
