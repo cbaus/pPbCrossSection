@@ -333,6 +333,9 @@ class AnalysisEvent {
   float vertexX;
   float vertexY;
   float vertexZ;
+  float vertexXe;
+  float vertexYe;
+  float vertexZe;
   bool vertexIsFake;
 
   // --------- Monte Carlo information ------------
@@ -363,7 +366,7 @@ class AnalysisEvent {
   float instLuminosity;
   float instLuminosityCorr;
   
-  ClassDef(AnalysisEvent, 9);
+  ClassDef(AnalysisEvent, 10);
 };
 
 //}

@@ -1,3 +1,5 @@
+///HF plots E over eta
+
 void Show(TH1D* a,TH1D* b,TH1D* c,TH1D* d, string type);
 
 void makePlots5()
@@ -22,6 +24,13 @@ void makePlots5()
   TH1D* h= (TH1D*)file2->Get("QGSJetII/QGSJetII_h_perf_hf_totE_eta_double_1dot5gev");
 
   Show(e,f,g,h,"double");
+
+  TFile* file = TFile::Open("histos.root");
+  TFile* file2 = TFile::Open("histos_mc.root");
+  TH1D* e= (TH1D*)file->Get("data210614/data210614_h_perf_hf_totE_eta_lev_m");
+  TH1D* f= (TH1D*)file->Get("Hijing/Hijing_h_perf_hf_totE_eta_lev_m");
+  TH1D* g= (TH1D*)file->Get("Epos/Epos_h_perf_hf_totE_eta_lev_m");
+  TH1D* h= (TH1D*)file->Get("QGSJetII/QGSJetII_h_perf_hf_totE_eta_lev_m");
 }
 
 void Show(TH1D* a,TH1D* b,TH1D* c,TH1D* d, string type)
@@ -59,7 +68,7 @@ void Show(TH1D* a,TH1D* b,TH1D* c,TH1D* d, string type)
   a->GetYaxis()->SetTitle("E / a.u.");
 
   TCanvas* c1 = new TCanvas;
-  a->Draw("");
+  a->Draw("HIST P");
   b->Draw("HIST SAME");
   c->Draw("HIST SAME");
   d->Draw("HIST SAME");

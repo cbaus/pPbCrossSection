@@ -1,16 +1,48 @@
 //nt comes in charge on the bunch fillling scheme page (source Ekaterina)
 
+#include "TAxis.h"
+#include "TCanvas.h"
+#include "TF1.h"
+#include "TFile.h"
+#include "TFitResult.h"
+#include "TFitResultPtr.h"
+#include "TGraph.h"
+#include "TGraphErrors.h"
+#include "TH1D.h"
+#include "TH2D.h"
+#include "TLegend.h"
+#include "TLine.h"
+#include "TMarker.h"
+#include "TMath.h"
+#include "TROOT.h"
+#include "TVectorD.h"
+
+#ifndef __CINT__
+#include "style.h"
+#endif
+
+#include <iomanip>
+#include <iostream>
+#include <sstream>
+#include <utility>
+
 void makePlots_vdm_beambeam1()
 {
-  const double ep = 4000;
-  const double epb = 1580;
+
+  gROOT->ProcessLine(" .L style.cc+");
+#ifdef __CINT__
+  style();
+#endif
+
+  const double ep = 1380;
+  const double epb = 4000;
   const double mp = 0.938;
   const double gamma = ep / mp;
   const double gammapb = epb / mp;
 
   TCanvas* c1 = new TCanvas;
   TF1 *f = new TF1 ("f", "-2*[0]*[1]/[2] * ((1.-exp(-x*x/(2.*[3]*[3])))/x)", -400., 400.);
-  f->SetParName(0,"re"); f->SetParameter( 0, 2.8179403267e-9); //µm
+  f->SetParName(0,"re"); f->SetParameter( 0, 1.53e-12); //µm
   f->SetParName(1,"nt"); f->SetParameter( 1, 8.5e10);
   f->SetParName(2,"gamma"); f->SetParameter( 2, gamma);
   f->SetParName(3,"sigma"); f->SetParameter( 3, 125.);
@@ -19,39 +51,69 @@ void makePlots_vdm_beambeam1()
   /////////////////////
 
   TCanvas* c2 = new TCanvas;
-  TString formula("tan(-2*[0]*[1]/[2] * ((1.-exp(-x*x/(2.*[3]*[3])))/x))*1000");
+  TString formula("-1*-2*[0]*[1]/[2] * ((1.-exp(-x*x/(2.*[3]*[3])))/x) * [4] / (2.*tan(TMath::Pi()*[5]))");
+  //TString formula("-1*-2*[0]*[1]/[2] * ((1.-exp(-x*x/(2.*[3]*[3])))/x)*1000");
   TF1 *f1 = new TF1 ("f1", formula, -500., 500.);
   TF1 *fp = new TF1 ("fp", formula, -500., 500.);
   TF1 *fpb = new TF1 ("fpb", formula, -500., 500.);
-  TLegend* leg = new TLegend(0.5,0.7,0.8,0.85);
-  f1->SetNpx(500);
-  f1->SetTitle(";#DeltaX [#mum];<#theta> [#murad]");
-  f1->SetMaximum(0.6);
-  f1->SetMinimum(-0.6);
+  TLegend* leg = new TLegend(0.25,0.75,0.55,0.9);
+  fp->SetNpx(500);
+  fp->SetTitle(";#DeltaX [#mum];<deflection> [#mum]");
+  fp->SetMaximum(1);
+  fp->SetMinimum(-1);
 
-  f1->SetParName(0,"re"); f1->SetParameter( 0, 2.8179403267e-9); //µm
-  f1->SetParName(1,"nt"); f1->SetParameter( 1, 8.5e10);
+  f1->SetParName(0,"re"); f1->SetParameter( 0, 1.53e-12); //µm
+  f1->SetParName(1,"nt"); f1->SetParameter( 1, 10e10);
   f1->SetParName(2,"gamma"); f1->SetParameter( 2, gamma);
-  f1->SetParName(3,"sigma"); f1->SetParameter( 3, 125.);
-  f1->SetLineWidth(2); f1->SetLineColor(kBlack); f1->DrawCopy();
-  leg->AddEntry(f1,"pp p@4TeV (#sigma=125#mum)");
+  f1->SetParName(3,"sigma"); f1->SetParameter( 3, 150.);
+  f1->SetParName(4,"betastar"); f1->SetParameter( 4, 11e6);
+  f1->SetParName(5,"tunex"); f1->SetParameter( 5, 64.31);
+  f1->SetParName(6,"tuney"); f1->SetParameter( 6, 59.32);
+  f1->SetMaximum(4);
+  f1->SetMinimum(-2.8);
+  f1->GetXaxis()->SetNdivisions(505);
+  f1->SetTitle(";#DeltaX [#mum];<deflection> [#mum]");
+  f1->SetLineWidth(2); f1->SetLineColor(kBlack); f1->Draw();
+  f1->GetXaxis()->SetNdivisions(505);
+  leg->AddEntry(f1,"pp p@2.76TeV (#sigma=150#mum, N=10e10)","l");
 
-  fp->SetParName(0,"re"); fp->SetParameter( 0, 2.8179403267e-9); //µm
-  fp->SetParName(1,"nt"); fp->SetParameter( 1, 1.16e10);
-  fp->SetParName(2,"gamma"); fp->SetParameter( 2, gamma); 
+  TF1 *f2 = new TF1 ("f2", formula, -500., 500.);
+  f2->SetParName(0,"re"); f2->SetParameter( 0, 1.53e-12); //µm
+  f2->SetParName(1,"nt"); f2->SetParameter( 1, 8.5e10);
+  f2->SetParName(2,"gamma"); f2->SetParameter( 2, gammapb);
+  f2->SetParName(3,"sigma"); f2->SetParameter( 3, 125.);
+  f2->SetParName(4,"betastar"); f2->SetParameter( 4, 11e6);
+  f2->SetParName(5,"tunex"); f2->SetParameter( 5, 64.31);
+  f2->SetParName(6,"tuney"); f2->SetParameter( 6, 59.32);
+  f2->SetLineWidth(2); f2->SetLineColor(kRed); f2->Draw("SAME");
+  leg->AddEntry(f2,"pp p@8TeV (#sigma=125#mum, N=8.5e10)","l");
+
+  fp->SetParName(0,"re"); fp->SetParameter( 0, 1.53e-12); //µm
+  fp->SetParName(1,"nt"); fp->SetParameter( 1, 1.16e10); //!!!this is intensity of target beam (i.e. lead)
+  fp->SetParName(2,"gamma"); fp->SetParameter( 2, gammapb); 
   fp->SetParName(3,"sigma"); fp->SetParameter( 3, 35.);
-  fp->SetLineWidth(2); fp->SetLineColor(kRed); fp->DrawCopy("SAME");
-  leg->AddEntry(fp,"pPb p@4TeV (#sigma=35#mum)");
+  fp->SetParName(4,"betastar"); fp->SetParameter( 4, 0.8e6);
+  fp->SetParName(5,"tunex"); fp->SetParameter( 5, 64.31);
+  fp->SetParName(6,"tuney"); fp->SetParameter( 6, 59.32);
+  //fp->SetLineWidth(2); fp->SetLineColor(kRed); fp->Draw("SAME");
+  //leg->AddEntry(fp,"pPb p@4TeV (#sigma=35#mum)","l");
 
-  fpb->SetParName(0,"re"); fpb->SetParameter( 0, 2.8179403267e-9); //µm
-  fpb->SetParName(1,"nt"); fpb->SetParameter( 1, 1.26e10); //this is intensity of target beam (i.e. proton)
+  fpb->SetParName(0,"re"); fpb->SetParameter( 0, 1.53e-12); //µm
+  fpb->SetParName(1,"nt"); fpb->SetParameter( 1, 1.26e10); //!!!this is intensity of target beam (i.e. proton)
   fpb->SetParName(2,"gamma"); fpb->SetParameter( 2, gammapb);
   fpb->SetParName(3,"sigma"); fpb->SetParameter( 3, 35.);
-  fpb->SetLineWidth(2); fpb->SetLineColor(kBlue); fpb->DrawCopy("SAME");
+  fpb->SetParName(4,"betastar"); fpb->SetParameter( 4, 0.8e6);
+  fpb->SetParName(5,"tunex"); fpb->SetParameter( 5, 64.31);
+  fpb->SetParName(6,"tuney"); fpb->SetParameter( 6, 59.32);
+  //fpb->SetLineWidth(2); fpb->SetLineColor(kBlue); fpb->Draw("SAME");
   fpb->GetYaxis()->SetLimits(-0.6,0.6);
-  leg->AddEntry(fpb,"pPb Pb@1.58TeV (#sigma=35#mum)");
+  //leg->AddEntry(fpb,"pPb Pb@1.58TeV (#sigma=35#mum)","l");
 
+#ifdef __CINT__
+  SetLegAtt(leg);
+#endif
   leg->Draw("SAME");
+  c2->SaveAs((string("plots/vdm_beambeam_1.pdf")).c_str());
 
   /////////////////////
 
@@ -65,11 +127,12 @@ void makePlots_vdm_beambeam1()
     << f2->Eval(1000) << endl
     << f2->Eval(-1000) << endl
     << "gamma = " << gamma << endl
+    << "gammapb = " << gammapb << endl
     << "factor = " << -2.*2.8179403267e-9*8.5e10/gamma << endl
     ;
   
-  TH1D* h_p = new TH1D("h_p","proton;N_{t} x 10^{10};N_{b}",30,0.7,1.8);
-  TH1D* h_pb = new TH1D("h_pb","proton;N_{t} x 10^{10};N_{b}",30,0.7,1.8);
+  TH1D* h_p = new TH1D("h_p","proton;N_{ch} [10^{10}];N_{b}",30,0.7,1.8);
+  TH1D* h_pb = new TH1D("h_pb","proton;N_{ch} [10^{10}];N_{b}",30,0.7,1.8);
 
   h_p->Fill(0.960);
   h_p->Fill(0.997);
@@ -692,11 +755,16 @@ void makePlots_vdm_beambeam1()
   h_p->GetYaxis()->SetRangeUser(0,max);
 
   TCanvas* c3 = new TCanvas;
-  TLegend* leg3 = new TLegend(0.5,0.7,0.8,0.85);
-  leg->AddEntry(h_p,"proton");
-  leg->AddEntry(h_pb,"lead");
+  TLegend* leg3 = new TLegend(0.7,0.75,0.9,0.9);
+  leg3->AddEntry(h_p,"proton","l");
+  leg3->AddEntry(h_pb,"lead","l");
+#ifdef __CINT__
+  SetLegAtt(leg3);
+#endif
   
   h_p->Draw();
   h_pb->Draw("SAME");
+  leg3->Draw("SAME");
+  c3->SaveAs((string("plots/vdm_beambeam_2.pdf")).c_str());
 
 }

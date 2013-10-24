@@ -4,19 +4,31 @@
 int RingToIeta(int ring);
 int RingToCanvas(int ring);
 void ShowStack(TH1D* a,TH1D* a2,TH1D* b,TH1D* c,TH1D* d,TH1D* e,TH1D* f,int ring);
+void DividegPad(Int_t nx, Int_t ny, Float_t l, Float_t r, Float_t t, Float_t b);
 
 TCanvas* c1 = NULL;
 void makePlots_perf_hits_rings()
 {
   gROOT->ProcessLine(" .L style.cc+");
   style();
+
+
+  gStyle->SetPadTopMargin(0.);
+  gStyle->SetPadBottomMargin(0.);
+  gStyle->SetPadLeftMargin(0.);
+  gStyle->SetPadRightMargin(0.); 
+  gStyle->SetFrameBorderMode(0);
   for(int i=0; i<24; i++)
     {
-      if(i==0 || i==12)
+      if(i==0 || i==24)
         {
           ostringstream title; title << "c" << i;
           c1 = new TCanvas(title.str().c_str(),title.str().c_str(),1200,1600);
-          c1->Divide(3,4);
+          Double_t mlb = 0.3;
+          Double_t mrt = 0.1;
+          Double_t nx  = 3;
+          Double_t ny  = 4;
+          DividegPad(nx,ny,mlb,mrt,mrt,mlb);
         }
       ostringstream ss_ring; ss_ring << i;
       TFile* file2 = TFile::Open("histos.root");
@@ -31,32 +43,14 @@ void makePlots_perf_hits_rings()
       TH1D* f=(TH1D*)file->Get((string("Starlight_Pythia/Starlight_Pythia_h_hf_hits_rings_")+ss_ring.str()).c_str());
 
       ShowStack(a,a2,b,c,d,e,f,i);
-      if(i==0 || i==11)
-        {
-          c1->SaveAs((string("plots/hf_ring_signal.pdf")).c_str());
-        }
+      if(i==11) c1->SaveAs((string("plots/hf_ring_signal_m.pdf")).c_str());
+      if(i==23) c1->SaveAs((string("plots/hf_ring_signal_p.pdf")).c_str());
     }
 
 }
 
 void ShowStack(TH1D* data,TH1D* noise,TH1D* b,TH1D* c,TH1D* d,TH1D* sl1,TH1D* sl2,int ring)
 {
-  //RESCALING-------------------------------
-  // TH1D** toBeRescaled = &b;
-  // double fac = 1./1.3;
-  // double* newbinning = new double[(*toBeRescaled)->GetNbinsX()+1];
-  // for (int i=0; i<=(*toBeRescaled)->GetNbinsX();i++)
-  //   newbinning[i]=(*toBeRescaled)->GetBinLowEdge(i+1)*fac;
-  // newbinning[0]=(*toBeRescaled)->GetBinLowEdge(1);
-  // newbinning[(*toBeRescaled)->GetNbinsX()]=(*toBeRescaled)->GetBinLowEdge((*toBeRescaled)->GetNbinsX()+1);
-  // TH1D* bs = new TH1D("rescaled","rescaled",(*toBeRescaled)->GetNbinsX(),newbinning);
-  // for (int i=1; i<=bs->GetNbinsX();i++)
-  //   {
-  //     bs->SetBinContent(i,(*toBeRescaled)->GetBinContent(i));
-  //     bs->SetBinError(i,(*toBeRescaled)->GetBinError(i));
-  //   }
-  //(*toBeRescaled)=bs;
-  //RESCALING-------------------------------
 
   const int normbin = data->FindBin(20);
   const int normendbin = data->GetNbinsX();
@@ -131,16 +125,23 @@ void ShowStack(TH1D* data,TH1D* noise,TH1D* b,TH1D* c,TH1D* d,TH1D* sl1,TH1D* sl
   THStack* h_s_bg = new THStack("h_s_gb","events");
   h_s_bg->Add(noise,"HIST F");
   h_s_bg->Add(sl,"HIST F");
-  // TList *list = new TList;
-  // list->Add(noise);
-  // list->Add(sl);
-  // TH1D* h_s_bg = (TH1D*)b->Clone("h_s_bg");
-  // h_s_bg->Reset();
-  // h_s_bg->Merge(list);
 
-  //TCanvas* c1 = new TCanvas;
+  TPad* refPad = c1->cd(3);
+  TPad* curPad = c1->cd(RingToCanvas(ring));
+  double heightRatio = curPad->GetHNDC()/refPad->GetHNDC();
+  double widthRatio = curPad->GetWNDC()/refPad->GetWNDC();
+  double smallestRatio = TMath::Min(heightRatio,widthRatio);
+  data->GetXaxis()->SetTitleSize(data->GetXaxis()->GetTitleSize() / widthRatio);
+  data->GetYaxis()->SetTitleSize(data->GetYaxis()->GetTitleSize() / heightRatio);
+  data->GetXaxis()->SetLabelSize(data->GetXaxis()->GetLabelSize() / widthRatio);
+  data->GetYaxis()->SetLabelSize(data->GetYaxis()->GetLabelSize() / heightRatio);
+  data->GetYaxis()->SetTitleOffset(data->GetYaxis()->GetTitleOffset() * heightRatio);
+  data->GetXaxis()->SetTitleOffset(data->GetXaxis()->GetTitleOffset() * widthRatio);
+  data->GetYaxis()->SetLabelOffset(data->GetYaxis()->GetLabelOffset() * heightRatio);
+  data->GetXaxis()->SetLabelOffset(data->GetXaxis()->GetLabelOffset() * widthRatio);
+  
+
   cout << "Ring: " << ring << "  Canvas: " << RingToCanvas(ring) << "  Ieta " << RingToIeta(ring) << endl;
-  c1->cd(RingToCanvas(ring));
   data->Draw("P");
   h_s_bg->Draw("SAME");
   b->Draw("SAME");
@@ -149,15 +150,19 @@ void ShowStack(TH1D* data,TH1D* noise,TH1D* b,TH1D* c,TH1D* d,TH1D* sl1,TH1D* sl
   data->Draw("SAME P");
   data->Draw("SAME AXIS");
 
-  TLegend* leg = new TLegend(0.23,0.72,0.43,0.93);
-  SetLegAtt(leg);
-  leg->AddEntry(data,"","p");
-  leg->AddEntry(b,"","p");
-  leg->AddEntry(c,"","p");
-  leg->AddEntry(d,"","p");
-  leg->AddEntry(sl,"","f");
-  leg->AddEntry(noise,"","f");
-  leg->Draw();
+  if(ring == 1 || ring == 13)
+    {
+      TLegend* leg = new TLegend(0.23,0.62,0.63,0.87);
+      SetLegAtt(leg);
+      leg->AddEntry(data,"","p");
+      leg->AddEntry(b,"","p");
+      leg->AddEntry(c,"","p");
+      leg->AddEntry(d,"","p");
+      leg->AddEntry(sl,"","f");
+      leg->AddEntry(noise,"","f");
+      leg->SetTextFont(62);
+      leg->Draw();
+    }
   c1->cd(RingToCanvas(ring))->SetLogy();
   c1->cd(RingToCanvas(ring))->SetLogx();
   ostringstream txt; txt << "Ring (ieta=" << RingToIeta(ring) << ")";
@@ -177,8 +182,61 @@ int RingToIeta(int ring)
 int RingToCanvas(int ring)
 ///converts internal ring numbering to original ieta
 {
-  if(ring < 12)
-    return ring + 1;
-  else
-    return ring - 11;
+  if(ring >= 12) ring -=12;
+
+  if(ring == 0) return 10;
+  else if(ring == 1) return 11;
+  else if(ring == 2) return 12;
+  else if(ring == 3) return 7;
+  else if(ring == 4) return 8;
+  else if(ring == 5) return 9;
+  else if(ring == 6) return 4;
+  else if(ring == 7) return 5;
+  else if(ring == 8) return 6;
+  else if(ring == 9) return 1;
+  else if(ring ==10) return 2;
+  else if(ring ==11) return 3;
+  else cerr << "asd" << endl;
+}
+
+//   if(ring < 12)
+//     return ring + 1;
+//   else
+//     return ring - 11;
+// }
+
+void DividegPad(Int_t nx, Int_t ny, Float_t l, Float_t r, Float_t t, Float_t b)
+{
+   Int_t ix, iy, n=0;
+   Double_t x1, x2, y1, y2;
+   Double_t dx = ((1-r)*(1-l))/((1-r)*(1-l)*(nx-2)-r+2-l);
+   Double_t dl = dx/(1-l);
+   Double_t dy = ((1-t)*(1-b))/((1-t)*(1-b)*(ny-2)-t+2-b);
+   Double_t db = dy/(1-b);
+   char *name  = new char [strlen(gPad->GetName())+6];
+
+   y1 = 0;
+   y2 = db;
+   for (iy=0; iy<ny; iy++) {
+      x1 = 0;
+      x2 = dl;
+      for (ix=0;ix<nx;ix++) {
+         if (x1 > x2) continue;
+         n++;
+         sprintf(name,"%s_%d",gPad->GetName(),n);
+         pad = new TPad(name,name,x1,y1,x2,y2,0);
+         if (ix==0)    pad->SetLeftMargin(l);
+         if (ix==nx-1) pad->SetRightMargin(r);
+         if (iy==ny-1) pad->SetTopMargin(t);
+         if (iy==0)    pad->SetBottomMargin(b);
+         x1 = x2;
+         if (ix==nx-2) x2 = 1;
+         else          x2 = x1+dx;
+         pad->SetNumber(n);
+         pad->Draw();
+      }
+      y1 = y2;
+      if (iy==ny-2) y2 = 1;
+      else          y2 = y1+dy;
+   }
 }

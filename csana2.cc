@@ -1,5 +1,5 @@
-#define _MAXEVT 50000
-#define _SkipHFRings 1
+#define _MAXEVT -50000
+#define _SkipHFRings 0
 #define _HFEnergyScale 1.0 //0.8
 
 #include "TChain.h"
@@ -58,7 +58,7 @@ int main()
 
   //*************************************************************INPUT***********************************************************
   //sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Data210614/*_*.root"); sample_name.push_back("data210614"); sample_type.push_back(DATA);
-  //sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Data210885/*_*.root"); sample_name.push_back("data210885"); sample_type.push_back(DATA);
+  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Data210885/*_*.root"); sample_name.push_back("data210885"); sample_type.push_back(DATA);
   //sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data210998/*_*.root"); sample_name.push_back("data210998"); sample_type.push_back(DATA);
   //sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211000/*.root"); sample_name.push_back("data211000"); sample_type.push_back(DATA);
   //sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211001/*.root"); sample_name.push_back("data211001"); sample_type.push_back(DATA);
@@ -72,12 +72,12 @@ int main()
   //sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Data211607/*_*.root"); sample_name.push_back("data211607"); sample_type.push_back(DATA);
 
   sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Epos/*.root"); sample_name.push_back("Epos"); sample_type.push_back(MC);
-  //sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Epos/*.root"); sample_name.push_back("EposSDWeight2"); sample_type.push_back(MC);
-  //sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Epos_SL/*.root"); sample_name.push_back("Epos_SL"); sample_type.push_back(MC);
-  //sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Hijing/*.root"); sample_name.push_back("Hijing"); sample_type.push_back(MC);
-  //sample_fname.push_back("/afs/cern.ch/work/c/cbaus/public/castortree/pPb_QGSJetII/treeMC.root"); sample_name.push_back("QGSJetII"); sample_type.push_back(MC);
-  //sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/StarlightDPMjet_v2/treeMC.root"); sample_name.push_back("Starlight_DPMJet");  sample_type.push_back(MC);
-  //sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/StarlightPythia/treeMC.root"); sample_name.push_back("Starlight_Pythia");  sample_type.push_back(MC);
+  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Epos/*.root"); sample_name.push_back("EposSDWeight2"); sample_type.push_back(MC);
+  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Epos_SL/*.root"); sample_name.push_back("Epos_SL"); sample_type.push_back(MC);
+  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Hijing/*.root"); sample_name.push_back("Hijing"); sample_type.push_back(MC);
+  sample_fname.push_back("/afs/cern.ch/work/c/cbaus/public/castortree/pPb_QGSJetII/treeMC.root"); sample_name.push_back("QGSJetII"); sample_type.push_back(MC);
+  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/StarlightDPMjet_v2/treeMC.root"); sample_name.push_back("Starlight_DPMJet");  sample_type.push_back(MC);
+  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/StarlightPythia/treeMC.root"); sample_name.push_back("Starlight_Pythia");  sample_type.push_back(MC);
 
   TFile f("plots/hf_cuts_noise.root");
   TVectorD* hf_m_cuts_light_noise = NULL;
@@ -132,6 +132,9 @@ int main()
   vector<TH1D*> v_run_events_single(cut_energies_single.size(),NULL);
   vector<TH1D*> v_run_events_double( cut_energies_double.size(),NULL);
 
+  vector<TH1D*> v_hf_hits_rings(24,NULL);
+  vector<TH1D*> v_hf_hits_rings_noise(24,NULL);
+
   TH1D* h_run_events_lumi;
 
   TH1D* h_hf_cut_single;
@@ -163,6 +166,10 @@ int main()
   TH1D* h_perf_hf_totE_double_1dot5gev;
   TH1D* h_perf_hf_totE_eta_single_3gev;
   TH1D* h_perf_hf_totE_eta_double_1dot5gev;
+  TH1D* h_perf_hf_totE_eta_lev_p;
+  TH1D* h_perf_hf_totE_eta_lev_m;
+  TH1I* h_perf_hf_totE_eta_lev_n_p;
+  TH1I* h_perf_hf_totE_eta_lev_n_m;
 
   TH1D* h_mc_diffraction_single;
   TH1D* h_mc_diffraction_double;
@@ -199,6 +206,34 @@ int main()
   TH2D* h_mc_lrg_xiy;
   TH2D* h_mc_xix_xiy;
   TH2D* h_mc_unfold;
+
+  const int neta_lev = 13;
+  double deta_lev[neta_lev+1],eta_lev_m[neta_lev+1],eta_lev_p[neta_lev+1];
+  eta_lev_p[0] = 2.865;
+  eta_lev_p[1] = 2.975;
+  eta_lev_p[2] = 3.15;
+  eta_lev_p[3] = 3.325;
+  eta_lev_p[4] = 3.5;
+  eta_lev_p[5] = 3.675;
+  eta_lev_p[6] = 3.85;
+  eta_lev_p[7] = 4.025;
+  eta_lev_p[8] = 4.2;
+  eta_lev_p[9] = 4.375;
+  eta_lev_p[10] = 4.55;
+  eta_lev_p[11] = 4.725;
+  eta_lev_p[12] = 4.9;
+  eta_lev_p[13] = 5.2;
+  for (int j=0;j<neta_lev+1;j++)
+    {
+      eta_lev_m[neta_lev-j]=-eta_lev_p[j];
+    }
+  for (int j=0;j<neta_lev+1;j++)
+    {
+      cout << j << eta_lev_p[j] << " " << eta_lev_m[j] << endl;
+    }
+
+
+
   //****************************************************************LOOP*******************************************************************
 
   for (int sample=0; sample<int(sample_name.size()); sample++)
@@ -296,6 +331,18 @@ int main()
       h_castor_hf_diff_10         = new TH1D((add + string("_h_castor_hf_diff_10")).c_str(),"",100,0,10000);
       h_castor_gap_hf             = new TH1D((add + string("_h_castor_gap_hf")).c_str(),"",100,0,50);
       h_castor_nogap_hf           = new TH1D((add + string("_h_castor_nogap_hf")).c_str(),"",100,0,50);
+
+      for (int i = 0; i<24; i++)
+        {
+          ostringstream ss_single; ss_single << add <<"_h_hf_hits_rings_" << i;
+          v_hf_hits_rings[i] = new TH1D(ss_single.str().c_str(),run_str.str().c_str(),100,log10(0.5),log10(500.));
+          ostringstream ss_noise; ss_noise << add <<"_h_hf_hits_rings_noise_" << i;
+          v_hf_hits_rings_noise[i] = new TH1D(ss_noise.str().c_str(),run_str.str().c_str(),100,log10(0.5),log10(500.));
+
+          BinLogX(v_hf_hits_rings[i]);
+          BinLogX(v_hf_hits_rings_noise[i]);
+        }
+
       if(sample_type[sample] == DATA)
         {
 
@@ -358,6 +405,10 @@ int main()
       h_perf_hf_totE_double_1dot5gev       = new TH1D((add + string("_h_perf_hf_totE_double_1dot5gev")).c_str(),"",500,0,10);
       h_perf_hf_totE_eta_single_3gev       = new TH1D((add + string("_h_perf_hf_totE_eta_single_3gev")).c_str(),"",100,-5.2,5.2);
       h_perf_hf_totE_eta_double_1dot5gev   = new TH1D((add + string("_h_perf_hf_totE_eta_double_1dot5gev")).c_str(),"",100,-5.2,5.2);
+      h_perf_hf_totE_eta_lev_m   = new TH1D((add + string("_h_perf_hf_totE_eta_lev_m")).c_str(),"",neta_lev,eta_lev_m);
+      h_perf_hf_totE_eta_lev_p   = new TH1D((add + string("_h_perf_hf_totE_eta_lev_p")).c_str(),"",neta_lev,eta_lev_p);
+      h_perf_hf_totE_eta_lev_n_m   = new TH1I((add + string("_h_perf_hf_totE_eta_lev_n_m")).c_str(),"",neta_lev,eta_lev_m);
+      h_perf_hf_totE_eta_lev_n_p   = new TH1I((add + string("_h_perf_hf_totE_eta_lev_n_p")).c_str(),"",neta_lev,eta_lev_p);
       if(sample_type[sample] == MC)
         {
           h_mc_diffraction_single = new TH1D((add + string("_h_mc_diffraction_single")).c_str(),"",100,-9,2);
@@ -489,6 +540,8 @@ int main()
           int hf_zero_count = ForwardRecord::nMaxHFMRecHits - hf_n;
           double hf_double_energy_max = 0;
           double hf_single_energy_max = 0;
+          vector<double> v_hf_rings_energy_max(24,0.);
+
           double hf_m_energy_max = 0;
           double hf_p_energy_max = 0;
           double hf_p_energy = 0;
@@ -507,6 +560,12 @@ int main()
               const int Ieta = it->Eta > 0?it->IetaAbs:-it->IetaAbs;
               const double tower_e = it->Energy * _HFEnergyScale;
               //cout << it->IetaAbs << " " << eta << " " << tower_e << endl;
+
+              if(eta < 0 && tower_e > v_hf_rings_energy_max[IetaToRing(Ieta)])
+                v_hf_rings_energy_max[IetaToRing(Ieta)] = tower_e;
+              if(eta > 0 && tower_e > v_hf_rings_energy_max[IetaToRing(Ieta)])
+                v_hf_rings_energy_max[IetaToRing(Ieta)+12] = tower_e;
+
               if(eta > 0. && tower_e > hf_p_energy_max)
                 hf_p_energy_max = tower_e;
               if(eta <= 0. && tower_e > hf_m_energy_max)
@@ -664,6 +723,12 @@ int main()
           if(coll)                                                  h_zero_count_zb_coll->Fill(hf_zero_count,evtWeight);
           if(noise)                                                 h_zero_count_zb_no_coll->Fill(hf_zero_count,noiseWeight);
 
+          for (int i = 0; i<24; i++)
+            {
+              if(coll)                                              v_hf_hits_rings[i]      ->Fill(v_hf_rings_energy_max[i]);
+              if(noise)                                             v_hf_hits_rings_noise[i]->Fill(v_hf_rings_energy_max[i]);
+            }
+
           if(coll)                                                  h_hf_hits_coll_single->Fill(hf_single_energy_max);
           if(coll)                                                  h_hf_hits_coll_double->Fill(hf_double_energy_max);
 
@@ -700,9 +765,18 @@ int main()
                 continue;
 
               if(coll && hf_double_tag)
-                h_perf_hf_totE_eta_double_1dot5gev->Fill(it->Eta,it->Energy);
+                {
+                  h_perf_hf_totE_eta_double_1dot5gev->Fill(it->Eta,it->Energy);
+                }
               if(coll && hf_single_tag)
                 h_perf_hf_totE_eta_single_3gev->Fill(it->Eta,it->Energy);
+              if(coll && event->Tracks.size()>=1)
+                {
+                  h_perf_hf_totE_eta_lev_m->Fill(it->Eta,it->Energy);
+                  h_perf_hf_totE_eta_lev_p->Fill(it->Eta,it->Energy);
+                  h_perf_hf_totE_eta_lev_n_m->Fill(it->Eta);
+                  h_perf_hf_totE_eta_lev_n_p->Fill(it->Eta);
+                }
             } //no event weight. one would need to count weighted number of events
 
           if(coll)                                                  h_hf_new_cut_single->Fill(0.,evtWeight);
@@ -739,6 +813,7 @@ int main()
                   if(coll && hf_single_tag2)                        v_run_events_single[i]->Fill(event->lumiNb,evtWeight);
                   if(coll && hf_double_tag2)                        v_run_events_double[i]->Fill(event->lumiNb,evtWeight);
                 }
+
 
               if(coll)                                              h_run_events_lumi->Fill(event->lumiNb,lumiPerLS);
 
@@ -847,12 +922,27 @@ int main()
           h_mc_eta_e   ->Scale(1./n_total/h_mc_eta_e->GetBinWidth(1));
         }
 
+      for (int j=0;j<=neta_lev;j++)
+        {
+          int bin=j+1;
+          if(h_perf_hf_totE_eta_lev_n_m->GetBinContent(bin))
+            h_perf_hf_totE_eta_lev_m->SetBinContent(bin,h_perf_hf_totE_eta_lev_m->GetBinContent(bin)/(eta_lev_m[j+1]-eta_lev_m[j])/double(h_perf_hf_totE_eta_lev_n_m->GetBinContent(bin)));
+          else
+            h_perf_hf_totE_eta_lev_m->SetBinContent(bin,0);
+
+          if(h_perf_hf_totE_eta_lev_n_p->GetBinContent(bin))
+            h_perf_hf_totE_eta_lev_p->SetBinContent(bin,h_perf_hf_totE_eta_lev_p->GetBinContent(bin)/(eta_lev_p[j+1]-eta_lev_p[j])/double(h_perf_hf_totE_eta_lev_n_p->GetBinContent(bin)));
+          else
+            h_perf_hf_totE_eta_lev_p->SetBinContent(bin,0);
+        }
+
     }
 
   //********************************************AFTER SAMPLE LOOP************************************************
 
   out_file->Write();
   out_file->Save();
+  out_file->Close();
 
   return 0;
 }
@@ -860,6 +950,9 @@ int main()
 int IetaToRing(int ring)
 ///converts ieta to numbers from 0 to 24
 {
+  //rings range from [-41,29] and [29,41]
+  //29 is skipped in trees
+  //41 is skipped usually because of HCAL prescription
   if(ring < 0)
     return ring + 41;
   else

@@ -1,3 +1,6 @@
+///Plot the stacked hit distribution of (noise,em + data/mc) for HF
+
+
 void Show(TH1D* a,TH1D* a2,TH1D* b,TH1D* c,TH1D* d,TH1D* e,TH1D* f,string type);
 void ShowStack(TH1D* a,TH1D* a2,TH1D* b,TH1D* c,TH1D* d,TH1D* e,TH1D* f,string type);
 

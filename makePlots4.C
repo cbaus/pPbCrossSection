@@ -1,3 +1,5 @@
+///HF distribution of number of rechits
+
 void Show(TH1D* a,TH1D* b,TH1D* c,TH1D* d, string type);
 
 void makePlots4()
@@ -6,7 +8,7 @@ void makePlots4()
   style();
 
   TFile* file = TFile::Open("histos_old.root");
-  TH1D* a=file->Get("data/data_h_perf_hf_rechits_single_3gev");
+  TH1D* a=file->Get("data210614/data210614_h_perf_hf_rechits_single_3gev");
   TH1D* b=file->Get("Hijing/Hijing_h_perf_hf_rechits_single_3gev");
   TH1D* c=file->Get("Epos/Epos_h_perf_hf_rechits_single_3gev");
   TH1D* d=file->Get("QGSJetII/QGSJetII_h_perf_hf_rechits_single_3gev");
@@ -14,7 +16,7 @@ void makePlots4()
   Show(a,b,c,d,"single");
 
   TFile* file = TFile::Open("histos_old.root");
-  TH1D* e=file->Get("data/data_h_perf_hf_rechits_double_1dot5gev");
+  TH1D* e=file->Get("data210614/data210614_h_perf_hf_rechits_double_1dot5gev");
   TH1D* f=file->Get("Hijing/Hijing_h_perf_hf_rechits_double_1dot5gev");
   TH1D* g=file->Get("Epos/Epos_h_perf_hf_rechits_double_1dot5gev");
   TH1D* h=file->Get("QGSJetII/QGSJetII_h_perf_hf_rechits_double_1dot5gev");
