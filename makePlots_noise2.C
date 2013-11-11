@@ -1,3 +1,5 @@
+//no longer needed. was no better than the cuts based on whole HF. no eff improvement.
+
 TVectorD hf_m_cuts_light_noise(12);
 TVectorD hf_p_cuts_light_noise(12);
 TVectorD hf_m_cuts_medium_noise(12);
