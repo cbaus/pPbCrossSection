@@ -181,7 +181,7 @@ void makePlots_vdm_ls(double skip = 10.*11246.)
       vector<TF1*> sectionFunc; sectionFunc.resize(nSec);
       vector<TFitResultPtr> sectionFuncPtr; sectionFuncPtr.resize(nSec);
 
-      ostringstream histotitle; histotitle << ";orbit number; vertex " << type[n] << " position [mm]";
+      ostringstream histotitle; histotitle << ";orbit number; vertex " << type[n] << " position [cm]";
       h_length_scale->SetTitle(histotitle.str().c_str());
       h_length_scale->SetMarkerSize(0.5);
       h_length_scale->GetXaxis()->SetNdivisions(505);
@@ -334,7 +334,7 @@ void makePlots_vdm_ls(double skip = 10.*11246.)
           sectionChi[i]->Draw(drawoption.c_str());
           drawoption = string("L");
           
-          ostringstream legtext ; legtext << "Section " << i << " (" << sectionTruth[i] << " mm)";
+          ostringstream legtext ; legtext << "Section " << i << " (" << sectionTruth[i] << " µm)";
           legchi->AddEntry(sectionChi[i],legtext.str().c_str(),"l");
 
         }
