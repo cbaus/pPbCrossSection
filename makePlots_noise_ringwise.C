@@ -1,6 +1,8 @@
+//HF ringwise noise plots
+
 void Show(TH1D* a,TH1D* b,TH1D* c,TH1D* d, TH1D* e, TH1D* f);
 
-void makePlots_noise1()
+void makePlots_noise_ringwise()
 {
   gROOT->ProcessLine(" .L style.cc+");
   style();

@@ -3,8 +3,9 @@
 
 void Show(TH1D* a,TH1D* a2,TH1D* b,TH1D* c,TH1D* d,TH1D* e,TH1D* f,string type);
 void ShowStack(TH1D* a,TH1D* a2,TH1D* b,TH1D* c,TH1D* d,TH1D* e,TH1D* f,string type);
+TH1D* merge(TH1D* bg1, TH1D* bg2, TH1D* signal);
 
-void makePlots3()
+void makePlots_perf_stacked_hf()
 {
   gROOT->ProcessLine(" .L style.cc+");
   style();
@@ -34,8 +35,8 @@ void makePlots3()
   // ShowStack(a,a2,b,c,d,e,f,"m");
   // }
   {
-    TFile* file2 = TFile::Open("histos_old.root");
-    TFile* file = TFile::Open("histos_mc.root");
+    TFile* file2 = TFile::Open("histos.root");
+    TFile* file = TFile::Open("histos.root");
   TH1D* a=(TH1D*)file2->Get("data210885/data210885_h_hf_hits_coll_single");
   TH1D* a2=(TH1D*)file2->Get("data210885/data210885_h_hf_hits_noise_single");
   TH1D* b=(TH1D*)file->Get("Hijing/Hijing_h_hf_hits_coll_single");
@@ -47,8 +48,8 @@ void makePlots3()
   ShowStack(a,a2,b,c,d,e,f,"single");
   }
   {
-  TFile* file2 = TFile::Open("histos_old.root");
-  TFile* file = TFile::Open("histos_mc.root");
+  TFile* file2 = TFile::Open("histos.root");
+  TFile* file = TFile::Open("histos.root");
   TH1D* a=(TH1D*)file2->Get("data210885/data210885_h_hf_hits_coll_double");
   TH1D* a2=(TH1D*)file2->Get("data210885/data210885_h_hf_hits_noise_double");
   TH1D* b=(TH1D*)file->Get("Hijing/Hijing_h_hf_hits_coll_double");
@@ -153,12 +154,13 @@ void ShowStack(TH1D* data,TH1D* noise,TH1D* b,TH1D* c,TH1D* d,TH1D* sl1,TH1D* sl
   THStack* h_s_bg = new THStack("h_s_gb","events");
   h_s_bg->Add(noise,"HIST F");
   h_s_bg->Add(sl,"HIST F");
-  // TList *list = new TList;
-  // list->Add(noise);
-  // list->Add(sl);
-  // TH1D* h_s_bg = (TH1D*)b->Clone("h_s_bg");
-  // h_s_bg->Reset();
-  // h_s_bg->Merge(list);
+
+  if(0)
+    {
+      b = merge(noise,sl,b);
+      c = merge(noise,sl,c);
+      d = merge(noise,sl,d);
+    }
 
   TCanvas* c1 = new TCanvas;
   data->Draw("P");
@@ -182,7 +184,7 @@ void ShowStack(TH1D* data,TH1D* noise,TH1D* b,TH1D* c,TH1D* d,TH1D* sl1,TH1D* sl
   c1->SetLogx();
   CMSText(1,0,1,type=="single"?"single-arm selection":"double-arm selection");
 
-  TLine* line = new TLine(type=="single"?8:2.5,1e-6,type=="single"?8:2.5,0.1);
+  TLine* line = new TLine(type=="single"?8:4,1e-6,type=="single"?8:4,0.1);
   line->SetLineWidth(2);
   line->SetLineStyle(2);
   line->Draw("SAME");
@@ -191,3 +193,15 @@ void ShowStack(TH1D* data,TH1D* noise,TH1D* b,TH1D* c,TH1D* d,TH1D* sl1,TH1D* sl
 
 }
 
+TH1D* merge(TH1D* bg1, TH1D* bg2, TH1D* signal)
+{
+  TList *list = new TList;
+  list->Add(bg1);
+  list->Add(bg2);
+  list->Add(signal);
+  ostringstream newname; newname << signal->GetName() << "_merged";
+  TH1D* newsignal = (TH1D*)signal->Clone(newname.str().c_str());
+  newsignal->Reset();
+  newsignal->Merge(list);
+  return newsignal;
+}

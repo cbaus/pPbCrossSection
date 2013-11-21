@@ -1,6 +1,7 @@
-#define _MAXEVT -50000
-#define _SkipHFRings 0
-#define _HFEnergyScale 1.0 //0.8
+#define _MAXEVT 100000
+#define _SkipHFRings 1 //skip 41 and 29 as suggested by HCAL DPG 
+#define _HFEnergyScale 1.0 //1.0 //0.8
+#define _HFEnergyCalibration 1 //0 or 1
 
 #include "TChain.h"
 #include "TFile.h"
@@ -35,7 +36,7 @@ enum e_type
 
 using namespace std;
 
-int IetaToRing(int ring);
+int IetaToRing(int ieta);
 void BinLogX(TH1* h);
 
 
@@ -72,33 +73,23 @@ int main()
   //sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Data211607/*_*.root"); sample_name.push_back("data211607"); sample_type.push_back(DATA);
 
   sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Epos/*.root"); sample_name.push_back("Epos"); sample_type.push_back(MC);
-  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Epos/*.root"); sample_name.push_back("EposSDWeight2"); sample_type.push_back(MC);
-  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Epos_SL/*.root"); sample_name.push_back("Epos_SL"); sample_type.push_back(MC);
+  //sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Epos/*.root"); sample_name.push_back("EposSDWeight2"); sample_type.push_back(MC);
+  //sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Epos_SL/*.root"); sample_name.push_back("Epos_SL"); sample_type.push_back(MC);
   sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Hijing/*.root"); sample_name.push_back("Hijing"); sample_type.push_back(MC);
   sample_fname.push_back("/afs/cern.ch/work/c/cbaus/public/castortree/pPb_QGSJetII/treeMC.root"); sample_name.push_back("QGSJetII"); sample_type.push_back(MC);
   sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/StarlightDPMjet_v2/treeMC.root"); sample_name.push_back("Starlight_DPMJet");  sample_type.push_back(MC);
   sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/StarlightPythia/treeMC.root"); sample_name.push_back("Starlight_Pythia");  sample_type.push_back(MC);
 
-  TFile f("plots/hf_cuts_noise.root");
-  TVectorD* hf_m_cuts_light_noise = NULL;
-  TVectorD* hf_p_cuts_light_noise = NULL;
-  TVectorD* hf_m_cuts_medium_noise = NULL;
-  TVectorD* hf_p_cuts_medium_noise = NULL;
-  TVectorD* hf_m_cuts_heavy_noise = NULL;
-  TVectorD* hf_p_cuts_heavy_noise = NULL;
-  hf_m_cuts_light_noise=(TVectorD*)f.Get("hf_m_cuts_light_noise");
-  hf_p_cuts_light_noise=(TVectorD*)f.Get("hf_p_cuts_light_noise");
-  hf_m_cuts_medium_noise=(TVectorD*)f.Get("hf_m_cuts_medium_noise");
-  hf_p_cuts_medium_noise=(TVectorD*)f.Get("hf_p_cuts_medium_noise");
-  hf_m_cuts_heavy_noise=(TVectorD*)f.Get("hf_m_cuts_heavy_noise");
-  hf_p_cuts_heavy_noise=(TVectorD*)f.Get("hf_p_cuts_heavy_noise");
-  if(!hf_m_cuts_light_noise || !hf_p_cuts_light_noise || !hf_m_cuts_medium_noise || !hf_p_cuts_medium_noise || !hf_m_cuts_heavy_noise || !hf_p_cuts_heavy_noise) {cerr << "error" << endl; return 1;}
-  cout << "Heavy cuts:" << endl;
-  hf_p_cuts_heavy_noise->Print();
+#if _HFEnergyCalibration
+  TFile calibfile("plots/hf_calibration_data.root");
+  TVectorD* hf_calibration = NULL;
+  hf_calibration=(TVectorD*)calibfile.Get("hf_calibration");
+  hf_calibration->Print();
+#endif
 
   //**************************************************************OUTPUT*********************************************************
 
-  TFile* out_file = new TFile("histos.root","RECREATE");
+  TFile* out_file = new TFile("histos_test.root","RECREATE");
 
   TH1D* h_zero_count_zb_coll;
   TH1D* h_zero_count_zb_no_coll;
@@ -116,6 +107,10 @@ int main()
   TH1D* h_hf_hitdistr_noise;
   TH1D* h_hf_hitdistr_noise_p;
   TH1D* h_hf_hitdistr_noise_m;
+  TH1D* h_hf_triggered_ring_single;
+  TH1D* h_hf_triggered_ring_double;
+  TH1D* h_hf_triggered_ring_noise_single;
+  TH1D* h_hf_triggered_ring_noise_double;
   TH1D* h_castor_hf_diff_3;
   TH1D* h_castor_hf_diff_5;
   TH1D* h_castor_hf_diff_10;
@@ -141,8 +136,6 @@ int main()
   TH1D* h_hf_cut_single_noise;
   TH1D* h_hf_cut_double;
   TH1D* h_hf_cut_double_noise;
-  TH1D* h_hf_new_cut_single;
-  TH1D* h_hf_new_cut_double;
 
   TH1D* h_hf_noise_all_lumi;
   TH1D* h_hf_noise_selected_single_lumi;
@@ -157,6 +150,7 @@ int main()
   TProfile* h_hf_totE_minus_lumi;
   TProfile* h_hf_totE_noise_lumi;
 
+
   TH1D* h_lumi;
   TH1D* h_lumi_3GeV;
 
@@ -164,6 +158,8 @@ int main()
   TH1D* h_perf_hf_rechits_double_1dot5gev;
   TH1D* h_perf_hf_totE_single_3gev;
   TH1D* h_perf_hf_totE_double_1dot5gev;
+  TH1D* h_perf_hf_totE_ZBSingleTrack;
+  TH1D* h_perf_hf_totE_ZBSingleTrack_noise;
   TH1D* h_perf_hf_totE_eta_single_3gev;
   TH1D* h_perf_hf_totE_eta_double_1dot5gev;
   TH1D* h_perf_hf_totE_eta_lev_p;
@@ -326,6 +322,11 @@ int main()
       BinLogX(h_hf_hitdistr_coll_p);
       BinLogX(h_hf_hitdistr_coll_m);
 
+      h_hf_triggered_ring_single  = new TH1D((add + string("_h_hf_triggered_ring_single")).c_str(),"",83,-41.5,41.5);
+      h_hf_triggered_ring_double  = new TH1D((add + string("_h_hf_triggered_ring_double")).c_str(),"",83,-41.5,41.5);
+      h_hf_triggered_ring_noise_single  = new TH1D((add + string("_h_hf_triggered_ring_noise_single")).c_str(),"",83,-41.5,41.5);
+      h_hf_triggered_ring_noise_double  = new TH1D((add + string("_h_hf_triggered_ring_noise_double")).c_str(),"",83,-41.5,41.5);
+
       h_castor_hf_diff_3          = new TH1D((add + string("_h_castor_hf_diff_3")).c_str(),"",100,0,10000);
       h_castor_hf_diff_5          = new TH1D((add + string("_h_castor_hf_diff_5")).c_str(),"",100,0,10000);
       h_castor_hf_diff_10         = new TH1D((add + string("_h_castor_hf_diff_10")).c_str(),"",100,0,10000);
@@ -384,10 +385,6 @@ int main()
       h_hf_cut_double             = new TH1D((add + string("_h_hf_cut_double")).c_str(),"",201,-0.05,20.05);
       h_hf_cut_double_noise       = new TH1D((add + string("_h_hf_cut_double_noise")).c_str(),"",201,-0.05,20.05);
 
-      h_hf_new_cut_single         = new TH1D((add + string("_h_hf_new_cut_single")).c_str(),"",4,-0.5,3.5);
-      h_hf_new_cut_double         = new TH1D((add + string("_h_hf_new_cut_double")).c_str(),"",4,-0.5,3.5);
-
-
       h_hf_hits_coll_lumi         = new TProfile((add + string("_h_hf_hits_coll_lumi")).c_str(),"",2000,0,2000);
       h_hf_hits_minus_lumi        = new TProfile((add + string("_h_hfp_hits_lumi")).c_str(),"",2000,0,2000);
       h_hf_hits_plus_lumi         = new TProfile((add + string("_h_hfm_hits_lumi")).c_str(),"",2000,0,2000);
@@ -403,6 +400,8 @@ int main()
       h_perf_hf_rechits_double_1dot5gev    = new TH1D((add + string("_h_perf_hf_rechits_double_1dot5gev")).c_str(),"",100,0,1000);
       h_perf_hf_totE_single_3gev           = new TH1D((add + string("_h_perf_hf_totE_single_3gev")).c_str(),"",500,0,10);
       h_perf_hf_totE_double_1dot5gev       = new TH1D((add + string("_h_perf_hf_totE_double_1dot5gev")).c_str(),"",500,0,10);
+      h_perf_hf_totE_ZBSingleTrack         = new TH1D((add + string("_h_perf_hf_totE_ZBSingleTrack")).c_str(),"",500,0,10);
+      h_perf_hf_totE_ZBSingleTrack_noise   = new TH1D((add + string("_h_perf_hf_totE_ZBSingleTrack_noise")).c_str(),"",500,0,10);
       h_perf_hf_totE_eta_single_3gev       = new TH1D((add + string("_h_perf_hf_totE_eta_single_3gev")).c_str(),"",100,-5.2,5.2);
       h_perf_hf_totE_eta_double_1dot5gev   = new TH1D((add + string("_h_perf_hf_totE_eta_double_1dot5gev")).c_str(),"",100,-5.2,5.2);
       h_perf_hf_totE_eta_lev_m   = new TH1D((add + string("_h_perf_hf_totE_eta_lev_m")).c_str(),"",neta_lev,eta_lev_m);
@@ -464,17 +463,17 @@ int main()
           h_mc_eff->GetXaxis()->SetBinLabel(2,"HF single > 6 GeV");
           h_mc_eff->GetXaxis()->SetBinLabel(3,"HF single > 8 GeV");
           h_mc_eff->GetXaxis()->SetBinLabel(4,"HF single > 10 GeV");
-          h_mc_eff->GetXaxis()->SetBinLabel(5,"HF double > 2 GeV");
-          h_mc_eff->GetXaxis()->SetBinLabel(6,"HF double > 2.5 GeV");
-          h_mc_eff->GetXaxis()->SetBinLabel(7,"HF double > 3 GeV");
+          h_mc_eff->GetXaxis()->SetBinLabel(5,"HF double > 3 GeV");
+          h_mc_eff->GetXaxis()->SetBinLabel(6,"HF double > 4 GeV");
+          h_mc_eff->GetXaxis()->SetBinLabel(7,"HF double > 5 GeV");
           h_mc_eff->GetXaxis()->SetBinLabel(8,"no. of tracks #geq 1");
           h_mc_eff->GetXaxis()->SetBinLabel(9,"CASTOR E_{tot} > 12.5 GeV");
           h_mc_effgain_single     = new TH1D((add + string("_h_mc_effgain_single")).c_str(),"",7,-0.5,6.5);
           h_mc_effgain_single->GetXaxis()->SetBinLabel(1,"All");
           h_mc_effgain_single->GetXaxis()->SetBinLabel(2,"HF single > 6 GeV");
-          h_mc_effgain_single->GetXaxis()->SetBinLabel(3,"HF double > 2 GeV");
-          h_mc_effgain_single->GetXaxis()->SetBinLabel(4,"HF double > 2.5 GeV");
-          h_mc_effgain_single->GetXaxis()->SetBinLabel(5,"HF double > 3 GeV");
+          h_mc_effgain_single->GetXaxis()->SetBinLabel(3,"HF double > 3 GeV");
+          h_mc_effgain_single->GetXaxis()->SetBinLabel(4,"HF double > 4 GeV");
+          h_mc_effgain_single->GetXaxis()->SetBinLabel(5,"HF double > 5 GeV");
           h_mc_effgain_single->GetXaxis()->SetBinLabel(6,"no. of tracks #geq 1");
           h_mc_effgain_single->GetXaxis()->SetBinLabel(7,"CASTOR E_{tot} > 12.5 GeV");
           h_mc_effgain_double     = new TH1D((add + string("_h_mc_effgain_double")).c_str(),"",7,-0.5,6.5);
@@ -482,7 +481,7 @@ int main()
           h_mc_effgain_double->GetXaxis()->SetBinLabel(2,"HF single > 6 GeV");
           h_mc_effgain_double->GetXaxis()->SetBinLabel(3,"HF single > 8 GeV");
           h_mc_effgain_double->GetXaxis()->SetBinLabel(4,"HF single > 10 GeV");
-          h_mc_effgain_double->GetXaxis()->SetBinLabel(5,"HF double > 2 GeV");
+          h_mc_effgain_double->GetXaxis()->SetBinLabel(5,"HF double > 3 GeV");
           h_mc_effgain_double->GetXaxis()->SetBinLabel(6,"no. of tracks  #geq 1");
           h_mc_effgain_double->GetXaxis()->SetBinLabel(7,"CASTOR E_{tot} > 12.5 GeV");
         }
@@ -546,43 +545,42 @@ int main()
           double hf_p_energy_max = 0;
           double hf_p_energy = 0;
           double hf_m_energy = 0;
-          bool hf_m_light_cut = false;
-          bool hf_m_medium_cut = false;
-          bool hf_m_heavy_cut = false;
-          bool hf_p_light_cut = false;
-          bool hf_p_medium_cut = false;
-          bool hf_p_heavy_cut = false;
+          int triggered_ring = 0;
+          int triggered_ring_m = 0;
+          int triggered_ring_p = 0;
           for (vector<TowerHF>::const_iterator it = event->HFtowers.begin(); it < event->HFtowers.end(); ++it)
             {
               if(_SkipHFRings && (it->IetaAbs == 41 || it->IetaAbs == 29))
                 continue;
               const double eta = it->Eta;
               const int Ieta = it->Eta > 0?it->IetaAbs:-it->IetaAbs;
-              const double tower_e = it->Energy * _HFEnergyScale;
+              double tower_e = it->Energy * _HFEnergyScale;
+#if _HFEnergyCalibration
+              if(sample_type[sample]==MC)
+                tower_e /= (*hf_calibration)[IetaToRing(Ieta)];
+#endif
               //cout << it->IetaAbs << " " << eta << " " << tower_e << endl;
 
               if(eta < 0 && tower_e > v_hf_rings_energy_max[IetaToRing(Ieta)])
                 v_hf_rings_energy_max[IetaToRing(Ieta)] = tower_e;
               if(eta > 0 && tower_e > v_hf_rings_energy_max[IetaToRing(Ieta)])
-                v_hf_rings_energy_max[IetaToRing(Ieta)+12] = tower_e;
+                v_hf_rings_energy_max[IetaToRing(Ieta)] = tower_e;
 
               if(eta > 0. && tower_e > hf_p_energy_max)
-                hf_p_energy_max = tower_e;
+                {
+                  hf_p_energy_max = tower_e;
+                  triggered_ring_p = Ieta;
+                }
               if(eta <= 0. && tower_e > hf_m_energy_max)
-                hf_m_energy_max = tower_e;
+                {
+                  hf_m_energy_max = tower_e;
+                  triggered_ring_m = Ieta;
+                }
 
               if(eta > 0.)
                 hf_p_energy += tower_e;
               else
                 hf_m_energy += tower_e;
-
-              if(Ieta < 0 && tower_e >= (*hf_m_cuts_light_noise)[IetaToRing(Ieta)])  hf_m_light_cut = true;
-              if(Ieta < 0 && tower_e >= (*hf_m_cuts_medium_noise)[IetaToRing(Ieta)]) hf_m_medium_cut = true;
-              if(Ieta < 0 && tower_e >= (*hf_m_cuts_heavy_noise)[IetaToRing(Ieta)])  hf_m_heavy_cut = true;
-              if(Ieta > 0 && tower_e >= (*hf_p_cuts_light_noise)[IetaToRing(Ieta)])  hf_p_light_cut = true;
-              if(Ieta > 0 && tower_e >= (*hf_p_cuts_medium_noise)[IetaToRing(Ieta)]) hf_p_medium_cut = true;
-              if(Ieta > 0 && tower_e >= (*hf_p_cuts_heavy_noise)[IetaToRing(Ieta)])  hf_p_heavy_cut = true;
-
 
               if(coll)               h_hf_hitdistr_coll->   Fill(tower_e);
               if(coll && eta <= 0.)  h_hf_hitdistr_coll_m-> Fill(tower_e);
@@ -594,18 +592,12 @@ int main()
           double hf_pm_energy = hf_p_energy + hf_m_energy;
           //cout << "rechit: " << hf_pm_energy << endl;
 
+          triggered_ring = hf_m_energy_max>hf_p_energy_max?triggered_ring_m:triggered_ring_p;
+
           hf_double_energy_max = TMath::Min(hf_m_energy_max,hf_p_energy_max);
           hf_single_energy_max = TMath::Max(hf_m_energy_max,hf_p_energy_max);
           bool hf_single_tag = hf_single_energy_max >= 8;
-          bool hf_double_tag = hf_double_energy_max >= 2.5;
-
-          bool hf_light_double_tag = hf_p_light_cut && hf_m_light_cut;
-          bool hf_medium_double_tag = hf_p_medium_cut && hf_m_medium_cut;
-          bool hf_heavy_double_tag = hf_p_heavy_cut && hf_m_heavy_cut;
-          bool hf_light_single_tag = hf_p_light_cut || hf_m_light_cut;
-          bool hf_medium_single_tag = hf_p_medium_cut || hf_m_medium_cut;
-          bool hf_heavy_single_tag = hf_p_heavy_cut || hf_m_heavy_cut;
-
+          bool hf_double_tag = hf_double_energy_max >= 4;
 
 
 
@@ -758,6 +750,15 @@ int main()
 
           if(coll && hf_single_tag)                                 h_perf_hf_totE_single_3gev->Fill(hf_pm_energy/1000.,evtWeight);
           if(coll && hf_double_tag)                                 h_perf_hf_totE_double_1dot5gev->Fill(hf_pm_energy/1000.,evtWeight);
+          if(coll && event->Tracks.size()>=1)                       h_perf_hf_totE_ZBSingleTrack->Fill(hf_pm_energy/1000.,evtWeight);
+          if(noise && event->Tracks.size()>=1)                      h_perf_hf_totE_ZBSingleTrack_noise->Fill(hf_pm_energy/1000.,evtWeight);
+
+          if(coll && hf_single_tag)                                 h_hf_triggered_ring_single->Fill(triggered_ring);
+          if(coll && hf_double_tag)                                 h_hf_triggered_ring_double->Fill(triggered_ring_m);
+          if(coll && hf_double_tag)                                 h_hf_triggered_ring_double->Fill(triggered_ring_p);
+          if(noise && hf_single_tag)                                 h_hf_triggered_ring_noise_single->Fill(triggered_ring);
+          if(noise && hf_double_tag)                                 h_hf_triggered_ring_noise_double->Fill(triggered_ring_m);
+          if(noise && hf_double_tag)                                 h_hf_triggered_ring_noise_double->Fill(triggered_ring_p);
 
           for (vector<TowerHF>::const_iterator it = event->HFtowers.begin(); it < event->HFtowers.end(); ++it)
             {
@@ -778,15 +779,6 @@ int main()
                   h_perf_hf_totE_eta_lev_n_p->Fill(it->Eta);
                 }
             } //no event weight. one would need to count weighted number of events
-
-          if(coll)                                                  h_hf_new_cut_single->Fill(0.,evtWeight);
-          if(coll && hf_light_single_tag)                           h_hf_new_cut_single->Fill(1.,evtWeight);
-          if(coll && hf_medium_single_tag)                          h_hf_new_cut_single->Fill(2.,evtWeight);
-          if(coll && hf_heavy_single_tag)                           h_hf_new_cut_single->Fill(3.,evtWeight);
-          if(coll)                                                  h_hf_new_cut_double->Fill(0.,evtWeight);
-          if(coll && hf_light_double_tag)                           h_hf_new_cut_double->Fill(1.,evtWeight);
-          if(coll && hf_medium_double_tag)                          h_hf_new_cut_double->Fill(2.,evtWeight);
-          if(coll && hf_heavy_double_tag)                           h_hf_new_cut_double->Fill(3.,evtWeight);
 
           if(sample_type[sample]==DATA)
             {
@@ -832,30 +824,30 @@ int main()
                 }
 
               if(coll)                                                  h_mc_eff->Fill(0.,evtWeight);
-              if(coll && hf_single_energy_max > 6)                      h_mc_eff->Fill(1.,evtWeight);
-              if(coll && hf_single_energy_max > 8)                      h_mc_eff->Fill(2.,evtWeight);
-              if(coll && hf_single_energy_max > 10)                     h_mc_eff->Fill(3.,evtWeight);
-              if(coll && hf_double_energy_max > 2)                      h_mc_eff->Fill(4.,evtWeight);
-              if(coll && hf_double_energy_max > 2.5)                    h_mc_eff->Fill(5.,evtWeight);
-              if(coll && hf_double_energy_max > 3)                      h_mc_eff->Fill(6.,evtWeight);
+              if(coll && hf_single_energy_max >= 6)                      h_mc_eff->Fill(1.,evtWeight);
+              if(coll && hf_single_energy_max >= 8)                      h_mc_eff->Fill(2.,evtWeight);
+              if(coll && hf_single_energy_max >= 10)                     h_mc_eff->Fill(3.,evtWeight);
+              if(coll && hf_double_energy_max >= 3)                      h_mc_eff->Fill(4.,evtWeight);
+              if(coll && hf_double_energy_max >= 4)                     h_mc_eff->Fill(5.,evtWeight);
+              if(coll && hf_double_energy_max >= 5)                      h_mc_eff->Fill(6.,evtWeight);
               if(coll && event->Tracks.size()>=1)                       h_mc_eff->Fill(7.,evtWeight);
               if(coll && castor_tag)                                    h_mc_eff->Fill(8.,evtWeight);
 
-              if(!(hf_single_energy_max < 8))                                     h_mc_effgain_single->Fill(0.,evtWeight);
-              if(!(hf_single_energy_max < 8) && hf_single_energy_max > 6)         h_mc_effgain_single->Fill(1.,evtWeight);
-              if(!(hf_single_energy_max < 8) && hf_double_energy_max > 2)         h_mc_effgain_single->Fill(2.,evtWeight);
-              if(!(hf_single_energy_max < 8) && hf_double_energy_max > 2.5)       h_mc_effgain_single->Fill(3.,evtWeight);
-              if(!(hf_single_energy_max < 8) && hf_double_energy_max > 3)         h_mc_effgain_single->Fill(4.,evtWeight);
-              if(!(hf_single_energy_max < 8) && event->Tracks.size()>=1)          h_mc_effgain_single->Fill(5.,evtWeight);
-              if(!(hf_single_energy_max < 8) && castor_tag)                       h_mc_effgain_single->Fill(6.,evtWeight);
+              if(!(hf_single_energy_max > 8))                                     h_mc_effgain_single->Fill(0.,evtWeight);
+              if(!(hf_single_energy_max > 8) && hf_single_energy_max > 6)         h_mc_effgain_single->Fill(1.,evtWeight);
+              if(!(hf_single_energy_max > 8) && hf_double_energy_max > 3)         h_mc_effgain_single->Fill(2.,evtWeight);
+              if(!(hf_single_energy_max > 8) && hf_double_energy_max > 4)         h_mc_effgain_single->Fill(3.,evtWeight);
+              if(!(hf_single_energy_max > 8) && hf_double_energy_max > 5)         h_mc_effgain_single->Fill(4.,evtWeight);
+              if(!(hf_single_energy_max > 8) && event->Tracks.size()>=1)          h_mc_effgain_single->Fill(5.,evtWeight);
+              if(!(hf_single_energy_max > 8) && castor_tag)                       h_mc_effgain_single->Fill(6.,evtWeight);
 
-              if(!(hf_double_energy_max < 2.5))                                      h_mc_effgain_double->Fill(0.,evtWeight);
-              if(!(hf_double_energy_max < 2.5) && hf_single_energy_max > 6)          h_mc_effgain_double->Fill(1.,evtWeight);
-              if(!(hf_double_energy_max < 2.5) && hf_single_energy_max > 8)          h_mc_effgain_double->Fill(2.,evtWeight);
-              if(!(hf_double_energy_max < 2.5) && hf_single_energy_max > 10)         h_mc_effgain_double->Fill(3.,evtWeight);
-              if(!(hf_double_energy_max < 2.5) && hf_double_energy_max > 2)          h_mc_effgain_double->Fill(4.,evtWeight);
-              if(!(hf_double_energy_max < 2.5) && event->Tracks.size()>=1)           h_mc_effgain_double->Fill(5.,evtWeight);
-              if(!(hf_double_energy_max < 2.5) && castor_tag)                        h_mc_effgain_double->Fill(6.,evtWeight);
+              if(!(hf_double_energy_max > 4))                                      h_mc_effgain_double->Fill(0.,evtWeight);
+              if(!(hf_double_energy_max > 4) && hf_single_energy_max > 6)          h_mc_effgain_double->Fill(1.,evtWeight);
+              if(!(hf_double_energy_max > 4) && hf_single_energy_max > 8)          h_mc_effgain_double->Fill(2.,evtWeight);
+              if(!(hf_double_energy_max > 4) && hf_single_energy_max > 10)         h_mc_effgain_double->Fill(3.,evtWeight);
+              if(!(hf_double_energy_max > 4) && hf_double_energy_max > 2)          h_mc_effgain_double->Fill(4.,evtWeight);
+              if(!(hf_double_energy_max > 4) && event->Tracks.size()>=1)           h_mc_effgain_double->Fill(5.,evtWeight);
+              if(!(hf_double_energy_max > 4) && castor_tag)                        h_mc_effgain_double->Fill(6.,evtWeight);
 
 
               if(coll && hf_single_tag)                                 h_mc_diffraction_single->Fill(log10(xi_x),evtWeight);
@@ -947,16 +939,28 @@ int main()
   return 0;
 }
 
-int IetaToRing(int ring)
-///converts ieta to numbers from 0 to 24
+int IetaToRing(int ieta)
+///converts ieta to numbers from 0 to 23
 {
   //rings range from [-41,29] and [29,41]
   //29 is skipped in trees
   //41 is skipped usually because of HCAL prescription
-  if(ring < 0)
-    return ring + 41;
+  if(ieta < 0)
+    return ieta + 41;
   else
-    return ring - 30;
+    return ieta + 12 - 30;
+}
+
+int RingToIeta(int ring)
+///converts rings from 0 to 23 to ieta
+{
+  //rings range from [-41,29] and [29,41]
+  //29 is skipped in trees
+  //41 is skipped usually because of HCAL prescription
+  if(ring < 12)
+    return ring - 41;
+  else
+    return ring - 12 + 30;
 }
 
 void BinLogX(TH1* h)

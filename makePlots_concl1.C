@@ -4,8 +4,7 @@
 #include "TLegend.h"
 #include "TROOT.h"
 
-#define CSe 0.082
-#define CSe2 0.020
+#define CSe 0.047
 
 
 
@@ -42,7 +41,7 @@ void DataText2(const bool left, const bool top, const std::string str, bool sim)
 void SetAttributes(TGraphErrors* theGraph, int colour, int marker)
 {
   theGraph->SetMarkerSize(1.5);
-  theGraph->SetLineWidth(1.8);
+  theGraph->SetLineWidth(2);
   theGraph->SetFillColor(kWhite);
   theGraph->SetLineColor(colour);
   theGraph->SetMarkerColor(colour);
@@ -145,18 +144,19 @@ void makePlots_concl1()
   pb_this->SetPoint(0,0.9,CS);
   pb_this->SetPointError(0,0,CS*CSe);
   SetAttributes(pb_this,kRed,20);
-  TGraphErrors* pb_this_up  = new TGraphErrors(1);
-  pb_this_up->SetName("pb_this_up");
-  pb_this_up->SetTitle("CMS");
-  pb_this_up->SetPoint(0,0.9,CS*(1+CSe2));
-  SetAttributes(pb_this_up,kRed,23);
-  pb_this_up->SetMarkerSize(1.2);
-  TGraphErrors* pb_this_down  = new TGraphErrors(1);
-  pb_this_down->SetName("pb_this_down");
-  pb_this_down->SetTitle("CMS");
-  pb_this_down->SetPoint(0,0.9,CS*(1.-CSe2));
-  SetAttributes(pb_this_down,kRed,22);
-  pb_this_down->SetMarkerSize(1.2);
+  // this was for additional lumi error bars
+  // TGraphErrors* pb_this_up  = new TGraphErrors(1);
+  // pb_this_up->SetName("pb_this_up");
+  // pb_this_up->SetTitle("CMS");
+  // pb_this_up->SetPoint(0,0.9,CS*(1+CSe2));
+  // SetAttributes(pb_this_up,kRed,23);
+  // pb_this_up->SetMarkerSize(1.2);
+  // TGraphErrors* pb_this_down  = new TGraphErrors(1);
+  // pb_this_down->SetName("pb_this_down");
+  // pb_this_down->SetTitle("CMS");
+  // pb_this_down->SetPoint(0,0.9,CS*(1.-CSe2));
+  // SetAttributes(pb_this_down,kRed,22);
+  // pb_this_down->SetMarkerSize(1.2);
 
 
   ///RANGE
@@ -188,8 +188,8 @@ void makePlots_concl1()
   pb_qgsjetii->Draw("P");
   pb_fit->Draw("P");
   pb_this->Draw("P");
-  pb_this_up->Draw("P");
-  pb_this_down->Draw("P");
+  //pb_this_up->Draw("P");
+  //pb_this_down->Draw("P");
 
   TLegend* leg1 = new TLegend(0.283,0.157,0.884,0.357);
   SetLegAtt(leg1);
@@ -221,8 +221,8 @@ void makePlots_concl1()
   pb_qgsjetii->Draw("P");
   pb_fit->Draw("P");
   pb_this->Draw("P");
-  pb_this_up->Draw("P");
-  pb_this_down->Draw("P");
+  //pb_this_up->Draw("P");
+  //pb_this_down->Draw("P");
 
   leg1->SetX1NDC(0.28);
   leg1->SetY1NDC(0.72);

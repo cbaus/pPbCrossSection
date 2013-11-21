@@ -51,7 +51,7 @@ void makePlots_vdm_beambeam1()
   /////////////////////
 
   TCanvas* c2 = new TCanvas;
-  TString formula("-1*-2*[0]*[1]/[2] * ((1.-exp(-x*x/(2.*[3]*[3])))/x) * [4] / (2.*tan(TMath::Pi()*[5]))");
+  TString formula("-1*-2*[0]*[1]/[2] * ((1.-exp(-x*x/(2.*[3]*[3])))/x) * [4] / (2.*tan(TMath::Pi()*[6]))");
   //TString formula("-1*-2*[0]*[1]/[2] * ((1.-exp(-x*x/(2.*[3]*[3])))/x)*1000");
   TF1 *f1 = new TF1 ("f1", formula, -500., 500.);
   TF1 *fp = new TF1 ("fp", formula, -500., 500.);
@@ -89,14 +89,14 @@ void makePlots_vdm_beambeam1()
   leg->AddEntry(f2,"pp p@8TeV (#sigma=125#mum, N=8.5e10)","l");
 
   fp->SetParName(0,"re"); fp->SetParameter( 0, 1.53e-12); //µm
-  fp->SetParName(1,"nt"); fp->SetParameter( 1, 1.16e10); //!!!this is intensity of target beam (i.e. lead)
+  fp->SetParName(1,"nt"); fp->SetParameter( 1, 6.5e9); //!!!this is intensity of target beam (i.e. lead)
   fp->SetParName(2,"gamma"); fp->SetParameter( 2, gammapb); 
   fp->SetParName(3,"sigma"); fp->SetParameter( 3, 35.);
   fp->SetParName(4,"betastar"); fp->SetParameter( 4, 0.8e6);
   fp->SetParName(5,"tunex"); fp->SetParameter( 5, 64.31);
   fp->SetParName(6,"tuney"); fp->SetParameter( 6, 59.32);
-  //fp->SetLineWidth(2); fp->SetLineColor(kRed); fp->Draw("SAME");
-  //leg->AddEntry(fp,"pPb p@4TeV (#sigma=35#mum)","l");
+  fp->SetLineWidth(2); fp->SetLineColor(kRed); fp->Draw("SAME");
+  leg->AddEntry(fp,"pPb p@4TeV (#sigma=35#mum)","l");
 
   fpb->SetParName(0,"re"); fpb->SetParameter( 0, 1.53e-12); //µm
   fpb->SetParName(1,"nt"); fpb->SetParameter( 1, 1.26e10); //!!!this is intensity of target beam (i.e. proton)

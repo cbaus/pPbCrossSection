@@ -2,21 +2,21 @@
 
 void Show(TH1D* a,TH1D* b,TH1D* c,TH1D* d, string type);
 
-void makePlots4()
+void makePlots_perf_hf_norechits()
 {
   gROOT->ProcessLine(" .L style.cc+");
   style();
 
-  TFile* file = TFile::Open("histos_old.root");
-  TH1D* a=file->Get("data210614/data210614_h_perf_hf_rechits_single_3gev");
+  TFile* file = TFile::Open("histos.root");
+  TH1D* a=file->Get("data210885/data210885_h_perf_hf_rechits_single_3gev");
   TH1D* b=file->Get("Hijing/Hijing_h_perf_hf_rechits_single_3gev");
   TH1D* c=file->Get("Epos/Epos_h_perf_hf_rechits_single_3gev");
   TH1D* d=file->Get("QGSJetII/QGSJetII_h_perf_hf_rechits_single_3gev");
 
   Show(a,b,c,d,"single");
 
-  TFile* file = TFile::Open("histos_old.root");
-  TH1D* e=file->Get("data210614/data210614_h_perf_hf_rechits_double_1dot5gev");
+  TFile* file = TFile::Open("histos.root");
+  TH1D* e=file->Get("data210885/data210885_h_perf_hf_rechits_double_1dot5gev");
   TH1D* f=file->Get("Hijing/Hijing_h_perf_hf_rechits_double_1dot5gev");
   TH1D* g=file->Get("Epos/Epos_h_perf_hf_rechits_double_1dot5gev");
   TH1D* h=file->Get("QGSJetII/QGSJetII_h_perf_hf_rechits_double_1dot5gev");
@@ -27,7 +27,7 @@ void makePlots4()
 void Show(TH1D* a,TH1D* b,TH1D* c,TH1D* d, string type)
 {
   const int normbin = a->FindBin(50);
-  a->Scale(1./double(a->GetEntries()));
+  a->Scale(1./double(a->Integral()));
   b->Scale(a->GetBinContent(normbin)/b->GetBinContent(normbin));
   c->Scale(a->GetBinContent(normbin)/c->GetBinContent(normbin));
   d->Scale(a->GetBinContent(normbin)/d->GetBinContent(normbin));

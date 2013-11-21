@@ -11,7 +11,7 @@
 
 using namespace std;
 
-#define CSe 0.082
+#define CSe 0.047
 
 void SetAttributes(TGraphErrors* theGraph, int colour, int marker)
 {

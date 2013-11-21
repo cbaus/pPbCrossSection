@@ -1,8 +1,8 @@
 {
 const double lumiPerLS_begin = 2. * 1e6;
 const double lumiPerLS_end = 0.9 * 1e6;
-const double eff_acc_double = 0.9363;
-const double eff_acc_single = 0.9643;
+const double eff_acc_double = 0.939;
+const double eff_acc_single = 0.910;
 
 double lumiPerLS = lumiPerLS_begin;
 

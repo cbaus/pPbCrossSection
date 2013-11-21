@@ -1,4 +1,4 @@
-#define _MAXEVT -500000
+#define _MAXEVT 500000
 #define _SkipHFRings 1
 #define _HFEnergyScale 1.0 //0.8
 
@@ -56,7 +56,7 @@ int main()
 sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/VDM211821/*.root"); sample_name.push_back("pp");
 
   //**************************************************************OUTPUT*********************************************************
-  TFile* out_file = new TFile("histos_vdmpp.root","RECREATE");
+  TFile* out_file = new TFile("histos_test.root","RECREATE");
   convert("vdmfiles/B1Lpos.csv","vdmfiles/B1Rpos.csv",h_b1_vpos,h_b1_hpos);
   convert("vdmfiles/B2Lpos.csv","vdmfiles/B2Lpos.csv",h_b2_vpos,h_b2_hpos); // WARNUNG twice L position because R is corrupt
   h_b1_vpos->Write();
@@ -90,11 +90,11 @@ sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/
 
       tree->SetBranchStatus("*", 0);
       tree->SetBranchStatus("event*", 1);
-      tree->SetBranchStatus("orbitNb", 1);
-      tree->SetBranchStatus("time", 1);
-      tree->SetBranchStatus("CASTOR.Sector", 1);
-      tree->SetBranchStatus("CASTOR.Module", 1);
-      tree->SetBranchStatus("CASTOR.Energy", 1);
+      tree->SetBranchStatus("orbitNb", 0);
+      tree->SetBranchStatus("time", 0);
+      tree->SetBranchStatus("CASTOR.Sector", 0);
+      tree->SetBranchStatus("CASTOR.Module", 0);
+      tree->SetBranchStatus("CASTOR.Energy", 0);
       tree->SetBranchStatus("*ertex*", 1);
 
       AnalysisEvent* event = 0;
@@ -109,6 +109,8 @@ sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/
       h_rate_ls = new TH1D("h_rate_ls","",500,STARTORBIT,ENDORBIT);
       TH1D* h_rate_s;
       h_rate_s = new TH1D("h_rate_s","",500,0,100000);
+      TH1D* h_vertex_z;
+      h_vertex_z = new TH1D("h_vertex_z","",500,-25,25);
       TH2D* h_length_scale_x;
       h_length_scale_x = new TH2D("h_length_scale_X","",500,STARTORBIT,ENDORBIT,200,-0.02,0.16);
       TH2D* h_length_scale_y;
@@ -120,7 +122,7 @@ sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/
       if(_MAXEVT<n_total && _MAXEVT>0)
         n_total = double(_MAXEVT);
 
-      for(int iEvent=0; iEvent<n_total; iEvent++)
+      for(int iEvent=0; iEvent<int(n_total); iEvent++)
         {
           if(iEvent % 100000 == 0) cout << sample+1 << "/" << sample_name.size() << " -- " << sample_name[sample].c_str() << " -- Entry: " << fixed << iEvent << " / " << int(n_total) << endl;
           tree->GetEntry(iEvent);
@@ -132,10 +134,17 @@ sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/
           const int nVertex = event->nVertex;
           const double vertexX = double(event->vertexX);
           const double vertexY = double(event->vertexY);
+          const double vertexZe = double(event->vertexZe);
           const double vertexXe = double(event->vertexXe);
           const double vertexYe = double(event->vertexYe);
+          const double vertexZ = double(event->vertexZ);
           const bool vertexIsFake = event->vertexIsFake;
           
+          if(!vertexIsFake)
+            {
+              h_vertex_z->Fill(vertexZ,1./vertexZe);
+            }
+
           if(STARTORBIT < orbitNb && orbitNb<ENDORBIT && nVertex==1)
             {
               if(vertexIsFake)
@@ -145,6 +154,7 @@ sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/
               h_length_scale_y->Fill(orbitNb,vertexY,1./vertexYe/vertexYe);
               h_rate_ls->Fill(orbitNb);
               h_rate_s->Fill(timeS);
+
             }
 
           

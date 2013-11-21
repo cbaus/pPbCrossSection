@@ -1,3 +1,5 @@
+//energy in hf for event types (diffraction)
+
 #include <TColor.h>
 
 void Show(TH1D* a,TH1D* b,TH1D* c,TH1D* d,TH1D* e,TH1D* f,TH1D* g);

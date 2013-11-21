@@ -11,8 +11,8 @@ void makePlots_perf_triggered_ring()
   style();
 
   {
-    TFile* file2 = TFile::Open("histos3.root");
-    TFile* file = TFile::Open("histos3.root");
+    TFile* file2 = TFile::Open("histos.root");
+    TFile* file = TFile::Open("histos.root");
   TH1D* a=(TH1D*)file2->Get("data210885/data210885_h_hf_triggered_ring_single");
   TH1D* a2=(TH1D*)file2->Get("data210885/data210885_h_hf_triggered_ring_noise_single");
   TH1D* b=(TH1D*)file->Get("Hijing/Hijing_h_hf_triggered_ring_single");
@@ -24,8 +24,8 @@ void makePlots_perf_triggered_ring()
   ShowStack(a,a2,b,c,d,e,f,"single");
   }
   {
-  TFile* file2 = TFile::Open("histos3.root");
-  TFile* file = TFile::Open("histos3.root");
+  TFile* file2 = TFile::Open("histos.root");
+  TFile* file = TFile::Open("histos.root");
   TH1D* a=(TH1D*)file2->Get("data210885/data210885_h_hf_triggered_ring_double");
   TH1D* a2=(TH1D*)file2->Get("data210885/data210885_h_hf_triggered_ring_noise_double");
   TH1D* b=(TH1D*)file->Get("Hijing/Hijing_h_hf_triggered_ring_double");
@@ -103,7 +103,7 @@ void ShowStack(TH1D* data,TH1D* noise,TH1D* b,TH1D* c,TH1D* d,TH1D* sl1,TH1D* sl
   sl->SetTitle("#gamma-p (STARLIGHT+DPMJET/PYTHIA)");
 
   //data->GetXaxis()->SetLimits(1,);
-  data->GetYaxis()->SetRangeUser(0,0.13);
+  data->GetYaxis()->SetRangeUser(0,0.2);
   data->GetXaxis()->SetTitle("HF Ring (ieta)");
   data->GetYaxis()->SetTitle("events (normalised)");
   data->GetXaxis()->SetTitleOffset(data->GetXaxis()->GetTitleOffset()*1.1);
@@ -140,7 +140,10 @@ void ShowStack(TH1D* data,TH1D* noise,TH1D* b,TH1D* c,TH1D* d,TH1D* sl1,TH1D* sl
   leg->Draw();
   CMSText(1,0,1,type=="single"?"single-arm selection":"double-arm selection");
 
-  c1->SaveAs((string("plots/hf_") + type + string("_triggered_rings")+string(".pdf")).c_str());
+  data->GetXaxis()->SetRangeUser(-41,-29);
+  c1->SaveAs((string("plots/hf_") + type + string("_triggered_rings_m")+string(".pdf")).c_str());
+  data->GetXaxis()->SetRangeUser(29,41);
+  c1->SaveAs((string("plots/hf_") + type + string("_triggered_rings_p")+string(".pdf")).c_str());
 
 }
 

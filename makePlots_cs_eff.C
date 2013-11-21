@@ -12,6 +12,7 @@
 #include "TMarker.h"
 #include "TMath.h"
 #include "TROOT.h"
+#include "TSystem.h"
 #include "TVectorD.h"
 
 #ifndef __CINT__
@@ -27,13 +28,15 @@ TVectorD corr_fac_em(2);
 TVectorD corr_fac_eme(2);
 TVectorD corr_fac_mc(4);
 TVectorD corr_fac_mce(4);
+TVectorD corr_fac_epos(2);
+TVectorD corr_fac_qgsjet(2);
 
-void makePlots(bool draw=1, double cut_value_single = 8., double cut_value_double = 2.5);
+void makePlots_cs_eff(bool draw=1, double cut_value_single = 8., double cut_value_double = 4.,string filename = "histos.root");
 
 //available cuts single 5, 6.4, 7.2, 8, 8.8, 9.6, 10, 15, 20
 //available cuts double 1.5, 2, 2.25, 2.5, 2.75, 3, 3.5, 4, 5
 
-void makePlots(bool draw, double cut_value_single, double cut_value_double)
+void makePlots_cs_eff(bool draw, double cut_value_single, double cut_value_double,string filename)
 {
   gROOT->ProcessLine(" .L style.cc+");
 #ifdef __CINT__
@@ -44,37 +47,25 @@ void makePlots(bool draw, double cut_value_single, double cut_value_double)
 
   for(int n=0; n<int(type.size()); n++)
     {
+      TFile* file = TFile::Open(filename.c_str());
 
-      TFile* file2 = TFile::Open("histos_old.root");
-      TFile* file = TFile::Open("histos_mc.root");
-      TFile* file3 = TFile::Open("plots/hf_cuts_noise.root");
-
-      TH1D* a=(TH1D*)file2->Get((string("data210885/data210885_h_hf_cut_") + type[n]).c_str());
-      TH1D* a2=(TH1D*)file2->Get((string("data210885/data210885_h_hf_cut_") + type[n] + string("_noise")).c_str());
+      TH1D* a=(TH1D*)file->Get((string("data210885/data210885_h_hf_cut_") + type[n]).c_str());
+      TH1D* a2=(TH1D*)file->Get((string("data210885/data210885_h_hf_cut_") + type[n] + string("_noise")).c_str());
       TH1D* eposrew=(TH1D*)file->Get((string("EposSDWeight2/EposSDWeight2_h_hf_cut_") + type[n]).c_str());
-      TH1D* eposrewnew=(TH1D*)file->Get((string("EposSDWeight2/EposSDWeight2_h_hf_new_cut_")+ type[n]).c_str());
       TH1D* b=(TH1D*)file->Get((string("Hijing/Hijing_h_hf_cut_") + type[n]).c_str());
-      TH1D* b2=(TH1D*)file->Get((string("Hijing/Hijing_h_hf_new_cut_")+ type[n]).c_str());
       TH1D* c=(TH1D*)file->Get((string("Epos/Epos_h_hf_cut_")+ type[n]).c_str());
-      TH1D* c2=(TH1D*)file->Get((string("Epos/Epos_h_hf_new_cut_")+ type[n]).c_str());
       TH1D* d=(TH1D*)file->Get((string("QGSJetII/QGSJetII_h_hf_cut_") + type[n]).c_str());
-      TH1D* d2=(TH1D*)file->Get((string("QGSJetII/QGSJetII_h_hf_new_cut_")+ type[n]).c_str());
       TH1D* e=(TH1D*)file->Get((string("Starlight_DPMJet/Starlight_DPMJet_h_hf_cut_") + type[n]).c_str());
       TH1D* f=(TH1D*)file->Get((string("Starlight_Pythia/Starlight_Pythia_h_hf_cut_") + type[n]).c_str());
-      TVectorD* hf_cuts_equivalent = (TVectorD*)file3->Get("hf_cuts_equivalent");
 
       a->Scale(1./double(a->GetBinContent(1)));
       a2->Scale(1./double(a2->GetBinContent(1)));
       b->Scale(1./double(b->GetBinContent(1)));
-      b2->Scale(1./double(b2->GetBinContent(1)));
       c->Scale(1./double(c->GetBinContent(1)));
-      c2->Scale(1./double(c2->GetBinContent(1)));
       d->Scale(1./double(d->GetBinContent(1)));
-      d2->Scale(1./double(d2->GetBinContent(1)));
       e->Scale(1./double(e->GetBinContent(1)));
-      f->Scale(1./double(f->GetBinContent(1))/ 195. * 122.);
+      f->Scale(1./double(f->GetBinContent(1))/ 195. * 122.); //cross section starlight samples
       eposrew->Scale(1./double(eposrew->GetBinContent(1)));
-      eposrewnew->Scale(1./double(eposrewnew->GetBinContent(1)));
 
       a->SetLineWidth(3);
       a2->SetLineWidth(3);
@@ -137,22 +128,6 @@ void makePlots(bool draw, double cut_value_single, double cut_value_double)
       b->GetYaxis()->SetTitleOffset(b->GetYaxis()->GetTitleOffset()*1.1);
 
 
-      TGraphErrors* b3 = new TGraphErrors(3);
-      TGraphErrors* c3 = new TGraphErrors(3);
-      TGraphErrors* d3 = new TGraphErrors(3);
-      for (int j=0; j<3; j++)
-        {
-          b3->SetPoint(j,(*hf_cuts_equivalent)[j],b2->GetBinContent(j+2));
-          c3->SetPoint(j,(*hf_cuts_equivalent)[j],c2->GetBinContent(j+2));
-          d3->SetPoint(j,(*hf_cuts_equivalent)[j],d2->GetBinContent(j+2));
-        }
-      b3->SetMarkerColor(b->GetLineColor());
-      c3->SetMarkerColor(c->GetLineColor());
-      d3->SetMarkerColor(d->GetLineColor());
-      b3->SetMarkerSize(1.5);
-      c3->SetMarkerSize(1.5);
-      d3->SetMarkerSize(1.5);
-
       const double cut_value = type[n]=="single"?cut_value_single:cut_value_double;
 
       if(draw)
@@ -180,10 +155,10 @@ void makePlots(bool draw, double cut_value_single, double cut_value_double)
             }
           if(type[n]=="double")
             {
-              leg->SetX1(0.41);
-              leg->SetX2(0.74);
-              leg->SetY1(0.21);
-              leg->SetY2(0.44);
+              leg->SetX1(0.42);
+              leg->SetX2(0.75);
+              leg->SetY1(0.18);
+              leg->SetY2(0.41);
 #ifdef __CINT__
               CMSText(1,0,1,"double-arm selection");
 #endif
@@ -202,11 +177,6 @@ void makePlots(bool draw, double cut_value_single, double cut_value_double)
           a->GetYaxis()->SetTitle("event fraction");
 
           can1->SaveAs((string("plots/full_p_space_eff_PAS_")+type[n]+string(".pdf")).c_str());
-
-          b3->Draw("P");
-          c3->Draw("P");
-          d3->Draw("P");
-          can1->SaveAs((string("plots/full_p_space_eff_")+type[n]+string(".pdf")).c_str());
         }
 
       //////////////////////////////////////////////////////////////////////////////////////////////
@@ -261,6 +231,9 @@ void makePlots(bool draw, double cut_value_single, double cut_value_double)
                    << b->GetBinContent(i)/b->GetBinContent(1) << " & "
                    << d->GetBinContent(i)/d->GetBinContent(1)
                    << " \\\\\\hline" << endl;
+
+              corr_fac_epos[0] = c->GetBinContent(i);
+              corr_fac_qgsjet[0] = d->GetBinContent(i);
             }
           if(i==a->FindBin(cut_value_double) && type[n]==string("double"))
             {
@@ -284,6 +257,9 @@ void makePlots(bool draw, double cut_value_single, double cut_value_double)
                    << b->GetBinContent(i)/b->GetBinContent(1) << " & "
                    << d->GetBinContent(i)/d->GetBinContent(1)
                    << " \\\\\\hline" << endl;
+
+              corr_fac_epos[1] = c->GetBinContent(i);
+              corr_fac_qgsjet[1] = d->GetBinContent(i);
             }
         }
 
@@ -334,7 +310,7 @@ void makePlots(bool draw, double cut_value_single, double cut_value_double)
           SetLegAtt(leg2,1.1);
 #endif
 
-          TLine* line = new TLine(cut_value,type[n]=="single"?15e-4:0,cut_value,1.01);
+          TLine* line = new TLine(cut_value,type[n]=="single"?15e-4:0,cut_value,type[n]=="single"?1.01:5e-3);
           line->SetLineWidth(2);
           line->SetLineStyle(2);
           line->Draw("SAME");
@@ -352,5 +328,7 @@ void makePlots(bool draw, double cut_value_single, double cut_value_double)
   corr_fac_mc.Write("corr_fac_mc");
   corr_fac_eme.Write("corr_fac_eme");
   corr_fac_mce.Write("corr_fac_mce");
+  corr_fac_epos.Write("corr_fac_epos");
+  corr_fac_qgsjet.Write("corr_fac_qgsjet");
   outfile.Close();
 }

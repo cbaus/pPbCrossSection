@@ -20,7 +20,8 @@
 
 using namespace std;
 
-#define _LumiCorr 1.0925
+#define _LumiCorrpPb 1//.142
+#define _LumiCorrPbp 1//.138
 
 void makeTable_run()
 {
@@ -50,7 +51,9 @@ void makeTable_run()
   cout << "\\hlineRun number & Intgrated luminosity (nb$^{-1}$) & Peak Pileup (\\%)\\\\\\hline\\hline" << endl; 
   for (int run=0; run<int(run_num.size()); run++)
     {
-      TFile* file = TFile::Open("histos_old.root");
+      bool pPb=false;
+      if(run_num[run] <= 211256) pPb=true;
+      TFile* file = TFile::Open("histos.root");
       ostringstream runname_ss;
       runname_ss << run_num[run];
       string runname = runname_ss.str();
@@ -60,8 +63,10 @@ void makeTable_run()
       TH1D* h_lumi=(TH1D*)file->Get(filename_ss.str().c_str());
 
 
-      const double lumiPerLS=h_lumi->GetMaximum() * _LumiCorr;
-      const double lumiIntegral=h_lumi->Integral() * _LumiCorr * 1e-9;
+      const double lumiCorr = pPb?_LumiCorrpPb:_LumiCorrPbp;
+
+      const double lumiPerLS=h_lumi->GetMaximum() * lumiCorr;
+      const double lumiIntegral=h_lumi->Integral() * lumiCorr * 1e-9;
       totallumi += lumiIntegral;
 
       if (lumiPerLS<=0.) {cerr << "lumi neg: " << i << endl; return;}
@@ -69,7 +74,7 @@ void makeTable_run()
       const double lambda = lumiPerLS*2.13/11246./23.31/296.;
 
       if(runname == "211256") cout << "\\hline\\multicolumn{3}{|c|}{Beam Reversal} \\\\\\hline\\hline" << endl;
-      cout << runname << " & " << setprecision(3) << lumiIntegral << " & " << lambda*100 << "\\\\\\hline" << endl;
+      cout << runname << " & " << setprecision(5) << lumiIntegral << " & " << lambda*100 << "\\\\\\hline" << endl;
     }
   cout << "\\hline" << endl;
   cout << "Total (" << run_num.size() ")" << " & " << setprecision(3) << totallumi << " & - \\\\\\hline" << endl;

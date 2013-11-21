@@ -7,6 +7,7 @@
 #include <TVectorD.h>
 
 #include<iostream>
+#include<iomanip>
 
 using namespace std;
 
@@ -45,6 +46,19 @@ void makePlots_concl3()
   vec_sigma_had->Print();
   vec_sigma_vis->Print();
   f.Close();
+
+
+  TFile f2("plots/corr_factors.root");
+  TVectorD* corr_fac_epos = NULL;
+  TVectorD* corr_fac_qgsjet = NULL;
+  corr_fac_epos  = (TVectorD*)f2.Get("corr_fac_epos");
+  corr_fac_qgsjet  = (TVectorD*)f2.Get("corr_fac_qgsjet");
+  if(!corr_fac_epos || !corr_fac_qgsjet) {cerr << "error" << endl; return;}
+  cout << "EPOS Eff. Correction:" << endl;
+  corr_fac_epos->Print();
+  cout << "QGSJETII-04 Eff. Correction:" << endl;
+  corr_fac_qgsjet->Print();
+  f2.Close();
   ///!READ IN VALUES
 
   TH1D* h_data = new TH1D("h_data","CMS;cross section;#sigma [b]",6,-0.5,5.5);
@@ -82,12 +96,12 @@ void makePlots_concl3()
   h_data->SetBinError(5,(*vec_sigma_had_e)[1]);
   h_data->SetBinError(6,(*vec_sigma_vis_e)[1]);
 
-  double eff_epos_single = 0.958;
-  double eff_epos_double = 0.929;
-  double eff_qgsjet_single = 0.959;
-  double eff_qgsjet_double = 0.937;
+  double eff_epos_single = (*corr_fac_epos)[0];
+  double eff_epos_double = (*corr_fac_epos)[1];
+  double eff_qgsjet_single = (*corr_fac_qgsjet)[0];
+  double eff_qgsjet_double = (*corr_fac_qgsjet)[1];
 
-  h_epos->SetBinContent(1,2.085703);
+  h_epos->SetBinContent(1,2.085703); //this is cross section from model
   h_epos->SetBinContent(2,2.085703*eff_epos_single);
   h_epos->SetBinContent(4,2.085703);
   h_epos->SetBinContent(5,2.085703*eff_epos_double);
@@ -105,8 +119,8 @@ void makePlots_concl3()
   h_epos->Draw("SAME P");
   h_qgsjet->Draw("SAME P");
 
-  double min = 1.85;
-  double max = 2.8;
+  double min = 1.7;
+  double max = 2.7;
 
   h_data->GetYaxis()->SetRangeUser(min,max);
 
@@ -141,6 +155,17 @@ void makePlots_concl3()
   CMSText(1,0,1);
 
   can1->SaveAs((string("plots/concl_3")+string(".pdf")).c_str());
+
+  cout << endl << "Differences for cross sections:" << endl;
+  cout << endl << "Single:" << endl
+       << "HAD -> INEL:" << fixed << setprecision(1) << (*vec_sigma_inel)[1]*1000 - (*vec_sigma_had)[0]*1000 << " mb" << endl
+       << "VIS -> HAD: " << fixed << setprecision(1) <<  (*vec_sigma_had)[0]*1000 - (*vec_sigma_vis)[0]*1000 << " mb" << endl;
+  cout << endl << "Double:" << endl
+       << "HAD -> INEL:" << fixed << setprecision(1) <<  (*vec_sigma_inel)[2]*1000 - (*vec_sigma_had)[1]*1000 << " mb" << endl
+       << "VIS -> HAD: " << fixed << setprecision(1) <<  (*vec_sigma_had)[1]*1000 - (*vec_sigma_vis)[1]*1000 << " mb" << endl;
+  cout << endl << "Single/Double" << endl
+       << "VIS: " << (*vec_sigma_vis)[0]*1000 - (*vec_sigma_vis)[1]*1000 << endl
+       << "HAD: " << (*vec_sigma_had)[0]*1000 - (*vec_sigma_had)[1]*1000 << endl;
 
 }
 

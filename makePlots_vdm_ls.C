@@ -92,7 +92,7 @@ void makePlots_vdm_ls(double skip = 10.*11246.)
   FindSections(h_rate,sectionXBegin, sectionXEnd, BEGINX,ENDX,3.*11246.,skip);
   //FindSections(h_rate,sectionXBegin, sectionXEnd, 1.932e8,2.025e8,3.*11246.,skip);
 #ifdef __CINT__
-  CMSText(1,1,1,string("#DeltaX length scale"));
+  CMSText(1,1,1,string("#DeltaX length scale"),"","pp, #sqrt{s}=2.76 TeV");
 #endif
   if(sectionXTruth.size() != sectionXBegin.size())
     {
@@ -133,7 +133,7 @@ void makePlots_vdm_ls(double skip = 10.*11246.)
   //FindSections(h_rate,sectionYBegin, sectionYEnd, 2.038e8,2.12e8,3.*11246.,skip);
   FindSections(h_rate,sectionYBegin, sectionYEnd, BEGINY,ENDY,3.*11246.,skip);
 #ifdef __CINT__
-  CMSText(1,1,1,string("#DeltaY length scale"));
+  CMSText(1,1,1,string("#DeltaY length scale"),"","pp, #sqrt{s}=2.76 TeV");
 #endif
   if(sectionYTruth.size() != sectionYBegin.size())
     {
@@ -198,7 +198,7 @@ void makePlots_vdm_ls(double skip = 10.*11246.)
       h_length_scale->Draw("COLZ");
 
 #ifdef __CINT__
-      CMSText(1,1,1,string("#Delta")+type[n]+string(" length scale"));
+      CMSText(1,1,1,string("#Delta")+type[n]+string(" length scale"),"","pp, #sqrt{s}=2.76 TeV");
 #endif
       //FIT EACH SECTION
       TCanvas* canFit = new TCanvas;
@@ -339,7 +339,7 @@ void makePlots_vdm_ls(double skip = 10.*11246.)
 
         }
 #ifdef __CINT__
-      CMSText(1,1,1,string("#Delta")+type[n]+string(" length scale"));
+      CMSText(1,1,1,string("#Delta")+type[n]+string(" length scale"),"","pp, #sqrt{s}=2.76 TeV");
       SetLegAtt(legchi);
 #endif
       legchi->Draw("SAME");
@@ -347,7 +347,7 @@ void makePlots_vdm_ls(double skip = 10.*11246.)
       line->SetLineWidth(2);
       line->SetLineStyle(2);
       line->Draw("SAME");
-      can3->SaveAs((string("plots/vdm_length_scale_")+type[n]+string("_3.pdf")).c_str());
+      can3->SaveAs((string("plots/vdm_length_scale_")+type[n]+string("_3_pp.pdf")).c_str());
           
       //Determine reference value y0 to subtract from plotting
       TGraph helperGraph(nSec);
@@ -397,7 +397,7 @@ void makePlots_vdm_ls(double skip = 10.*11246.)
               h_truth_fit_crosscheck_down->SetPointError(i-5,0, yumerror_cc);
             }
         }
-      canFit->SaveAs((string("plots/vdm_length_scale_")+type[n]+string("_Fits.pdf")).c_str());
+      canFit->SaveAs((string("plots/vdm_length_scale_")+type[n]+string("_Fits_pp.pdf")).c_str());
       
       TCanvas* can2 = new TCanvas;
       ostringstream titleup; titleup << ";#Delta" << type[n] << " (LHC) [#mum]; #Delta" << type[n] << " (CMS) [#mum]";
@@ -431,10 +431,10 @@ void makePlots_vdm_ls(double skip = 10.*11246.)
       leg->AddEntry(h_truth_fit_down,legdown.str().c_str(),"lp");
 #ifdef __CINT__
       SetLegAtt(leg);
-      CMSText(1,1,1);
+      CMSText(1,1,1,"","","pp, #sqrt{s}=2.76 TeV");
 #endif
       leg->Draw("SAME");
-      can2->SaveAs((string("plots/vdm_length_scale_")+type[n]+string("_2.pdf")).c_str());
+      can2->SaveAs((string("plots/vdm_length_scale_")+type[n]+string("_2_pp.pdf")).c_str());
 
       double average = (fit_up->Parameter(1) + fit_down->Parameter(1)) / 2.;
       double average_cc = (fit_crosscheck_up->Parameter(1) + fit_crosscheck_down->Parameter(1)) / 2.;
@@ -458,8 +458,8 @@ void makePlots_vdm_ls(double skip = 10.*11246.)
       cout << endl << endl << endl;
     }
 
-  can1->SaveAs((string("plots/vdm_length_scale")+string("_1.pdf")).c_str());
-  canFind->SaveAs((string("plots/vdm_length_scale")+string("_sections.pdf")).c_str());
+  can1->SaveAs((string("plots/vdm_length_scale")+string("_1_pp.pdf")).c_str());
+  canFind->SaveAs((string("plots/vdm_length_scale")+string("_sections_pp.pdf")).c_str());
 }
 
 void FindSections(TH1D* h_rate, vector<double> &sectionBegin, vector<double> &sectionEnd, const double& begin, const double& end, const double offset, const double skip)

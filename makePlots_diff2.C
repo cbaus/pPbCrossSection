@@ -49,7 +49,7 @@ void makePlots_diff2()
   for(int i=0; i<int(list.size()); i++)
     {
       cout << i+1 << "/" << int(list.size()) << endl;
-      TFile* file = TFile::Open("histos_mc.root");
+      TFile* file = TFile::Open("histos.root");
       file->cd();
 
       TH1D* sd1_single=(TH1D*)file->Get(string(list[i]+string("/")+list[i]+string("_h_mc_diff_e_single_SD1")).c_str());
@@ -84,7 +84,7 @@ void makePlots_diff2()
       double n_sel_all_single = all_single->Integral(nbinsel_single,nbins+1);
 
 
-      int nbinsel_double = all_double->FindBin(2.5);
+      int nbinsel_double = all_double->FindBin(4.);
       double n_sd1_double = sd1_double->Integral(0,nbins+1);
       double n_sd2_double = sd2_double->Integral(0,nbins+1);
       double n_dd_double = dd_double->Integral(0,nbins+1);
@@ -108,17 +108,17 @@ void makePlots_diff2()
            << "100" << "\\\\" << endl;
 
       cout << fixed << setprecision(1)
-           << "$E_{\\text{HF}}>8$ GeV (single-arm) & "
+           << "Single-arm & "
            << (n_sel_sd1_single + n_sel_sd2_single)/n_all_single*100. << " & "
            << n_sel_dd_single/n_all_single*100. << " & "
            << n_sel_cd_single/n_all_single*100. << " & "
            << n_sel_nd_single/n_all_single*100. << " & "
            << n_sel_all_single/n_all_single*100.<< " & "
            << "\\multirow{2}{*}{" << (n_sel_all_double/n_all_double)/(n_sel_all_single/n_all_single)*100 << "}"
-           << "\\multirow{2}{*}{" << 1.97752/2.01004*100 << "}"
+           << "\\multirow{2}{*}{" << 1.87253/1.93764*100 << "}" //from data. sigma_had
            << "\\\\" << endl;
       cout << fixed << setprecision(1)
-           << "$E_{\\text{HF}}>2.5$ GeV (double-arm) & "
+           << "Double-arm & "
            << (n_sel_sd1_double + n_sel_sd2_double)/n_all_double*100. << " & "
            << n_sel_dd_double/n_all_double*100. << " & "
            << n_sel_cd_double/n_all_double*100. << " & "
@@ -170,12 +170,36 @@ void makePlots_diff2()
           nd->SetFillColor(nd->GetMarkerColor());
 
           ostringstream txt;
-          txt.str(""); txt << "SD1 (Underflow: " << fixed << setprecision(1) << sd1->GetBinContent(0)*1e3 << "x10^{-3})"; sd1->SetTitle(txt.str().c_str());
-          txt.str(""); txt << "SD2 (Underflow: " << fixed << setprecision(1) << sd2->GetBinContent(0)*1e3 << "x10^{-3})"; sd2->SetTitle(txt.str().c_str());
-          txt.str(""); txt << "DD (Underflow: " << fixed << setprecision(1) << dd->GetBinContent(0)*1e3 << "x10^{-3})"; dd->SetTitle(txt.str().c_str());
-          txt.str(""); txt << "CD (Underflow: " << fixed << setprecision(1) << cd->GetBinContent(0)*1e3 << "x10^{-3})"; cd->SetTitle(txt.str().c_str());
-          txt.str(""); txt << "ND (Underflow: " << fixed << setprecision(1) << nd->GetBinContent(0)*1e3 << "x10^{-3})"; nd->SetTitle(txt.str().c_str());
-          txt.str(""); txt << "all (Underflow: " << fixed << setprecision(1) << all->GetBinContent(0)*1e3 << "x10^{-3})"; all->SetTitle(txt.str().c_str());
+          txt.str(""); txt << "SD1 (Underflow: " << fixed;
+          if (sd1->GetBinContent(0)*1e3 >= 0.05) txt << setprecision(1) << sd1->GetBinContent(0)*1e3 << "x10^{-3})";
+          else txt << setprecision(0) << 0 << ")";
+          sd1->SetTitle(txt.str().c_str());
+
+          txt.str(""); txt << "SD2 (Underflow: " << fixed;
+          if (sd2->GetBinContent(0)*1e3 >= 0.05) txt << setprecision(1) << sd2->GetBinContent(0)*1e3 << "x10^{-3})";
+          else txt << setprecision(0) << 0 << ")";
+          sd2->SetTitle(txt.str().c_str());
+
+          txt.str(""); txt << "DD (Underflow: " << fixed;
+          if (dd->GetBinContent(0)*1e3 >= 0.05) txt << setprecision(1) << dd->GetBinContent(0)*1e3 << "x10^{-3})";
+          else txt << setprecision(0) << 0 << ")";
+          dd->SetTitle(txt.str().c_str());
+
+          txt.str(""); txt << "CD (Underflow: " << fixed;
+          if (cd->GetBinContent(0)*1e3 >= 0.05) txt << setprecision(1) << cd->GetBinContent(0)*1e3 << "x10^{-3})";
+          else txt << setprecision(0) << 0 << ")";
+          cd->SetTitle(txt.str().c_str());
+
+          txt.str(""); txt << "ND (Underflow: " << fixed;
+          if (nd->GetBinContent(0)*1e3 >= 0.05) txt << setprecision(1) << nd->GetBinContent(0)*1e3 << "x10^{-3})";
+          else txt << setprecision(0) << 0 << ")";
+          nd->SetTitle(txt.str().c_str());
+
+          txt.str(""); txt << "all (Underflow: " << fixed;
+          if (all->GetBinContent(0)*1e3 >= 0.05) txt << setprecision(1) << all->GetBinContent(0)*1e3 << "x10^{-3})";
+          else txt << setprecision(0) << 0 << ")";
+          all->SetTitle(txt.str().c_str());
+
           // txt.str(""); txt << "SD1"; sd1->SetTitle(txt.str().c_str());
           // txt.str(""); txt << "SD2"; sd2->SetTitle(txt.str().c_str());
           // txt.str(""); txt << "DD"; dd->SetTitle(txt.str().c_str());
@@ -199,12 +223,24 @@ void makePlots_diff2()
           can1->SetLogy();
           can1->SetLogx();
 
-          TLegend* leg1 = can1->BuildLegend(0.25,0.63,0.45,0.93);
+          TLegend* leg1 = new TLegend(0.25,0.63,0.45,0.93);
+          if(list[i]!="Hijing")
+            {
+              leg1->AddEntry(sd1,"","F");
+              leg1->AddEntry(sd2,"","F");
+              leg1->AddEntry(dd,"","F");
+              leg1->AddEntry(cd,"","F");
+              leg1->AddEntry(nd,"","F");
+            }
+          else
+            {
+              leg1->AddEntry(nd,all->GetTitle(),"F");
+            }
           SetLegAtt(leg1);
           leg1->Draw();
           CMSText(0,0,1,name[i],type[cur]=="single"?"single-arm selection":"double-arm selection");
 
-          TLine* line = new TLine(type[cur]=="single"?8:2.5,5e-5,type[cur]=="single"?8:2.5,1e-2);
+          TLine* line = new TLine(type[cur]=="single"?8:4,2e-5,type[cur]=="single"?8:4,4e-2);
           line->SetLineWidth(2);
           line->SetLineStyle(2);
           line->Draw("SAME");

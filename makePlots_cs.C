@@ -16,6 +16,7 @@
 
 #ifndef __CINT__
 #include "style.h"
+#include "makePlots_cs_eff.C"
 #endif
 
 #include <iostream>
@@ -25,20 +26,19 @@
 
 using namespace std;
 
-#define _LumiCorr 1.0925
-#define _LumiError 0.08
-#define _CSEstimate 2.122
-#define _CSEstimate_single 2.117
-#define _CSEstimate_double 2.127
-#define _CSEstimate_e 0.03
+#define _LumiCorrpPb 1.142
+#define _LumiCorrPbp 1.138
+#define _CSEstimate 2.06
+#define _CSEstimate_single 2.06
+#define _CSEstimate_double 2.06
+#define _CSEstimate_e 0.025
 
+void makePlots_cs(bool draw = 1,double cut_value_single = 8., double cut_value_double = 4, double modfactor = 1.0, string filename = "histos.root");
 string cutToString(double cut);
-void makePlots_cs1(bool draw = 1,double cut_value_single = 8., double cut_value_double = 2.5);
 
 //available cuts single 5, 6.4, 7.2, 8, 8.8, 9.6, 10, 15, 20
 //available cuts double 1.5, 2, 2.25, 2.5, 2.75, 3, 3.5, 4, 5
-
-void makePlots_cs1(bool draw,double cut_value_single, double cut_value_double)
+void makePlots_cs(bool draw,double cut_value_single, double cut_value_double, double modfactor,string filename)
 {
   TH1::SetDefaultSumw2();
   gROOT->ProcessLine(" .L style.cc+");
@@ -46,11 +46,11 @@ void makePlots_cs1(bool draw,double cut_value_single, double cut_value_double)
   style();
 #endif
 
-
-  // gROOT->ProcessLine(" .L makePlots.C+");
-  // gROOT->SetBatch(kTRUE);
-  // makePlots(0,cut_value_single, cut_value_double);
-  // gROOT->SetBatch(kFALSE);
+  bool batch_status = gROOT->IsBatch();
+  gROOT->ProcessLine(" .L makePlots_cs_eff.C+");
+  gROOT->SetBatch(kTRUE); //don't draw anything
+  makePlots_cs_eff(0,cut_value_single/modfactor, cut_value_double/modfactor,filename);
+  gROOT->SetBatch(batch_status);
 
   TVectorD vec_sigma_vis(2);
   TVectorD vec_sigma_had(2);
@@ -86,11 +86,11 @@ void makePlots_cs1(bool draw,double cut_value_single, double cut_value_double)
   TH1D* h_runs_single_Pbp = new TH1D("h_runs_single_Pbp","",run_num.size(),-0.5,run_num.size()-0.5);// h_runs_single->SetName("h_runs_single");
   TH1D* h_runs_double_Pbp = new TH1D("h_runs_double_Pbp","",run_num.size(),-0.5,run_num.size()-0.5);// h_runs_single->SetName("h_runs_double");
 
-  TH1D* h_runs_fnoise_single = new TH1D("h_runs_fnoise_single","E_{HF}>8 GeV (single-arm);run;f_{noise}",run_num.size(),-0.5,run_num.size()-0.5);
-  TH1D* h_runs_fnoise_double = new TH1D("h_runs_fnoise_double","E_{HF}>2.5 GeV (double-arm);run;f_{noise}",run_num.size(),-0.5,run_num.size()-0.5);
+  TH1D* h_runs_fnoise_single = new TH1D("h_runs_fnoise_single","single-arm selection;run;f_{noise}",run_num.size(),-0.5,run_num.size()-0.5);
+  TH1D* h_runs_fnoise_double = new TH1D("h_runs_fnoise_double","double-arm selection;run;f_{noise}",run_num.size(),-0.5,run_num.size()-0.5);
 
-  TH1D* h_runs_pull_single = new TH1D("h_runs_pull_single","E_{HF}>8 GeV (single-arm);#frac{x-#mu}{#sigma}",49,-7,7);
-  TH1D* h_runs_pull_double = new TH1D("h_runs_pull_double","E_{HF}>2.5 GeV (double-arm);#frac{x-#mu}{#sigma}",49,-7,7);
+  TH1D* h_runs_pull_single = new TH1D("h_runs_pull_single","single-arm selection;#frac{x-#mu}{#sigma}",49,-7,7);
+  TH1D* h_runs_pull_double = new TH1D("h_runs_pull_double","double-arm selection;#frac{x-#mu}{#sigma}",49,-7,7);
 
   TFile f("plots/corr_factors.root");
   TVectorD* f_em = NULL;
@@ -138,7 +138,7 @@ void makePlots_cs1(bool draw,double cut_value_single, double cut_value_double)
   double f_noise2_avg_double=0;
   for (int run=0; run<int(run_num.size()); run++)
     {
-      TFile* file = TFile::Open("histos_old.root");
+      TFile* file = TFile::Open(filename.c_str());
       ostringstream runname_ss;
       runname_ss << run_num[run];
       string runname = runname_ss.str();
@@ -161,9 +161,9 @@ void makePlots_cs1(bool draw,double cut_value_single, double cut_value_double)
       f_noise_avg_double += f_noise_double;
       f_noise2_avg_double += pow(f_noise_double,2);
     }
-      double N = double(run_num.size());
-      double fnoise_e_single = sqrt( (f_noise2_avg_single - f_noise_avg_single*f_noise_avg_single/N)/(N-1) );
-      double fnoise_e_double = sqrt( (f_noise2_avg_double - f_noise_avg_double*f_noise_avg_double/N)/(N-1) );
+  double N = double(run_num.size());
+  double fnoise_e_single = sqrt( (f_noise2_avg_single - f_noise_avg_single*f_noise_avg_single/N)/(N-1) );
+  double fnoise_e_double = sqrt( (f_noise2_avg_double - f_noise_avg_double*f_noise_avg_double/N)/(N-1) );
   cout << "Noise Uncertainty" << endl
        << "single: mean=" << f_noise_avg_single/N << " rms=" << fnoise_e_single << endl
        << "double: mean=" << f_noise_avg_double/N << " rms=" << fnoise_e_double << endl
@@ -176,7 +176,7 @@ void makePlots_cs1(bool draw,double cut_value_single, double cut_value_double)
       h_runs_fnoise_double->SetMarkerColor(kBlue);
       h_runs_fnoise_single->SetLineColor(kRed);
       h_runs_fnoise_double->SetLineColor(kBlue);
-      h_runs_fnoise_single->GetYaxis()->SetRangeUser(TMath::Min(h_runs_fnoise_single->GetMinimum(),h_runs_fnoise_double->GetMinimum())/3.,TMath::Max(h_runs_fnoise_single->GetMaximum(),h_runs_fnoise_double->GetMaximum())*3.);
+      h_runs_fnoise_single->GetYaxis()->SetRangeUser(0,TMath::Max(h_runs_fnoise_single->GetMaximum(),h_runs_fnoise_double->GetMaximum())*2.);
       h_runs_fnoise_single->Draw("HIST P");
       h_runs_fnoise_double->Draw("HIST P SAME");
       TLegend* leg4 = new TLegend(0.3,0.60,0.8,0.80);
@@ -189,24 +189,34 @@ void makePlots_cs1(bool draw,double cut_value_single, double cut_value_double)
 #ifdef __CINT__
       CMSText(true,true);
 #endif
-      TMarker *m_single = new TMarker(run_num.size(),f_noise_avg_single/N,5);
-      TMarker *m_double = new TMarker(run_num.size(),f_noise_avg_double/N,5);
+      TLine* line = 0;
+      double line_y;
 
-      m_single->SetMarkerColor(h_runs_fnoise_single->GetMarkerColor());
-      m_double->SetMarkerColor(h_runs_fnoise_double->GetMarkerColor());
+      line_y=f_noise_avg_single/N;
+      line = new TLine(-0.5,line_y,run_num.size()-0.5,line_y);
+      line->SetLineWidth(2); line->SetLineColor(kRed); line->SetLineStyle(1); line->Draw("SAME");
+      line = new TLine(-0.5,line_y-fnoise_e_single,run_num.size()-0.5,line_y-fnoise_e_single);
+      line->SetLineWidth(2); line->SetLineColor(kRed); line->SetLineStyle(3); line->Draw("SAME");
+      line = new TLine(-0.5,line_y+fnoise_e_single,run_num.size()-0.5,line_y+fnoise_e_single);
+      line->SetLineWidth(2); line->SetLineColor(kRed); line->SetLineStyle(3); line->Draw("SAME");
 
-      m_single->SetMarkerSize(1.5);
-      m_double->SetMarkerSize(1.5);
+      line_y=f_noise_avg_double/N;
+      line = new TLine(-0.5,line_y,run_num.size()-0.5,line_y);
+      line->SetLineWidth(2); line->SetLineColor(kBlue); line->SetLineStyle(1); line->Draw("SAME");
+      line = new TLine(-0.5,line_y-fnoise_e_double,run_num.size()-0.5,line_y-fnoise_e_double);
+      line->SetLineWidth(2); line->SetLineColor(kBlue); line->SetLineStyle(3); line->Draw("SAME");
+      line = new TLine(-0.5,line_y+fnoise_e_double,run_num.size()-0.5,line_y+fnoise_e_double);
+      line->SetLineWidth(2); line->SetLineColor(kBlue); line->SetLineStyle(3); line->Draw("SAME");
 
-      m_single->Draw("SAME");
-      m_double->Draw("SAME");
       can4->SaveAs("plots/noise_runs_final.pdf");
     }
 
   for (int run=0; run<int(run_num.size()); run++)
     {
-      cout << endl << " Processing ... run: " << run_num[run] << endl << endl;
-      TFile* file = TFile::Open("histos_old.root");
+      bool pPb=false;
+      if(run_num[run] <= 211256) pPb=true;
+      cout << endl << " Processing ... run: " << run_num[run] << "(pPb=" << pPb << ")" << endl << endl;
+      TFile* file = TFile::Open("histos.root");
       ostringstream runname_ss;
       runname_ss << run_num[run];
       string runname = runname_ss.str();
@@ -242,7 +252,7 @@ void makePlots_cs1(bool draw,double cut_value_single, double cut_value_double)
 
 
       ///////////////////////////////////////////////////////////////////////
-      //Acceptance
+      //Acceptance (For eposSDx2 all that needs to be changes is to 2 and 3 here)
       const double eff_acc_single = (*f_mc)[0];
       const double eff_acc_double = (*f_mc)[1];
       const double eff_acc_single_e = (*f_mce)[0];
@@ -293,8 +303,9 @@ void makePlots_cs1(bool draw,double cut_value_single, double cut_value_double)
         {
           ///////////////////////////////////////////////////////////////////////
           //PILEUP!!
-          const double lumiPerLS=h_lumi->GetBinContent(i) * _LumiCorr;
-          const double lumiPerLS_error=h_lumi->GetBinError(i) * _LumiCorr; //not 100% correct since from profile but has no contribution
+          const double lumicorr = pPb?_LumiCorrpPb:_LumiCorrPbp;
+          const double lumiPerLS=h_lumi->GetBinContent(i) * lumicorr;
+          const double lumiPerLS_error=h_lumi->GetBinError(i) * lumicorr; //not 100% correct since from profile but has no contribution
           if (lumiPerLS<0.) {cerr << "lumi neg: " << i << endl; return;}
           else if (lumiPerLS==0.) {continue;}
 
@@ -483,8 +494,8 @@ void makePlots_cs1(bool draw,double cut_value_single, double cut_value_double)
       h_single->SetLineWidth(2);
       h_double->SetLineWidth(2);
 
-      h_single->SetTitle("E>8 GeV (single-arm);lumisection;#sigma_{inel} [b]");
-      h_double->SetTitle("E>2.5 GeV (double-arm);lumisection;#sigma_{inel} [b]");
+      h_single->SetTitle("single-arm selection;lumisection;#sigma_{inel} [b]");
+      h_double->SetTitle("double-arm selection;lumisection;#sigma_{inel} [b]");
 
       TH1D* projection_single =  new TH1D("projection_single","",50,0,5);
       TH1D* projection_double =  new TH1D("projection_double","",50,0,5);
@@ -534,8 +545,8 @@ void makePlots_cs1(bool draw,double cut_value_single, double cut_value_double)
               projection_single->GetXaxis()->SetRangeUser(0,fit_double->Parameter(0)*2.);
               projection_single->SetMarkerStyle(21);
               projection_double->SetMarkerStyle(22);
-              projection_single->SetTitle("E>8 GeV (single-arm);#sigma_{inel} [b];weighted count");
-              projection_double->SetTitle("E>2.5 GeV (double-arm);#sigma_{inel} [b];weighted count");
+              projection_single->SetTitle("single-arm selection;#sigma_{inel} [b];weighted count");
+              projection_double->SetTitle("double-arm selection;#sigma_{inel} [b];weighted count");
 
               TLegend* leg = new TLegend(0.4,0.75,0.85,0.9);
               leg->AddEntry(projection_single,"","lp");
@@ -581,7 +592,7 @@ void makePlots_cs1(bool draw,double cut_value_single, double cut_value_double)
       h_runs_had_double->SetBinContent(run+1,run,fit_had_double->Parameter(0));
       h_runs_had_double->SetBinError(run+1,0,fit_had_double->ParError(0));
 
-      if(run_num[run] <= 211256) //pPb or Pbp?
+      if(pPb) //pPb or Pbp?
         {
           h_runs_single_pPb->SetBinContent(run+1,run,fit_single->Parameter(0));
           h_runs_single_pPb->SetBinError(run+1,0,fit_single->ParError(0));
@@ -633,21 +644,21 @@ void makePlots_cs1(bool draw,double cut_value_single, double cut_value_double)
   h_runs_double_pPb->GetYaxis()->SetRangeUser(1.9,2.7);
   h_runs_double_pPb->SetLineColor(kRed);
   h_runs_double_pPb->SetMarkerColor(kRed);
-  h_runs_double_pPb->SetTitle("E>2.5 GeV (double-arm) (pPb);run number;#sigma_{inel} [b]");
+  h_runs_double_pPb->SetTitle("pPb (double-arm selection);run number;#sigma_{inel} [b]");
 
   h_runs_single_pPb->SetLineColor(kBlue);
   h_runs_single_pPb->SetMarkerColor(kBlue);
   h_runs_single_pPb->SetMarkerStyle(34);
-  h_runs_single_pPb->SetTitle("E>8 GeV (single-arm) (pPb)");
+  h_runs_single_pPb->SetTitle("pPb (single-arm selection)");
 
   h_runs_double_Pbp->SetLineColor(kRed-1);
   h_runs_double_Pbp->SetMarkerColor(kRed-1);
-  h_runs_double_Pbp->SetTitle("E>2.5 GeV (double-arm) (Pbp);run number;#sigma_{inel} [b]");
+  h_runs_double_Pbp->SetTitle("Pbp (double-arm selection);run number;#sigma_{inel} [b]");
 
   h_runs_single_Pbp->SetLineColor(kBlue-1);
   h_runs_single_Pbp->SetMarkerColor(kBlue-1);
   h_runs_single_Pbp->SetMarkerStyle(34);
-  h_runs_single_Pbp->SetTitle("E>8 GeV (single-arm) (Pbp)");
+  h_runs_single_Pbp->SetTitle("Pbp (single-arm selection)");
 
 
 
@@ -679,13 +690,16 @@ void makePlots_cs1(bool draw,double cut_value_single, double cut_value_double)
   double staterr2=fit_runs_double->ParError(0);
   double staterr = (staterr1 + staterr2)/2.;
   cout << endl << endl << " !!! CROSS SECTION" << endl << fixed << setprecision(5)
-       << " !!! sigma_inel_single: " << sigmainel_single << " b +- (" << staterr1 << " = " << staterr1/sigmainel_single*100 << "% (stat)) " << sigmainel_single * _LumiError << " (lumi)" << endl
-       << " !!! sigma_inel_double: " << sigmainel_double << " b +- (" << staterr2 << " = " << staterr2/sigmainel_double*100 << "% (stat)) " << sigmainel_double * _LumiError << " (lumi)" << endl
-       << " !!! sigma_inel       : " << sigmainel << " b +- (" << staterr << " = " << staterr/sigmainel*100 << "% (stat)) " << sigmainel * _LumiError << " (lumi)" << endl << endl;
+       << " !!! sigma_inel_single: " << sigmainel_single << " b +- (" << staterr1 << " = " << staterr1/sigmainel_single*100 << "% (stat)) " << endl
+       << " !!! sigma_inel_double: " << sigmainel_double << " b +- (" << staterr2 << " = " << staterr2/sigmainel_double*100 << "% (stat)) " << endl
+       << " !!! sigma_inel       : " << sigmainel        << " b +- (" << staterr << " = " << staterr/sigmainel*100 << "% (stat))" << endl << endl;
 
-  cout << " !! corr_noise_single =" << n_noise_runs_single << "/" << A_runs_single << "=" << n_noise_runs_single/A_runs_single << " b "
+  cout << " !! CORRECTIONS" << endl;
+  cout << " !! single: noise =" << n_noise_runs_single << "/" << A_runs_single << "=" << n_noise_runs_single/A_runs_single << " b = "
+       << n_noise_runs_single/A_runs_single/sigmainel_single * 100. << "%"
        << " !! corr_f_pilup    =" << f_pileup_runs_single << endl;
-  cout << " !! corr_noise_double =" << n_noise_runs_double << "/" << A_runs_double << "=" << n_noise_runs_double/A_runs_double << " b "
+  cout << " !! double: noise =" << n_noise_runs_double << "/" << A_runs_double << "=" << n_noise_runs_double/A_runs_double << " b = "
+       << n_noise_runs_double/A_runs_double/sigmainel_double * 100. << "%"
        << " !! corr_f_pilup    =" << f_pileup_runs_double << endl << endl;
 
   cout << endl << " ! SYSTEMATIC UNCERTAINTY" << endl << endl;
@@ -693,11 +707,11 @@ void makePlots_cs1(bool draw,double cut_value_single, double cut_value_double)
   cout << " ! sigma_em_single=" << sigma_em_runs_single/fit_runs_single->Parameter(0)*100 << "%" << endl
        << " ! sigma_mc_single=" << sigma_mc_runs_single/fit_runs_single->Parameter(0)*100 << "%" << endl
        << " ! sigma_pu_single=" << sigma_pu_runs_single/fit_runs_single->Parameter(0)*100  << "%" << endl
-       << " ! sigma_oi_single=" << sigma_oi_runs_single/fit_runs_single->Parameter(0)*100  << "%" << endl <<endl;
+       << " ! si_noise_single=" << sigma_oi_runs_single/fit_runs_single->Parameter(0)*100  << "%" << endl <<endl;
   cout << " ! sigma_em_double=" << sigma_em_runs_double/fit_runs_double->Parameter(0)*100 << "%" << endl
        << " ! sigma_mc_double=" << sigma_mc_runs_double/fit_runs_double->Parameter(0)*100 << "%" << endl
        << " ! sigma_pu_double=" << sigma_pu_runs_double/fit_runs_double->Parameter(0)*100  << "%" << endl
-       << " ! sigma_oi_double=" << sigma_oi_runs_double/fit_runs_double->Parameter(0)*100  << "%" << endl << endl;
+       << " ! si_noise_double=" << sigma_oi_runs_double/fit_runs_double->Parameter(0)*100  << "%" << endl << endl;
   cout << " ! sigma_combine=" << fabs(fit_runs_single->Parameter(0)-fit_runs_double->Parameter(0))/2./sigmainel*100 << "%" << endl << endl;
 
 
@@ -765,8 +779,8 @@ void makePlots_cs1(bool draw,double cut_value_single, double cut_value_double)
 
       ///////////////////////////////////////////////////////////////////////
       //PULL Distribution
-      TH1D* h_pull_single = new TH1D("h_pull_single","E_{HF}>8 GeV (single-arm);#frac{x-#mu}{#sigma};N_{run}",19,-8,8);
-      TH1D* h_pull_double = new TH1D("h_pull_double","E_{HF}>2.5 GeV (double-arm);#frac{x-#mu}{#sigma};N_{run}",19,-8,8);
+      TH1D* h_pull_single = new TH1D("h_pull_single","single-arm selection;#frac{x-#mu}{#sigma};N_{run}",19,-8,8);
+      TH1D* h_pull_double = new TH1D("h_pull_double","double-arm selection;#frac{x-#mu}{#sigma};N_{run}",19,-8,8);
       double pull2_avg_single = 0;
       double pull_avg_single = 0;
       double pull2_avg_double = 0;
@@ -783,9 +797,9 @@ void makePlots_cs1(bool draw,double cut_value_single, double cut_value_double)
           h_pull_double->Fill(pull_double);
         }
 
-      double N = double(run_num.size());
-      double sigma_pull_single = sqrt( (pull2_avg_single - pull_avg_single*pull_avg_single/N)/(N-1) );
-      double sigma_pull_double = sqrt( (pull2_avg_double - pull_avg_double*pull_avg_double/N)/(N-1) );
+      double dN = double(run_num.size());
+      double sigma_pull_single = sqrt( (pull2_avg_single - pull_avg_single*pull_avg_single/dN)/(dN-1) );
+      double sigma_pull_double = sqrt( (pull2_avg_double - pull_avg_double*pull_avg_double/dN)/(dN-1) );
 
 
 
@@ -816,8 +830,8 @@ void makePlots_cs1(bool draw,double cut_value_single, double cut_value_double)
       CMSText(true,true);
 #endif
       cout << "Calculated Mean and RMS" << endl
-           << "mean = " << pull_avg_single/N << " sigma = " << sigma_pull_single << endl
-           << "mean = " << pull_avg_double/N << " sigma = " << sigma_pull_double << endl << endl;
+           << "mean = " << pull_avg_single/dN << " sigma = " << sigma_pull_single << endl
+           << "mean = " << pull_avg_double/dN << " sigma = " << sigma_pull_double << endl << endl;
 
       cout << "GAUSSIAN FITS (Pull)" << endl
            << "single: mean=" << fit_pull_single->Parameter(1) << " +- " << fit_pull_single->ParError(1) << " "
@@ -837,9 +851,9 @@ void makePlots_cs1(bool draw,double cut_value_single, double cut_value_double)
       h_runs_pull_double->Draw("HIST SAME");
       TLegend* leg6 = new TLegend(0.3,0.65,0.8,0.80);
       ostringstream title;
-      title.str(""); title << fixed << setprecision(1) << "E_{HF}>8 GeV (single-arm) " << "#mu=" << h_runs_pull_single->GetMean() << " #sigma=" << h_runs_pull_single->GetRMS();
+      title.str(""); title << fixed << setprecision(1) << "single-arm selection " << "#mu=" << h_runs_pull_single->GetMean() << " #sigma=" << h_runs_pull_single->GetRMS();
       leg6->AddEntry(h_runs_pull_single,title.str().c_str(),"l");
-      title.str(""); title << fixed << setprecision(1) << "E_{HF}>2.5 GeV (double-arm) " << "#mu=" << h_runs_pull_double->GetMean() << " #sigma=" << h_runs_pull_double->GetRMS();
+      title.str(""); title << fixed << setprecision(1) << "double-arm selection " << "#mu=" << h_runs_pull_double->GetMean() << " #sigma=" << h_runs_pull_double->GetRMS();
       leg6->AddEntry(h_runs_pull_double,title.str().c_str(),"l");
 #ifdef __CINT__
       SetLegAtt(leg6);

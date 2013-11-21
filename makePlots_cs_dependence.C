@@ -1,3 +1,5 @@
+//checks dependence on threshold energy
+
 #include "TFitResultPtr.h"
 #include "TFitResult.h"
 #include "TLegend.h"
@@ -13,6 +15,8 @@
 
 #ifndef __CINT__
 #include "style.h"
+#inculde "makePlots_cs_eff.C" //yes not very nice
+#inculde "makePlots_cs.C"
 #endif
 
 #include <iostream>
@@ -22,22 +26,18 @@
 
 using namespace std;
 
-// void makePlots(bool draw,double cut_value_single, double cut_value_double);
-// void makePlots_cs1(bool draw,double cut_value_single, double cut_value_double);
+#define modfactor 1.0
 
-#define modfactor 0.7
-
-void makePlots_crosscheck1()
+void makePlots_cs_dependence(string filename = "histos.root")
 {
   TH1::SetDefaultSumw2();
   gROOT->ProcessLine(" .L style.cc+");
-  gROOT->ProcessLine(" .L makePlots.C+");
-  gROOT->ProcessLine(" .L makePlots_cs1.C+");
+  gROOT->ProcessLine(" .L makePlots_cs.C+");
 #ifdef __CINT__
   style();
 #endif
 
-  TFile* file = TFile::Open("histos_mc.root");
+  TFile* file = TFile::Open(filename.c_str());
 
   vector<double> cut_energies_single;
   vector<double> cut_energies_double;
@@ -55,10 +55,10 @@ void makePlots_crosscheck1()
   g_crosscheck_single->SetMarkerColor(kBlack);
   g_crosscheck_double->SetMarkerColor(kBlack);
   g_crosscheck_single->SetMarkerStyle(21);
-  g_crosscheck_double->SetMarkerStyle(22);
+  g_crosscheck_double->SetMarkerStyle(21);
   g_crosscheck_had_single->SetMarkerColor(g_crosscheck_single->GetMarkerColor());
   g_crosscheck_had_double->SetMarkerColor(g_crosscheck_double->GetMarkerColor());
-  g_crosscheck_had_single->SetMarkerStyle(24);
+  g_crosscheck_had_single->SetMarkerStyle(25);
   g_crosscheck_had_double->SetMarkerStyle(25);
   g_crosscheck_single->SetTitle("single-arm;selection threshold [GeV];#sigma [b]");
   g_crosscheck_double->SetTitle("double-arm;selection threshold [GeV];#sigma [b]");
@@ -68,11 +68,11 @@ void makePlots_crosscheck1()
       double cut_single = cut_energies_single[i];
       double cut_double = cut_energies_double[i];
 
-      cout << i << cut_double << " " << cut_single << endl;
+      cout << "Cross checking round " << i << "  single:" << cut_single << " double:" << cut_double << endl << endl;
+      bool batch_status = gROOT->IsBatch();
       gROOT->SetBatch(kTRUE);
-      makePlots(0,cut_single/modfactor, cut_double/modfactor);
-      makePlots_cs1(0,cut_single,cut_double);
-      gROOT->SetBatch(kFALSE);
+      makePlots_cs(0,cut_single,cut_double,modfactor,filename);
+      gROOT->SetBatch(batch_status);
 
       TFile f("plots/final_values.root");
       TVectorD* vec_sigma_vis    = NULL;
@@ -94,10 +94,12 @@ void makePlots_crosscheck1()
       g_crosscheck_had_double->SetPoint(i,cut_double,(*vec_sigma_had)[1]);
     }
 
+  //Draw the modified monte carlo lines
   TCanvas* can1 = new TCanvas;
   TH1D* eposin=(TH1D*)file->Get("Epos/Epos_h_hf_cut_single");
   TH1D* epossd2in=(TH1D*)file->Get("EposSDWeight2/EposSDWeight2_h_hf_cut_single");
   TH1D* qgsjetin=(TH1D*)file->Get("QGSJetII/QGSJetII_h_hf_cut_single");
+  //Normalise to standard cut values. The lines all cross at this point
   eposin->Scale(g_crosscheck_had_single->Eval(8.)/eposin->Interpolate(8./modfactor));
   epossd2in->Scale(g_crosscheck_had_single->Eval(8.)/epossd2in->Interpolate(8./modfactor));
   qgsjetin->Scale(g_crosscheck_had_single->Eval(8.)/qgsjetin->Interpolate(8./modfactor));
@@ -139,15 +141,15 @@ void makePlots_crosscheck1()
   epossd2->Draw("L SAME");
   qgsjet->Draw("L SAME");
   CMSText(0,1,1,"single-arm selection");
-  can1->SaveAs((string("plots/cross_check_1_single_30")+string(".pdf")).c_str());
+  can1->SaveAs((string("plots/cross_check_1_single")+string(".pdf")).c_str());
 
   TCanvas* can2 = new TCanvas;
   eposin=(TH1D*)file->Get("Epos/Epos_h_hf_cut_double");
   epossd2in=(TH1D*)file->Get("EposSDWeight2/EposSDWeight2_h_hf_cut_double");
   qgsjetin=(TH1D*)file->Get("QGSJetII/QGSJetII_h_hf_cut_double");
-  eposin->Scale(g_crosscheck_had_double->Eval(2.5)/eposin->Interpolate(2.5/modfactor));
-  epossd2in->Scale(g_crosscheck_had_double->Eval(2.5)/epossd2in->Interpolate(2.5/modfactor));
-  qgsjetin->Scale(g_crosscheck_had_double->Eval(2.5)/qgsjetin->Interpolate(2.5/modfactor));
+  eposin->Scale(g_crosscheck_had_double->Eval(4)/eposin->Interpolate(4/modfactor));
+  epossd2in->Scale(g_crosscheck_had_double->Eval(4)/epossd2in->Interpolate(4/modfactor));
+  qgsjetin->Scale(g_crosscheck_had_double->Eval(4)/qgsjetin->Interpolate(4/modfactor));
   TGraph* epos = new TGraph(eposin->GetNbinsX());
   TGraph* epossd2 = new TGraph(epossd2in->GetNbinsX());
   TGraph* qgsjet = new TGraph(qgsjetin->GetNbinsX());
@@ -185,5 +187,5 @@ void makePlots_crosscheck1()
   epossd2->Draw("L SAME");
   qgsjet->Draw("L SAME");
   CMSText(0,1,1,"double-arm selection");
-  can2->SaveAs((string("plots/cross_check_1_double_30")+string(".pdf")).c_str());
+  can2->SaveAs((string("plots/cross_check_1_double")+string(".pdf")).c_str());
 }

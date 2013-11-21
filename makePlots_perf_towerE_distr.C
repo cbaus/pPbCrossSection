@@ -1,13 +1,15 @@
+//distribution of tower E averaged over events
+
 void ShowStack(TH1D* a,TH1D* a2,TH1D* b,TH1D* c,TH1D* d,TH1D* e,TH1D* f,string type);
 
-void makePlots_crosscheck2()
+void makePlots_perf_towerE_distr()
 {
   gROOT->ProcessLine(" .L style.cc+");
   style();
 
   {
-    TFile* file2 = TFile::Open("histos_old.root");
-    TFile* file = TFile::Open("histos_mc.root");
+    TFile* file2 = TFile::Open("histos_nohfcalib.root");
+    TFile* file = TFile::Open("histos_nohfcalib.root");
   TH1D* a=(TH1D*)file2->Get("data210885/data210885_h_hf_hitdistr_coll");
   TH1D* a2=(TH1D*)file2->Get("data210885/data210885_h_hf_hitdistr_noise");
   TH1D* b=(TH1D*)file->Get("Hijing/Hijing_h_hf_hitdistr_coll");
@@ -50,7 +52,7 @@ void ShowStack(TH1D* data,TH1D* noise,TH1D* b,TH1D* c,TH1D* d,TH1D* sl1,TH1D* sl
         sl2->SetBinContent(k,sl2->GetBinContent(k)/sl2->GetBinWidth(k));
       }
 
-  const int normbin = data->FindBin(3);
+  const int normbin = data->FindBin(10);
   const int normendbin = data->GetNbinsX();
   double eposscale=double(c->Integral())/double(sl1->Integral()); //scale number of events in the two samples
   double eposscale2=double(c->Integral())/double(sl2->Integral());
@@ -151,7 +153,7 @@ void ShowStack(TH1D* data,TH1D* noise,TH1D* b,TH1D* c,TH1D* d,TH1D* sl1,TH1D* sl
   c1->SetLogx();
   CMSText(1,0,1,"HF+ and HF-");
 
-  c1->SaveAs((string("plots/hf_hitdistr_") + type + string(".pdf")).c_str());
+  c1->SaveAs((string("plots/hf_hitdistr_") + type + string("_nohfcalib.pdf")).c_str());
 
 }
 

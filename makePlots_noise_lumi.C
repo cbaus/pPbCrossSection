@@ -1,5 +1,5 @@
 
-void makePlots_noise3()
+void makePlots_noise_lumi()
 {
   gROOT->ProcessLine(" .L style.cc+");
   style();

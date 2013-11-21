@@ -30,13 +30,15 @@ void makePlots_eff()
   TCanvas* c4 = new TCanvas;
 
   TLegend* legan = new TLegend(0.23,0.23,0.43,0.45);
+  TLegend* legeff = new TLegend(0.23,0.71,0.43,0.93);
   TLegend* legpas = new TLegend(0.23,0.23,0.43,0.38);
   SetLegAtt(legan,1.5);
+  SetLegAtt(legeff,1.5);
   SetLegAtt(legpas,1.5);
   for(int i=0; i<int(list.size()); i++)
     {
       cout << i+1 << "/" << int(list.size()) << endl;
-      TFile* file = TFile::Open("histos.root");
+      TFile* file = TFile::Open("histos_test.root");
 
       TH1D* h_eff=file->Get(string(list[i]+string("/")+list[i]+string("_h_mc_eff")).c_str());
       TH1D* h_effgain_single=file->Get(string(list[i]+string("/")+list[i]+string("_h_mc_effgain_single")).c_str());
@@ -80,6 +82,7 @@ void makePlots_eff()
       h_effgain_double->SetTitle(";;selection efficiency gain");
 
       legan->AddEntry(h_eff,name[i].c_str(),"p");
+      legeff->AddEntry(h_eff,name[i].c_str(),"p");
       if(list[i] != string("Hijing"))
         legpas->AddEntry(h_eff,name[i].c_str(),"p");
 
@@ -104,12 +107,12 @@ void makePlots_eff()
 
   c2->cd();
   CMSText(0,0,1);
-  legan->Draw();
+  legeff->Draw();
   c2->SaveAs((string("plots/mc_effgain_single")+string(".pdf")).c_str());
 
   c3->cd();
   CMSText(0,0,1);
-  legan->Draw();
+  legeff->Draw();
   c3->SaveAs((string("plots/mc_effgain_double")+string(".pdf")).c_str());
 
   c4->cd();
