@@ -26,12 +26,16 @@
 
 using namespace std;
 
-#define _LumiCorrpPb 1.142
+//*********************PLEASE SET THE FOLLOWING OPTIONS****************************
+
+#define _LumiCorrpPb 1.142 //only use if trees don't contain vdm calibration factor
 #define _LumiCorrPbp 1.138
-#define _CSEstimate 2.06
-#define _CSEstimate_single 2.06
-#define _CSEstimate_double 2.06
-#define _CSEstimate_e 0.025
+#define _CSEstimate 2.0608 //used for pileup
+#define _CSEstimate_single 2.0587 //used for pull?
+#define _CSEstimate_double 2.0630
+#define _CSEstimate_e 0.0136//relative. this is needed for the pileup error. enter uncertainty + stat but without lumi error sqrt(sqrt(2.4^2+2.6^2)÷2+0.3^2)
+
+//*********************************************************************************
 
 void makePlots_cs(bool draw = 1,double cut_value_single = 8., double cut_value_double = 4, double modfactor = 1.0, string filename = "histos.root");
 string cutToString(double cut);

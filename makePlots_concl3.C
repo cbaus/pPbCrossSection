@@ -1,3 +1,6 @@
+//macro for vis - had - inel plot
+//important please always update uncertainties by hand!
+
 #include <TH1D.h>
 #include <TROOT.h>
 #include <TStyle.h>
@@ -26,6 +29,32 @@ void makePlots_concl3()
   gROOT->ProcessLine(" .L style.cc+");
   style();
   gStyle->SetPadTopMargin(0.07);
+
+  //Uncertainty values
+  double s_lumi = 3.2, d_lumi = 3.2;
+  double s_pu = 0.1, d_pu = 0.1;
+  double s_acc = 0.5, d_acc = 1.6;
+  double s_sd2 = 1.3, d_sd2 = 1.6;
+  double s_em = 0.2, d_em = 0.1;
+  double s_mod = 1.7, d_mod = 0.8;
+  double s_sel = 0.6, d_sel = 0.2;
+  double s_noi = 1.2, d_noi = 0.2;
+
+  double s_vis = sqrt(pow(s_lumi,2)+pow(s_pu,2)+pow(s_sel,2)+pow(s_noi,2));
+  double d_vis = sqrt(pow(d_lumi,2)+pow(d_pu,2)+pow(d_sel,2)+pow(d_noi,2));
+  double s_had = sqrt(pow(s_lumi,2)+pow(s_pu,2)+pow(s_em,2)+pow(s_sel,2)+pow(s_noi,2));
+  double d_had = sqrt(pow(d_lumi,2)+pow(d_pu,2)+pow(d_em,2)+pow(d_sel,2)+pow(d_noi,2));
+  double s_inel = sqrt(pow(s_lumi,2)+pow(s_pu,2)+pow(s_acc,2)+pow(s_sd2,2)+pow(s_em,2)+pow(s_mod,2)+pow(s_sel,2)+pow(s_noi,2));
+  double d_inel = sqrt(pow(d_lumi,2)+pow(d_pu,2)+pow(d_acc,2)+pow(d_sd2,2)+pow(d_em,2)+pow(d_mod,2)+pow(d_sel,2)+pow(d_noi,2));
+  
+  cout << "s_vis=" << s_vis << endl;
+  cout << "d_vis=" << d_vis << endl;
+  cout << "s_had=" << s_had << endl;
+  cout << "d_had=" << d_had << endl;
+  cout << "s_inel=" << s_inel << endl;
+  cout << "d_inel=" << d_inel << endl;
+
+
 
   ///READ IN VALUES
   TFile f("plots/final_values.root");
@@ -89,12 +118,12 @@ void makePlots_concl3()
   h_data->SetBinContent(4,(*vec_sigma_inel)[2]);
   h_data->SetBinContent(5,(*vec_sigma_had)[1]);
   h_data->SetBinContent(6,(*vec_sigma_vis)[1]);
-  h_data->SetBinError(1,(*vec_sigma_inel_e)[1]);
-  h_data->SetBinError(2,(*vec_sigma_had_e)[0]);
-  h_data->SetBinError(3,(*vec_sigma_vis_e)[0]);
-  h_data->SetBinError(4,(*vec_sigma_inel_e)[2]);
-  h_data->SetBinError(5,(*vec_sigma_had_e)[1]);
-  h_data->SetBinError(6,(*vec_sigma_vis_e)[1]);
+  h_data->SetBinError(1,s_inel/100.*(*vec_sigma_inel)[1]);
+  h_data->SetBinError(2,s_had/100.*(*vec_sigma_had)[0]);
+  h_data->SetBinError(3,s_vis/100.*(*vec_sigma_vis)[0]);
+  h_data->SetBinError(4,d_inel/100.*(*vec_sigma_inel)[2]);
+  h_data->SetBinError(5,d_had/100.*(*vec_sigma_had)[1]);
+  h_data->SetBinError(6,d_vis/100.*(*vec_sigma_vis)[1]);
 
   double eff_epos_single = (*corr_fac_epos)[0];
   double eff_epos_double = (*corr_fac_epos)[1];

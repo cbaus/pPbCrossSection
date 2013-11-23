@@ -33,6 +33,7 @@ void makePlots_perf_ring_corr_factors()
   gROOT->ProcessLine(" .L style.cc+");
   style();
 
+
   for(int ring=0; ring<24; ring++)
     {
       hf_calibration[ring]=1;
@@ -67,6 +68,66 @@ void makePlots_perf_ring_corr_factors()
 
 void Show(TH1D* a, TH1D* b, TH1D* c, TH1D* epossl, TH1D* d, string type)
 {
+  //FROM LEV email 22.11
+
+  vector<double> c_lev_m,c_lev_m_e,c_lev_p,c_lev_p_e;
+  //TGraphErrors* gr_lev_p = new TGraphErrors(c_lev_m.size(),&c_lev_m.front());
+  c_lev_m.push_back(1.07); //-41 //12
+  c_lev_m.push_back(0.97);
+  c_lev_m.push_back(0.95);
+  c_lev_m.push_back(0.99);
+  c_lev_m.push_back(0.96);
+  c_lev_m.push_back(0.91);
+  c_lev_m.push_back(0.92);
+  c_lev_m.push_back(0.86);
+  c_lev_m.push_back(0.80);
+  c_lev_m.push_back(0.72);
+  c_lev_m.push_back(0.69);
+  c_lev_m.push_back(0.83);
+  c_lev_m.push_back(0.73); //-29 //0
+
+  c_lev_p.push_back(1.01);
+  c_lev_p.push_back(0.94);
+  c_lev_p.push_back(0.91);
+  c_lev_p.push_back(0.89);
+  c_lev_p.push_back(0.87);
+  c_lev_p.push_back(0.92);
+  c_lev_p.push_back(0.84);
+  c_lev_p.push_back(0.85);
+  c_lev_p.push_back(0.83);
+  c_lev_p.push_back(0.67);
+  c_lev_p.push_back(0.61);
+  c_lev_p.push_back(0.75);
+  c_lev_p.push_back(0.66);
+
+  c_lev_m_e.push_back(0.23);
+  c_lev_m_e.push_back(0.04);
+  c_lev_m_e.push_back(0.03);
+  c_lev_m_e.push_back(0.03);
+  c_lev_m_e.push_back(0.03);
+  c_lev_m_e.push_back(0.03);
+  c_lev_m_e.push_back(0.03);
+  c_lev_m_e.push_back(0.03);
+  c_lev_m_e.push_back(0.03);
+  c_lev_m_e.push_back(0.04);
+  c_lev_m_e.push_back(0.06);
+  c_lev_m_e.push_back(0.10);
+  c_lev_m_e.push_back(0.09);
+
+  c_lev_p_e.push_back(0.21);
+  c_lev_p_e.push_back(0.04);
+  c_lev_p_e.push_back(0.03);
+  c_lev_p_e.push_back(0.03);
+  c_lev_p_e.push_back(0.03);
+  c_lev_p_e.push_back(0.03);
+  c_lev_p_e.push_back(0.03);
+  c_lev_p_e.push_back(0.03);
+  c_lev_p_e.push_back(0.03);
+  c_lev_p_e.push_back(0.03);
+  c_lev_p_e.push_back(0.07);
+  c_lev_p_e.push_back(0.09);
+  c_lev_p_e.push_back(0.08);
+
   //a->Scale(a->GetBinContent(2)/a->GetBinContent(2);
   int bin = 2;
   if (type=="lev_minus")
@@ -107,12 +168,47 @@ void Show(TH1D* a, TH1D* b, TH1D* c, TH1D* epossl, TH1D* d, string type)
   a->GetXaxis()->SetTitle("#eta");
   a->GetYaxis()->SetTitle("E [GeV]");
 
+  //Correction Factor Histograms
+  TH1D* h_c_avg = a->Clone("h_c_avg");
+  TH1D* h_c_lev = a->Clone("h_c_lev");
+  h_c_avg->GetYaxis()->SetRangeUser(0,1.2);
+  h_c_avg->GetYaxis()->SetTitle("C");
+  h_c_lev->SetMarkerStyle(21);
+  h_c_avg->SetMarkerSize(1.5);
+  h_c_lev->SetMarkerSize(1.5);
+  h_c_avg->SetMarkerColor(kRed);
+  h_c_lev->SetMarkerColor(kBlack);
+
+
+  for(int bin=2;bin<=12;bin++)
+    {
+      double avg = b->GetBinContent(bin) + c->GetBinContent(bin) + d->GetBinContent(bin);
+      avg/=3.;
+      double calib = avg/a->GetBinContent(bin);
+      double c_lev = type=="lev_minus"?c_lev_m[12-(bin-1)]:c_lev_p[bin-1];
+      double c_lev_e = type=="lev_minus"?c_lev_m_e[12-(bin-1)]:c_lev_p_e[bin-1];
+      
+      h_c_avg->SetBinContent(bin,1./calib);
+      h_c_avg->SetBinError(bin,0);
+      h_c_lev->SetBinContent(bin,c_lev);
+      h_c_lev->SetBinError(bin,c_lev_e);
+      
+      int ieta = BinToIeta(type=="lev_minus"?(-bin):bin);
+      
+      cout << ieta << " & " << setprecision(3) <<  calib << "\\\\" << endl;
+      hf_calibration[IetaToRing(ieta)] = calib;
+    }
+  cout << "\\hline" << endl;
+
+
   TCanvas* c1 = new TCanvas;
   a->Draw("HIST P");
   b->Draw("HIST L SAME");
   c->Draw("HIST L SAME");
   epossl->Draw("HIST L SAME");
   d->Draw("HIST L SAME");
+  
+
   TLegend* leg = new TLegend(0.3,0.7,0.7,0.9);
   leg->AddEntry(a,"","P");
   leg->AddEntry(b,"","L");
@@ -123,19 +219,20 @@ void Show(TH1D* a, TH1D* b, TH1D* c, TH1D* epossl, TH1D* d, string type)
   leg->SetFillColor(kWhite);
   leg->Draw();
 
+  TCanvas* c2 = new TCanvas;
+  h_c_avg->Draw("P");
+  h_c_lev->Draw("P SAME");
+  
 
-  for(int bin=2;bin<=12;bin++)
-    {
-      double avg = b->GetBinContent(bin) + c->GetBinContent(bin) + d->GetBinContent(bin);
-      avg/=3.;
-      
-      int ieta = BinToIeta(type=="lev_minus"?(-bin):bin);
-      
-      double calib = avg/a->GetBinContent(bin);
-      cout << ieta << " & " << setprecision(3) <<  calib << "\\\\" << endl;
-      hf_calibration[IetaToRing(ieta)] = calib;
-    }
-  cout << "\\hline" << endl;
+  leg = new TLegend(0.2,0.4,0.6,0.5);
+  leg->AddEntry(h_c_lev,"scale factor (pp 2013/2011 z#rightarrowee)","PL");
+  leg->AddEntry(h_c_avg,"1 / pPb MC scale factor","P");
+  SetLegAtt(leg);
+  leg->Draw();
+
+  CMSText(1,0,0);
+
+  c2->SaveAs((string("plots/hf_perf_corr_vs_")+type+string(".pdf")).c_str());
            
 }
 int BinToIeta(int bin)

@@ -223,9 +223,10 @@ void makePlots_diff2()
           can1->SetLogy();
           can1->SetLogx();
 
-          TLegend* leg1 = new TLegend(0.25,0.63,0.45,0.93);
+          TLegend* leg1;
           if(list[i]!="Hijing")
             {
+              leg1 = new TLegend(0.25,0.63,0.45,0.93);
               leg1->AddEntry(sd1,"","F");
               leg1->AddEntry(sd2,"","F");
               leg1->AddEntry(dd,"","F");
@@ -234,6 +235,7 @@ void makePlots_diff2()
             }
           else
             {
+              leg1 = new TLegend(0.25,0.87,0.45,0.93);
               leg1->AddEntry(nd,all->GetTitle(),"F");
             }
           SetLegAtt(leg1);

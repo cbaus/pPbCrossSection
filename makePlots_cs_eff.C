@@ -118,7 +118,7 @@ void makePlots_cs_eff(bool draw, double cut_value_single, double cut_value_doubl
       b->GetYaxis()->SetRangeUser(0.8,1.001);
       a2->GetYaxis()->SetRangeUser(type[n]=="double"?1e-5:1e-5,1.01);
 
-      b->GetXaxis()->SetTitle("E_{HF} tower threshold [GeV]");
+      b->GetXaxis()->SetTitle("E_{HF} [GeV]");
       b->GetYaxis()->SetTitle("event fraction");
       b->GetXaxis()->SetLabelSize(b->GetXaxis()->GetLabelSize()*1.2);
       b->GetYaxis()->SetLabelSize(b->GetYaxis()->GetLabelSize()*1.2);
@@ -173,7 +173,7 @@ void makePlots_cs_eff(bool draw, double cut_value_single, double cut_value_doubl
           leg->Draw();
 
           a->GetYaxis()->SetRangeUser(0,1.01);
-          a->GetXaxis()->SetTitle("E_{HF} tower threshold [GeV]");
+          a->GetXaxis()->SetTitle("E_{HF} [GeV]");
           a->GetYaxis()->SetTitle("event fraction");
 
           can1->SaveAs((string("plots/full_p_space_eff_PAS_")+type[n]+string(".pdf")).c_str());
@@ -268,7 +268,7 @@ void makePlots_cs_eff(bool draw, double cut_value_single, double cut_value_doubl
       if(draw)
         {
           TCanvas* can2 = new TCanvas;
-          a2->GetXaxis()->SetTitle("E_{HF} tower threshold [GeV]");
+          a2->GetXaxis()->SetTitle("E_{HF} [GeV]");
           a2->GetYaxis()->SetTitle("event fraction");
           a2->GetXaxis()->SetLabelSize(a2->GetXaxis()->GetLabelSize()*1.2);
           a2->GetYaxis()->SetLabelSize(a2->GetYaxis()->GetLabelSize()*1.2);

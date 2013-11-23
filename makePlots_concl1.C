@@ -4,7 +4,7 @@
 #include "TLegend.h"
 #include "TROOT.h"
 
-#define CSe 0.047
+#define CSe 0.037
 
 
 
