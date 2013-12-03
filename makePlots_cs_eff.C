@@ -51,7 +51,8 @@ void makePlots_cs_eff(bool draw, double cut_value_single, double cut_value_doubl
 
       TH1D* a=(TH1D*)file->Get((string("data210885/data210885_h_hf_cut_") + type[n]).c_str());
       TH1D* a2=(TH1D*)file->Get((string("data210885/data210885_h_hf_cut_") + type[n] + string("_noise")).c_str());
-      TH1D* eposrew=(TH1D*)file->Get((string("EposDiffWeight2/EposDiffWeight2_h_hf_cut_") + type[n]).c_str());
+      TH1D* eposrew=(TH1D*)file->Get((string("EposDiffWeightOpt/EposDiffWeightOpt_h_hf_cut_") + type[n]).c_str());
+      TH1D* qgsrew=(TH1D*)file->Get((string("QGSJetIIDiffWeightOpt/QGSJetIIDiffWeightOpt_h_hf_cut_") + type[n]).c_str());
       TH1D* b=(TH1D*)file->Get((string("Hijing/Hijing_h_hf_cut_") + type[n]).c_str());
       TH1D* c=(TH1D*)file->Get((string("Epos/Epos_h_hf_cut_")+ type[n]).c_str());
       TH1D* d=(TH1D*)file->Get((string("QGSJetII/QGSJetII_h_hf_cut_") + type[n]).c_str());
@@ -66,6 +67,7 @@ void makePlots_cs_eff(bool draw, double cut_value_single, double cut_value_doubl
       e->Scale(1./double(e->GetBinContent(1)));
       f->Scale(1./double(f->GetBinContent(1))/ 195. * 122.); //cross section starlight samples
       eposrew->Scale(1./double(eposrew->GetBinContent(1)));
+      qgsrew->Scale(1./double(qgsrew->GetBinContent(1)));
 
       a->SetLineWidth(3);
       a2->SetLineWidth(3);
@@ -75,6 +77,7 @@ void makePlots_cs_eff(bool draw, double cut_value_single, double cut_value_doubl
       e->SetLineWidth(3);
       f->SetLineWidth(3);
       eposrew->SetLineWidth(3);
+      qgsrew->SetLineWidth(3);
       a2->SetLineColor(kBlack);
       b->SetLineColor(kGreen+2);
       c->SetLineColor(kBlue);
@@ -82,6 +85,7 @@ void makePlots_cs_eff(bool draw, double cut_value_single, double cut_value_doubl
       e->SetLineColor(kRed);
       f->SetLineColor(kBlue);
       eposrew->SetLineColor(kMagenta);
+      qgsrew->SetLineColor(kMagenta);
       a2->SetMarkerColor(a2->GetLineColor());
       b->SetMarkerColor(b->GetLineColor());
       c->SetMarkerColor(c->GetLineColor());
@@ -89,14 +93,17 @@ void makePlots_cs_eff(bool draw, double cut_value_single, double cut_value_doubl
       e->SetMarkerColor(e->GetLineColor());
       f->SetMarkerColor(f->GetLineColor());
       eposrew->SetMarkerColor(f->GetLineColor());
+      qgsrew->SetMarkerColor(f->GetLineColor());
       b->SetLineStyle(7);
       d->SetLineStyle(9);
       f->SetLineStyle(9);
       eposrew->SetLineStyle(10);
+      qgsrew->SetLineStyle(10);
 
       a->SetTitle("Data");
       a2->SetTitle("Noise");
-      eposrew->SetTitle("EPOS-LHC (#sigma_{SD}x2)");
+      eposrew->SetTitle("EPOS-LHC (#sigma_{diff}x1.12)");
+      qgsrew->SetTitle("QGSJETII-04 (#sigma_{diff}x1.50)");
       b->SetTitle("Hijing 1.383");
       c->SetTitle("EPOS-LHC");
       d->SetTitle("QGSJetII-04");
@@ -191,7 +198,7 @@ void makePlots_cs_eff(bool draw, double cut_value_single, double cut_value_doubl
           ++count;
           f_eme += fabs(e->GetBinContent(i) - f->GetBinContent(i));
           f_mce += fabs(c->GetBinContent(i) - d->GetBinContent(i));
-          f_mcesys += fabs(eposrew->GetBinContent(i) - d->GetBinContent(i));
+          f_mcesys += fabs(eposrew->GetBinContent(i) - qgsrew->GetBinContent(i));
         }
       f_eme /= double(count);
       f_mce /= double(count);
@@ -202,6 +209,7 @@ void makePlots_cs_eff(bool draw, double cut_value_single, double cut_value_doubl
         {
           const double f_em     = 0.5 * (e->GetBinContent(i) + f->GetBinContent(i));
           const double f_mc     = 0.5 * (c->GetBinContent(i) + d->GetBinContent(i));
+          const double f_mcsys  = 0.5 * (eposrew->GetBinContent(i) + qgsrew->GetBinContent(i));
           const double f_noise  = a2->GetBinContent(i)/a2->GetBinContent(1);
           const double n_sel_zb = a->GetBinContent(i);
           //const double n_zb     = 1;
@@ -214,13 +222,14 @@ void makePlots_cs_eff(bool draw, double cut_value_single, double cut_value_doubl
                 << setprecision(3)
                 << endl << i << "(" << a->GetBinCenter(i) << ")"
                 << endl << "f_mc= " << f_mc << " ± " << f_mce << " ( " << f_mce/f_mc*100. << "%)"
+                << endl << "f_mc_scaled= " << f_mcsys << " ± " << f_mcesys << " ( " << f_mcesys/f_mcsys*100. << "%)"
                 << endl << "f_em= " << f_em << " ± " << f_eme << " ( " << f_eme/f_em*100. << "%)"
                 << endl << "f_noise= " << f_noise
                 << endl << "n_sel_zb= " << n_sel_zb << endl << endl;
 
               corr_fac_em[0] = f_em;
               corr_fac_mc[0] = f_mc;
-              corr_fac_mc[2] = 0.5 * (eposrew->GetBinContent(i) + d->GetBinContent(i));
+              corr_fac_mc[2] = f_mcsys;
               corr_fac_eme[0] = f_eme;
               corr_fac_mce[0] = f_mce;
               corr_fac_mce[2] = f_mcesys;
@@ -241,6 +250,7 @@ void makePlots_cs_eff(bool draw, double cut_value_single, double cut_value_doubl
                 << setprecision(3)
                 << endl << i << "(" << a->GetBinCenter(i) << ")"
                 << endl << "f_mc= " << f_mc << " ± " << f_mce << " ( " << f_mce/f_mc*100. << "%)"
+                << endl << "f_mc_scaled= " << f_mcsys << " ± " << f_mcesys << " ( " << f_mcesys/f_mcsys*100. << "%)"
                 << endl << "f_em= " << f_em << " ± " << f_eme << " ( " << f_eme/f_em*100. << "%)"
                 << endl << "f_noise= " << f_noise
                 << endl << "n_sel_zb= " << n_sel_zb << endl << endl;
@@ -249,7 +259,7 @@ void makePlots_cs_eff(bool draw, double cut_value_single, double cut_value_doubl
               corr_fac_mc[1] = f_mc;
               corr_fac_eme[1] = f_eme;
               corr_fac_mce[1] = f_mce;
-              corr_fac_mc[3] = 0.5 * (eposrew->GetBinContent(i) + d->GetBinContent(i));
+              corr_fac_mc[3] = f_mcsys;
               corr_fac_mce[3] = f_mcesys;
               cout <<  " double-arm & "
                    << setprecision(3)

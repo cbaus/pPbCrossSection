@@ -248,11 +248,16 @@ void makePlots_cs(bool draw,double cut_value_single, double cut_value_double, do
 
 
       ///////////////////////////////////////////////////////////////////////
-      //Acceptance (For eposSDx2 all that needs to be changes is to 2 and 3 here)
+      //Acceptance (For eposDiffWeightOpt index is to 2 and 3 here)
       const double eff_acc_single = (*f_mc)[0];
       const double eff_acc_double = (*f_mc)[1];
       const double eff_acc_single_e = (*f_mce)[0];
       const double eff_acc_double_e = (*f_mce)[1];
+
+      const double eff_acc_single_sys = (*f_mc)[2]; //systematic uncertainty check with optimised diffractive cross section
+      const double eff_acc_double_sys = (*f_mc)[3];
+      const double eff_acc_single_e_sys = (*f_mce)[2];
+      const double eff_acc_double_e_sys = (*f_mce)[3];
 
       ///////////////////////////////////////////////////////////////////////
       //EM
@@ -477,10 +482,12 @@ void makePlots_cs(bool draw,double cut_value_single, double cut_value_double, do
 
       cout << "sigma_em_single=" << sigma_em_run_single/_CSEstimate*100 << "%"
            << " sigma_mc_single=" << sigma_mc_run_single/_CSEstimate*100 << "%"
+           << " sigma_mc_diff_single=" << fabs(eff_acc_single_sys-eff_acc_single) << "%"
            << " sigma_pu_single=" << sigma_pu_run_single/_CSEstimate*100  << "%"
            << " sigma_noise_single=" << sigma_oi_run_single/_CSEstimate*100  << "%"<< endl;
       cout << "sigma_em_double=" << sigma_em_run_double/_CSEstimate*100 << "%"
            << " sigma_mc_double=" << sigma_mc_run_double/_CSEstimate*100 << "%"
+           << " sigma_mc_diff_double=" << fabs(eff_acc_double_sys-eff_acc_double) << "%"
            << " sigma_pu_single=" << sigma_pu_run_double/_CSEstimate*100  << "%"
            << " sigma_oi_single=" << sigma_oi_run_double/_CSEstimate*100  << "%"<< endl;
 

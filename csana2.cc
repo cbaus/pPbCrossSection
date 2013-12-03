@@ -1,4 +1,4 @@
-#define _MAXEVT 10000
+#define _MAXEVT -10000
 #define _SkipHFRings 1 //skip 41 and 29 as suggested by HCAL DPG 
 #define _HFEnergyScale 1.0 //1.0 //0.8
 #define _HFEnergyCalibration 1 //0 or 1
@@ -72,14 +72,19 @@ int main()
   // sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211538/*.root"); sample_name.push_back("data211538"); sample_type.push_back(DATA);
   // sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Data211607/*_*.root"); sample_name.push_back("data211607"); sample_type.push_back(DATA);
 
-  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Epos/*.root"); sample_name.push_back("Epos"); sample_type.push_back(MC);
-  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Epos/*.root"); sample_name.push_back("EposDiffWeight150"); sample_type.push_back(MC);
-  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Epos/*.root"); sample_name.push_back("EposDiffWeight200"); sample_type.push_back(MC);
-  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Epos/*.root"); sample_name.push_back("EposDiffWeight299"); sample_type.push_back(MC);
+  // sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Epos/*.root"); sample_name.push_back("Epos"); sample_type.push_back(MC);
+  // sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Epos/*.root"); sample_name.push_back("EposDiffWeight150"); sample_type.push_back(MC);
+  // sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Epos/*.root"); sample_name.push_back("EposDiffWeight200"); sample_type.push_back(MC);
+  // sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Epos/*.root"); sample_name.push_back("EposDiffWeight299"); sample_type.push_back(MC);
+  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Epos/*.root"); sample_name.push_back("EposDiffWeightOpt"); sample_type.push_back(MC);
   // sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Epos_SL/*.root"); sample_name.push_back("Epos_SL"); sample_type.push_back(MC);
   // sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Hijing/*.root"); sample_name.push_back("Hijing"); sample_type.push_back(MC);
   // sample_fname.push_back("/afs/cern.ch/work/c/cbaus/public/castortree/pPb_QGSJetII/treeMC.root"); sample_name.push_back("QGSJetII"); sample_type.push_back(MC);
-  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/StarlightDPMjet_v2/treeMC.root"); sample_name.push_back("Starlight_DPMJet");  sample_type.push_back(MC);
+  // sample_fname.push_back("/afs/cern.ch/work/c/cbaus/public/castortree/pPb_QGSJetII/treeMC.root"); sample_name.push_back("QGSJetIIDiffWeight150"); sample_type.push_back(MC);
+  // sample_fname.push_back("/afs/cern.ch/work/c/cbaus/public/castortree/pPb_QGSJetII/treeMC.root"); sample_name.push_back("QGSJetIIDiffWeight200"); sample_type.push_back(MC);
+  // sample_fname.push_back("/afs/cern.ch/work/c/cbaus/public/castortree/pPb_QGSJetII/treeMC.root"); sample_name.push_back("QGSJetIIDiffWeight452"); sample_type.push_back(MC);
+  sample_fname.push_back("/afs/cern.ch/work/c/cbaus/public/castortree/pPb_QGSJetII/treeMC.root"); sample_name.push_back("QGSJetIIDiffWeightOpt"); sample_type.push_back(MC);
+  // sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/StarlightDPMjet_v2/treeMC.root"); sample_name.push_back("Starlight_DPMJet");  sample_type.push_back(MC);
   // sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/StarlightPythia/treeMC.root"); sample_name.push_back("Starlight_Pythia");  sample_type.push_back(MC);
 
 #if _HFEnergyCalibration
@@ -728,10 +733,22 @@ int main()
             }
           if(sample_type[sample]==DATA)
             evtWeight = double(prescale);
-          else if(sample_name[sample]=="EposDiffWeight2" && (SD1 || SD2 || DD || CD))
-            evtWeight *= 2.;
-          else if(sample_name[sample]=="EposDiffWeight25" && (SD1 || SD2 || DD || CD))
-            evtWeight *= 2.49;
+          else if(sample_name[sample]=="EposDiffWeight150" && (SD1 || SD2 || DD || CD))
+            evtWeight *= 1.50;
+          else if(sample_name[sample]=="EposDiffWeight200" && (SD1 || SD2 || DD || CD))
+            evtWeight *= 2.00;
+          else if(sample_name[sample]=="EposDiffWeight299" && (SD1 || SD2 || DD || CD))
+            evtWeight *= 2.99;
+          else if(sample_name[sample]=="EposDiffWeightOpt" && (SD1 || SD2 || DD || CD))
+            evtWeight *= 1.12;
+          else if(sample_name[sample]=="QGSJetIIDiffWeight150" && (SD1 || SD2 || DD || CD))
+            evtWeight *= 1.50;
+          else if(sample_name[sample]=="QGSJetIIDiffWeight200" && (SD1 || SD2 || DD || CD))
+            evtWeight *= 2.00;
+          else if(sample_name[sample]=="QGSJetIIDiffWeight452" && (SD1 || SD2 || DD || CD))
+            evtWeight *= 4.52;
+          else if(sample_name[sample]=="QGSJetIIDiffWeightOpt" && (SD1 || SD2 || DD || CD))
+            evtWeight *= 1.50;
           const double noiseWeight = random_prescale_HLT;
 
 

@@ -6,6 +6,7 @@
 #include "TFitResultPtr.h"
 #include "TFitResult.h"
 #include "TLegend.h"
+#include "TGraph.h"
 #include "TCanvas.h"
 #include "TF1.h"
 #include "TH1D.h"
@@ -17,18 +18,22 @@
 #include "TMath.h"
 #include "THStack.h"
 
+#ifndef __CINT__
+#include "style.h"
+#endif
+
 
 #include <iostream>
 #include <iomanip>
 #include <sstream>
 #include <vector>
 
-void Show(TH1D* a,TH1D* b,TH1D* c,TH1D* d,TH1D* e,TH1D* f,TH1D* g);
-
 void makePlots_diff2()
 {
   gROOT->ProcessLine(" .L style.cc+");
+#ifdef __CINT__
   style();
+#endif
 
   ///READ IN VALUES
   TFile f("plots/final_values.root");
@@ -47,6 +52,7 @@ void makePlots_diff2()
   cout << "Inel - Had - Vis:" << endl;
   vec_sigma_had->Print();
   f.Close();
+  double single_double_weight_data = (*vec_sigma_had)[1]/(*vec_sigma_had)[0]*100;
 
   vector<string> type;
   type.push_back(string("single"));
@@ -54,15 +60,23 @@ void makePlots_diff2()
 
   vector<string> list;
   list.push_back(string("Epos"));
-  list.push_back(string("Hijing"));
+  //list.push_back(string("Hijing"));
   list.push_back(string("QGSJetII"));
-  list.push_back(string("EposDiffWeight2"));
-  list.push_back(string("EposDiffWeight25"));
+  list.push_back(string("EposDiffWeight150"));
+  list.push_back(string("EposDiffWeight200"));
+  list.push_back(string("EposDiffWeight299"));
+  list.push_back(string("QGSJetIIDiffWeight150"));
+  list.push_back(string("QGSJetIIDiffWeight200"));
+  list.push_back(string("QGSJetIIDiffWeight452"));
   vector<string> name;
   name.push_back(string("EPOS-LHC"));
   name.push_back(string("HIJING 1.383"));
   name.push_back(string("QGSJetII-04"));
   name.push_back(string("Epos #sigma_{diff}x2"));
+  name.push_back(string("Epos #sigma_{diff}x2.4"));
+  name.push_back(string("Epos #sigma_{diff}x2.4"));
+  name.push_back(string("Epos #sigma_{diff}x2.4"));
+  name.push_back(string("Epos #sigma_{diff}x2.4"));
   name.push_back(string("Epos #sigma_{diff}x2.4"));
 
   cout << " & SD [$\\%$] & DD [$\\%$] & CD [$\\%$] & ND [$\\%$] & Sum [$\\%$] & "
@@ -70,11 +84,13 @@ void makePlots_diff2()
        << "Ratio_{Data} $\\frac{\\text{double-arm}}{\\text{single-arm}}$"
        << "\\\\\\hline" << endl;
 
+  TGraph graphFindDiffWeightEpos(4);
+  TGraph graphFindDiffWeightQgsjet(4);
 
   for(int i=0; i<int(list.size()); i++)
     {
       cout << i+1 << "/" << int(list.size()) << endl;
-      TFile* file = TFile::Open("histos.root");
+      TFile* file = TFile::Open("histos_test3.root");
       file->cd();
 
       TH1D* sd1_single=(TH1D*)file->Get(string(list[i]+string("/")+list[i]+string("_h_mc_diff_e_single_SD1")).c_str());
@@ -131,6 +147,8 @@ void makePlots_diff2()
            << n_cd_single/n_all_single*100. << " & "
            << n_nd_single/n_all_single*100. << " & "
            << "100" << "\\\\" << endl;
+      
+      double single_double_weight_mc = (n_sel_all_double/n_all_double)/(n_sel_all_single/n_all_single)*100;
 
       cout << fixed << setprecision(1)
            << "Single-arm & "
@@ -139,8 +157,8 @@ void makePlots_diff2()
            << n_sel_cd_single/n_all_single*100. << " & "
            << n_sel_nd_single/n_all_single*100. << " & "
            << n_sel_all_single/n_all_single*100.<< " & "
-           << "\\multirow{2}{*}{" << (n_sel_all_double/n_all_double)/(n_sel_all_single/n_all_single)*100 << "}"
-           << "\\multirow{2}{*}{" << (*vec_sigma_had)[1])/(*vec_sigma_had)[0])*100 << "}" //from data. sigma_had
+           << "\\multirow{2}{*}{" << single_double_weight_mc << "}"
+           << "\\multirow{2}{*}{" << single_double_weight_data << "}" //from data. sigma_had
            << "\\\\" << endl;
       cout << fixed << setprecision(1)
            << "Double-arm & "
@@ -151,6 +169,49 @@ void makePlots_diff2()
            << n_sel_all_double/n_all_double*100. << " & "
            << " " //multicolumn
            << "\\\\\\hline" << endl;
+
+      //Find optimal diffractive cs weight
+      double diffWeight = 1;
+      if(list[i]=="Epos")
+        {
+          diffWeight = 1.00;
+          graphFindDiffWeightEpos.SetPoint(0,diffWeight,single_double_weight_mc);
+        }
+      if(list[i]=="EposDiffWeight150")
+        {
+          diffWeight = 1.50;
+          graphFindDiffWeightEpos.SetPoint(1,diffWeight,single_double_weight_mc);
+        }
+      else if(list[i]=="EposDiffWeight200")
+        {
+          diffWeight = 2.00;
+          graphFindDiffWeightEpos.SetPoint(2,diffWeight,single_double_weight_mc);
+        }
+      else if(list[i]=="EposDiffWeight299")
+        {
+          diffWeight = 2.99;
+          graphFindDiffWeightEpos.SetPoint(3,diffWeight,single_double_weight_mc);
+        }
+      else if(list[i]=="QGSJetII")
+        {
+          diffWeight = 1.00;
+          graphFindDiffWeightQgsjet.SetPoint(0,diffWeight,single_double_weight_mc);
+        }
+      else if(list[i]=="QGSJetIIDiffWeight150")
+        {
+          diffWeight = 1.50;
+          graphFindDiffWeightQgsjet.SetPoint(1,diffWeight,single_double_weight_mc);
+        }
+      else if(list[i]=="QGSJetIIDiffWeight200")
+        {
+          diffWeight = 2.00;
+          graphFindDiffWeightQgsjet.SetPoint(2,diffWeight,single_double_weight_mc);
+        }
+      else if(list[i]=="QGSJetIIDiffWeight452")
+        {
+          diffWeight = 4.52;
+          graphFindDiffWeightQgsjet.SetPoint(3,diffWeight,single_double_weight_mc);
+        }
       ///////////////SCALING DIFF TO 25%///////////////diff*x/(1+diff(x-1)=0.25 -> x=(0.25/diff+0.25)/0.75
       double diff_frac = (n_sd1_single + n_sd2_single + n_dd_single + n_cd_single)/n_all_single;
       double to25 = diff_frac!=0?(0.25/diff_frac-0.25)/0.75:0;
@@ -266,9 +327,13 @@ void makePlots_diff2()
               leg1 = new TLegend(0.25,0.87,0.45,0.93);
               leg1->AddEntry(nd,all->GetTitle(),"F");
             }
+#ifdef __CINT__
           SetLegAtt(leg1);
+#endif
           leg1->Draw();
+#ifdef __CINT__
           CMSText(0,0,1,name[i],type[cur]=="single"?"single-arm selection":"double-arm selection");
+#endif
 
           TLine* line = new TLine(type[cur]=="single"?8:4,2e-5,type[cur]=="single"?8:4,4e-2);
           line->SetLineWidth(2);
@@ -276,6 +341,35 @@ void makePlots_diff2()
           line->Draw("SAME");
 
           can1->SaveAs((string("plots/diff_energy_")+type[cur]+string("_")+list[i]+string(".pdf")).c_str());
-        }
-    }
+        } //type loop
+    } //list loop
+  TCanvas* can1 = new TCanvas;
+  graphFindDiffWeightQgsjet.SetMarkerStyle(25);
+  graphFindDiffWeightQgsjet.SetMarkerSize(1.5);
+  graphFindDiffWeightQgsjet.SetTitle(";#sigma_{diff} scale factor;#frac{#sigma_{vis-EM}(double-arm)}{#sigma_{vis-EM}(single-arm)}");
+  graphFindDiffWeightQgsjet.Draw("AP");
+  graphFindDiffWeightEpos.SetMarkerSize(1.5);
+  graphFindDiffWeightEpos.Draw("P");
+  TLine* line = new TLine(1,single_double_weight_data,4.52,single_double_weight_data);
+  line->SetLineStyle(2);
+  line->Draw("SAME");
+  TLegend* leg = new TLegend(0.75,0.5,0.95,0.6);
+#ifdef __CINT__
+  SetLegAtt(leg);
+#endif
+  leg->AddEntry(&graphFindDiffWeightEpos,"EPOS","p");
+  leg->AddEntry(&graphFindDiffWeightQgsjet,"QGSJetII","p");
+  leg->Draw("SAME");
+  can1->SaveAs((string("plots/diff_optimal_weight.pdf")).c_str());
+  
+  double x_opt=1;
+  while(graphFindDiffWeightQgsjet.Eval(x_opt)>single_double_weight_data)
+    x_opt += 0.001;
+  cout << endl << "-------Optimal value for sigma_diff scale factor--------" << endl;
+  cout << "QGSJetII-04" << " " << x_opt*100. << "%" << endl;
+  x_opt=1;
+  while(graphFindDiffWeightEpos.Eval(x_opt)>single_double_weight_data)
+    x_opt += 0.001;
+  cout << "EPOS-LHC" << " " << x_opt*100. << "%" << endl;
+  
 }
