@@ -195,7 +195,7 @@ void Show(TH1D* a, TH1D* b, TH1D* c, TH1D* epossl, TH1D* d, string type)
       
       int ieta = BinToIeta(type=="lev_minus"?(-bin):bin);
       
-      cout << ieta << " & " << setprecision(3) <<  calib << "\\\\" << endl;
+      cout << ieta << " & " << fixed << setprecision(2) <<  1./calib << " & " << c_lev << "$\\pm$" << c_lev_e << "\\\\" << endl;
       hf_calibration[IetaToRing(ieta)] = calib;
     }
   cout << "\\hline" << endl;
@@ -224,9 +224,9 @@ void Show(TH1D* a, TH1D* b, TH1D* c, TH1D* epossl, TH1D* d, string type)
   h_c_lev->Draw("P SAME");
   
 
-  leg = new TLegend(0.2,0.4,0.6,0.5);
-  leg->AddEntry(h_c_lev,"scale factor (pp 2013/2011 z#rightarrowee)","PL");
-  leg->AddEntry(h_c_avg,"1 / pPb MC scale factor","P");
+  leg = new TLegend(0.2,0.3,0.6,0.4);
+  leg->AddEntry(h_c_lev,"scale factor (pp 2013/2011 energy flow)","PL");
+  leg->AddEntry(h_c_avg,"1/scale factor (pPb MC)","P");
   SetLegAtt(leg);
   leg->Draw();
 

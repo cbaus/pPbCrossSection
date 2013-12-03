@@ -36,12 +36,12 @@ void makePlots_noise_lumi()
 
       a2->Divide(atot);
 
-      // int rebin = 50;
-      // a->Rebin(rebin);
-      // a->Scale(1./double(rebin)/a->GetBinWidth(1));
+      int rebin = 50;
+      a->Rebin(rebin);
+      a->Scale(1./double(rebin));
 
-      // a2->Rebin(rebin);
-      // a2->Scale(1./double(rebin)/a2->GetBinWidth(1));
+      a2->Rebin(rebin);
+      a2->Scale(1./double(rebin));
 
       a->SetLineColor(run+1);
       a2->SetLineColor(run+1);
@@ -52,7 +52,7 @@ void makePlots_noise_lumi()
       a->GetXaxis()->SetRangeUser(0,100000);
       a2->GetXaxis()->SetRangeUser(0,100000);
 
-      runname_ss << ";L_{i} / (s b)^{-1};d#frac{N_{sel}}{N_{Noise}} / dL_{i}";
+      runname_ss << ";L_{i} / (s b)^{-1};event fraction";
       a->SetTitle(runname_ss.str().c_str());
       a2->SetTitle(runname_ss.str().c_str());
 
@@ -70,7 +70,7 @@ void makePlots_noise_lumi()
 
   can2->cd();
   leg1->Draw();
-  CMSPreliminary();
+  CMSText(1,0);
   can1->SaveAs((string("plots/noise_lumi_double")+string(".eps")).c_str());
   can1->SaveAs((string("plots/noise_lumi_double")+string(".pdf")).c_str());
   can1->SaveAs((string("plots/noise_lumi_double")+string(".png")).c_str());

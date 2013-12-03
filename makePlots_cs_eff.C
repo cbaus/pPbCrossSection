@@ -51,7 +51,7 @@ void makePlots_cs_eff(bool draw, double cut_value_single, double cut_value_doubl
 
       TH1D* a=(TH1D*)file->Get((string("data210885/data210885_h_hf_cut_") + type[n]).c_str());
       TH1D* a2=(TH1D*)file->Get((string("data210885/data210885_h_hf_cut_") + type[n] + string("_noise")).c_str());
-      TH1D* eposrew=(TH1D*)file->Get((string("EposSDWeight2/EposSDWeight2_h_hf_cut_") + type[n]).c_str());
+      TH1D* eposrew=(TH1D*)file->Get((string("EposDiffWeight2/EposDiffWeight2_h_hf_cut_") + type[n]).c_str());
       TH1D* b=(TH1D*)file->Get((string("Hijing/Hijing_h_hf_cut_") + type[n]).c_str());
       TH1D* c=(TH1D*)file->Get((string("Epos/Epos_h_hf_cut_")+ type[n]).c_str());
       TH1D* d=(TH1D*)file->Get((string("QGSJetII/QGSJetII_h_hf_cut_") + type[n]).c_str());

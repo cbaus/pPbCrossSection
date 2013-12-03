@@ -129,8 +129,8 @@ void makePlots_concl1()
   pp_fit->SetName("pp_fit");
   pp_fit->SetTitle("COMPETE and Glauber");
   pp_fit->SetPoint(0,0.95,0.070);
-  pp_fit->SetPointError(0,0,0.070*0.04);
-  SetAttributes(pp_fit,kBlack,21);
+  pp_fit->SetPointError(0,0,0);//0.070*0.04);//not sure where error is from
+  SetAttributes(pp_fit,kBlack,25);
   TGraphErrors* pb_fit  = new TGraphErrors(1);
   pb_fit->SetName("pb_fit");
   pb_fit->SetTitle("COMPETE and Glauber");
@@ -165,8 +165,8 @@ void makePlots_concl1()
   pp_epos->GetYaxis()->SetTitleOffset(pp_epos->GetYaxis()->GetTitleOffset()/1.5);
   pp_epos->GetXaxis()->SetNdivisions(0);
   pp_epos->GetXaxis()->SetLimits(0.6,1.4);
-  pp_epos->GetHistogram()->SetMaximum(0.076);
-  pp_epos->GetHistogram()->SetMinimum(0.064);
+  pp_epos->GetHistogram()->SetMaximum(0.080);
+  pp_epos->GetHistogram()->SetMinimum(0.060);
 
   pb_epos->GetXaxis()->SetLimits(0.6,1.4);
   pb_epos->GetXaxis()->SetNdivisions(0);
@@ -191,18 +191,24 @@ void makePlots_concl1()
   //pb_this_up->Draw("P");
   //pb_this_down->Draw("P");
 
-  TLegend* leg1 = new TLegend(0.283,0.157,0.884,0.357);
+  TLegend* leg1 = new TLegend(0.282,0.157,0.884,0.357);
   SetLegAtt(leg1);
-  leg1->AddEntry(pb_this,"CMS","p");
-  leg1->AddEntry(pb_fit,"(COMPETE+TOTEM) + Glauber","p");
+  leg1->AddEntry(pb_this,"CMS","pl");
+  leg1->AddEntry(pb_fit,"(COMPETE+TOTEM) + Glauber","pl");
   leg1->AddEntry(pb_epos,"EPOS","p");
   leg1->AddEntry(pb_eposlhc,"EPOS-LHC","p");
   leg1->AddEntry(pb_qgsjetii03,"QGSJetII-03","p");
   leg1->AddEntry(pb_qgsjetii,"QGSJetII-04","p");
   leg1->SetBorderSize(1);
 
+  TLegend* leg2 = new TLegend(0.282,0.157,0.884,0.19);
+  SetLegAtt(leg2);
+  leg2->AddEntry(pp_fit,"COMPETE+TOTEM","pl");
+  leg2->SetBorderSize(1);
+
   can1->cd(1);
   DataText2(true,true,"pp, #sqrt{s_{_{NN}}}=5.02 TeV",true);
+  leg2->Draw();
   can1->cd(2);
   DataText2(true,true);
   leg1->Draw();
@@ -231,6 +237,14 @@ void makePlots_concl1()
   leg1->Draw();
   CMSText(1,0,0);
   can2->SaveAs((string("plots/concl_1_PAS")+string(".pdf")).c_str());
+
+  cout.precision(3);
+  cout.fixed;
+  cout << "COMPETE+TOTEM(+Glauber) " << 1e3*pp_fit->GetY()[0] << " & " << pb_fit->GetY()[0] << " & " << -100+pb_fit->GetY()[0]/CS*100. << "\\\\" << endl;
+  cout << "\\EPOS                  " << 1e3*pp_eposlhc->GetY()[0] << " & " << pb_eposlhc->GetY()[0] << " & " << -100+pb_eposlhc->GetY()[0]/CS*100. << "\\\\" << endl;
+  cout << "\\textsc{epos}          " << 1e3*pp_epos->GetY()[0] << " & " << pb_epos->GetY()[0] << " & " << -100+pb_epos->GetY()[0]/CS*100. << "\\\\" << endl;
+  cout << "\\textsc{qgsjetii-03}   " << 1e3*pp_qgsjetii03->GetY()[0] << " & " << pb_qgsjetii03->GetY()[0] << " & " << -100+pb_qgsjetii03->GetY()[0]/CS*100. << "\\\\" << endl;
+  cout << "\\textsc{qgsjetii-04}   " << 1e3*pp_qgsjetii  ->GetY()[0] << " & " << pb_qgsjetii  ->GetY()[0] << " & " << -100+pb_qgsjetii  ->GetY()[0]/CS*100. << "\\\\" << endl;
 
 
 }

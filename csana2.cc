@@ -1,4 +1,4 @@
-#define _MAXEVT 100000
+#define _MAXEVT 10000
 #define _SkipHFRings 1 //skip 41 and 29 as suggested by HCAL DPG 
 #define _HFEnergyScale 1.0 //1.0 //0.8
 #define _HFEnergyCalibration 1 //0 or 1
@@ -58,27 +58,29 @@ int main()
     }
 
   //*************************************************************INPUT***********************************************************
-  //sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Data210614/*_*.root"); sample_name.push_back("data210614"); sample_type.push_back(DATA);
-  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Data210885/*_*.root"); sample_name.push_back("data210885"); sample_type.push_back(DATA);
-  //sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data210998/*_*.root"); sample_name.push_back("data210998"); sample_type.push_back(DATA);
-  //sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211000/*.root"); sample_name.push_back("data211000"); sample_type.push_back(DATA);
-  //sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211001/*.root"); sample_name.push_back("data211001"); sample_type.push_back(DATA);
-  //sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211032/*.root"); sample_name.push_back("data211032"); sample_type.push_back(DATA);
-  //sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211256/*.root"); sample_name.push_back("data211256"); sample_type.push_back(DATA);
-  //sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211371/*.root"); sample_name.push_back("data211371"); sample_type.push_back(DATA);
-  //sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211390/*.root"); sample_name.push_back("data211390"); sample_type.push_back(DATA);
-  //sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211460/*.root"); sample_name.push_back("data211460"); sample_type.push_back(DATA);
-  //sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211532/*.root"); sample_name.push_back("data211532"); sample_type.push_back(DATA);
-  //sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211538/*.root"); sample_name.push_back("data211538"); sample_type.push_back(DATA);
-  //sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Data211607/*_*.root"); sample_name.push_back("data211607"); sample_type.push_back(DATA);
+  // sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Data210614/*_*.root"); sample_name.push_back("data210614"); sample_type.push_back(DATA);
+  // sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Data210885/*_*.root"); sample_name.push_back("data210885"); sample_type.push_back(DATA);
+  // sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data210998/*_*.root"); sample_name.push_back("data210998"); sample_type.push_back(DATA);
+  // sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211000/*.root"); sample_name.push_back("data211000"); sample_type.push_back(DATA);
+  // sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211001/*.root"); sample_name.push_back("data211001"); sample_type.push_back(DATA);
+  // sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211032/*.root"); sample_name.push_back("data211032"); sample_type.push_back(DATA);
+  // sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211256/*.root"); sample_name.push_back("data211256"); sample_type.push_back(DATA);
+  // sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211371/*.root"); sample_name.push_back("data211371"); sample_type.push_back(DATA);
+  // sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211390/*.root"); sample_name.push_back("data211390"); sample_type.push_back(DATA);
+  // sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211460/*.root"); sample_name.push_back("data211460"); sample_type.push_back(DATA);
+  // sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211532/*.root"); sample_name.push_back("data211532"); sample_type.push_back(DATA);
+  // sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211538/*.root"); sample_name.push_back("data211538"); sample_type.push_back(DATA);
+  // sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Data211607/*_*.root"); sample_name.push_back("data211607"); sample_type.push_back(DATA);
 
   sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Epos/*.root"); sample_name.push_back("Epos"); sample_type.push_back(MC);
-  //sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Epos/*.root"); sample_name.push_back("EposSDWeight2"); sample_type.push_back(MC);
-  //sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Epos_SL/*.root"); sample_name.push_back("Epos_SL"); sample_type.push_back(MC);
-  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Hijing/*.root"); sample_name.push_back("Hijing"); sample_type.push_back(MC);
-  sample_fname.push_back("/afs/cern.ch/work/c/cbaus/public/castortree/pPb_QGSJetII/treeMC.root"); sample_name.push_back("QGSJetII"); sample_type.push_back(MC);
+  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Epos/*.root"); sample_name.push_back("EposDiffWeight150"); sample_type.push_back(MC);
+  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Epos/*.root"); sample_name.push_back("EposDiffWeight200"); sample_type.push_back(MC);
+  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Epos/*.root"); sample_name.push_back("EposDiffWeight299"); sample_type.push_back(MC);
+  // sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Epos_SL/*.root"); sample_name.push_back("Epos_SL"); sample_type.push_back(MC);
+  // sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Hijing/*.root"); sample_name.push_back("Hijing"); sample_type.push_back(MC);
+  // sample_fname.push_back("/afs/cern.ch/work/c/cbaus/public/castortree/pPb_QGSJetII/treeMC.root"); sample_name.push_back("QGSJetII"); sample_type.push_back(MC);
   sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/StarlightDPMjet_v2/treeMC.root"); sample_name.push_back("Starlight_DPMJet");  sample_type.push_back(MC);
-  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/StarlightPythia/treeMC.root"); sample_name.push_back("Starlight_Pythia");  sample_type.push_back(MC);
+  // sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/StarlightPythia/treeMC.root"); sample_name.push_back("Starlight_Pythia");  sample_type.push_back(MC);
 
 #if _HFEnergyCalibration
   TFile calibfile("plots/hf_calibration_data.root");
@@ -89,7 +91,7 @@ int main()
 
   //**************************************************************OUTPUT*********************************************************
 
-  TFile* out_file = new TFile("histos_test.root","RECREATE");
+  TFile* out_file = new TFile("histos_test3.root","RECREATE");
 
   TH1D* h_zero_count_zb_coll;
   TH1D* h_zero_count_zb_no_coll;
@@ -118,6 +120,11 @@ int main()
   TH1D* h_castor_nogap_hf;
   TH1D* h_mc_rapidity;
   TH1D* h_mc_eta_e;
+  TH1D* h_mc_eta_e_SD1;
+  TH1D* h_mc_eta_e_SD2;
+  TH1D* h_mc_eta_e_CD;
+  TH1D* h_mc_eta_e_DD;
+  TH1D* h_mc_eta_e_ND;
   TH1D* h_mc_eff;
   TH1D* h_mc_effgain_single;
   TH1D* h_mc_effgain_double;
@@ -458,6 +465,11 @@ int main()
 
           h_mc_rapidity           = new TH1D((add + string("_h_mc_rapidity")).c_str(),"",100,-12,12);
           h_mc_eta_e              = new TH1D((add + string("_h_mc_eta_e")).c_str(),"",100,-12,12);
+          h_mc_eta_e_SD1          = new TH1D((add + string("_h_mc_eta_e_SD1")).c_str(),"",100,-12,12);
+          h_mc_eta_e_SD2          = new TH1D((add + string("_h_mc_eta_e_SD2")).c_str(),"",100,-12,12);
+          h_mc_eta_e_CD           = new TH1D((add + string("_h_mc_eta_e_CD")).c_str(),"",100,-12,12);
+          h_mc_eta_e_DD           = new TH1D((add + string("_h_mc_eta_e_DD")).c_str(),"",100,-12,12);
+          h_mc_eta_e_ND           = new TH1D((add + string("_h_mc_eta_e_ND")).c_str(),"",100,-12,12);
           h_mc_eff                = new TH1D((add + string("_h_mc_eff")).c_str(),"",9,-0.5,8.5);
           h_mc_eff->GetXaxis()->SetBinLabel(1,"All");
           h_mc_eff->GetXaxis()->SetBinLabel(2,"HF single > 6 GeV");
@@ -612,6 +624,12 @@ int main()
           bool DD = event->genProcessID == 105;
           bool CD = event->genProcessID == 102;
           bool ND = !SD1 && !SD2 && !DD && !CD;
+
+          //Counting events
+          const int prescale        = zero_bias_prescale_L1*zero_bias_prescale_HLT;
+          const double lumiPerLS    = event->instLuminosity * event->instLuminosityCorr * 1e6;
+          double evtWeight    = 1;
+
           if(sample_type[sample] == MC)
             {
               multimap<double,GenParticle*> rapidityMassMap;
@@ -640,7 +658,17 @@ int main()
 
                   double Rapidity= it->GetRapidity();
                   h_mc_rapidity->Fill(Rapidity);
-                  h_mc_eta_e->Fill(eta,energy);
+                  h_mc_eta_e->Fill(eta,evtWeight);
+                  if(SD1)
+                    h_mc_eta_e_SD1->Fill(eta,evtWeight);
+                  if(SD2)
+                    h_mc_eta_e_SD2->Fill(eta,evtWeight);
+                  if(CD)
+                    h_mc_eta_e_CD->Fill(eta,evtWeight);
+                  if(DD)
+                    h_mc_eta_e_DD->Fill(eta,evtWeight);
+                  if(ND)
+                    h_mc_eta_e_ND->Fill(eta,evtWeight);
                   rapidityMassMap.insert(pair<double,GenParticle*>(Rapidity,&(*it)));
                 }
               assert(rapidityMassMap.size() >= 2); //Assume 2 or more final usable particles
@@ -698,14 +726,12 @@ int main()
               xi_y = m_y*m_y / s;
               //cout << "----------- !! M_X=" << m_x << "    M_Y=" << m_y << endl;
             }
-          //Counting events
-          const int prescale        = zero_bias_prescale_L1*zero_bias_prescale_HLT;
-          const double lumiPerLS    = event->instLuminosity * event->instLuminosityCorr * 1e6;
-          double evtWeight    = 1;
           if(sample_type[sample]==DATA)
             evtWeight = double(prescale);
-          else if(sample_name[sample]=="EposSDWeight2" && (SD1 || SD2))
+          else if(sample_name[sample]=="EposDiffWeight2" && (SD1 || SD2 || DD || CD))
             evtWeight *= 2.;
+          else if(sample_name[sample]=="EposDiffWeight25" && (SD1 || SD2 || DD || CD))
+            evtWeight *= 2.49;
           const double noiseWeight = random_prescale_HLT;
 
 
@@ -910,8 +936,13 @@ int main()
 
       if(sample_type[sample] == MC)
         {
-          h_mc_rapidity->Scale(1./n_total/h_mc_rapidity->GetBinWidth(1));
-          h_mc_eta_e   ->Scale(1./n_total/h_mc_eta_e->GetBinWidth(1));
+          h_mc_rapidity   ->Scale(1./n_total/h_mc_rapidity->GetBinWidth(1));
+          h_mc_eta_e      ->Scale(1./n_total/h_mc_eta_e->GetBinWidth(1));
+          h_mc_eta_e_SD1  ->Scale(1./n_total/h_mc_eta_e_SD1->GetBinWidth(1));
+          h_mc_eta_e_SD2  ->Scale(1./n_total/h_mc_eta_e_SD2->GetBinWidth(1));
+          h_mc_eta_e_CD   ->Scale(1./n_total/h_mc_eta_e_CD->GetBinWidth(1));
+          h_mc_eta_e_DD   ->Scale(1./n_total/h_mc_eta_e_DD->GetBinWidth(1));
+          h_mc_eta_e_ND   ->Scale(1./n_total/h_mc_eta_e_ND->GetBinWidth(1));
         }
 
       for (int j=0;j<=neta_lev;j++)

@@ -71,15 +71,11 @@ void makePlots_noise_ringwise()
     }
   }
   c0->cd();
-  CMSPreliminary();
+  CMSText();
   c1->cd();
-  CMSPreliminary();
-  c0->SaveAs((string("plots/hf_m_noise_")+string(".eps")).c_str());
+  CMSText();
   c0->SaveAs((string("plots/hf_m_noise_")+string(".pdf")).c_str());
-  c0->SaveAs((string("plots/hf_m_noise_")+string(".png")).c_str());
-  c1->SaveAs((string("plots/hf_p_noise_")+string(".eps")).c_str());
   c1->SaveAs((string("plots/hf_p_noise_")+string(".pdf")).c_str());
-  c1->SaveAs((string("plots/hf_p_noise_")+string(".png")).c_str());
 
 
   TCanvas* c2 = new TCanvas;
@@ -88,9 +84,7 @@ void makePlots_noise_ringwise()
   graph->SetName("noisepertower");
   graph->SetTitle(";ieta;<HF tower E>_{Noise} / GeV");
   graph->Draw("AP");
-  CMSPreliminary();
-  c2->SaveAs((string("plots/hf_meannoise_")+string(".eps")).c_str());
-  c2->SaveAs((string("plots/hf_meannoise_")+string(".png")).c_str());
+  CMSText();
   c2->SaveAs((string("plots/hf_meannoise_")+string(".pdf")).c_str());
 
 
@@ -101,10 +95,8 @@ void makePlots_noise_ringwise()
   graph2->SetName("noiseeffpertower");
   graph2->SetTitle(";ieta;event fraction (3 GeV cut)");
   graph2->Draw("AP");
-  CMSPreliminary();
-  c3->SaveAs((string("plots/hf_noisecut_")+string(".eps")).c_str());
+  CMSText();
   c3->SaveAs((string("plots/hf_noisecut_")+string(".pdf")).c_str());
-  c3->SaveAs((string("plots/hf_noisecut_")+string(".png")).c_str());
 
 
 }

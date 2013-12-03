@@ -1,3 +1,6 @@
+///PLEASE MAKE SURE SIGMA_HAD FOR DATA RATIO IS UP-TO-DATE!!!!
+///makes table for diffractive ratios of MC
+
 #include <TColor.h>
 #include <iomanip>
 #include "TFitResultPtr.h"
@@ -27,6 +30,24 @@ void makePlots_diff2()
   gROOT->ProcessLine(" .L style.cc+");
   style();
 
+  ///READ IN VALUES
+  TFile f("plots/final_values.root");
+  TVectorD* vec_sigma_vis    = NULL;
+  TVectorD* vec_sigma_vis_e  = NULL;
+  TVectorD* vec_sigma_had    = NULL;
+  TVectorD* vec_sigma_had_e  = NULL;
+  TVectorD* vec_sigma_inel   = NULL;
+  TVectorD* vec_sigma_inel_e = NULL;
+  vec_sigma_vis    = (TVectorD*)f.Get("vec_sigma_vis");
+  vec_sigma_vis_e  = (TVectorD*)f.Get("vec_sigma_vis_e");
+  vec_sigma_had    = (TVectorD*)f.Get("vec_sigma_had");
+  vec_sigma_had_e  = (TVectorD*)f.Get("vec_sigma_had_e");
+  vec_sigma_inel   = (TVectorD*)f.Get("vec_sigma_inel");
+  vec_sigma_inel_e = (TVectorD*)f.Get("vec_sigma_inel_e");
+  cout << "Inel - Had - Vis:" << endl;
+  vec_sigma_had->Print();
+  f.Close();
+
   vector<string> type;
   type.push_back(string("single"));
   type.push_back(string("double"));
@@ -35,10 +56,14 @@ void makePlots_diff2()
   list.push_back(string("Epos"));
   list.push_back(string("Hijing"));
   list.push_back(string("QGSJetII"));
+  list.push_back(string("EposDiffWeight2"));
+  list.push_back(string("EposDiffWeight25"));
   vector<string> name;
   name.push_back(string("EPOS-LHC"));
   name.push_back(string("HIJING 1.383"));
   name.push_back(string("QGSJetII-04"));
+  name.push_back(string("Epos #sigma_{diff}x2"));
+  name.push_back(string("Epos #sigma_{diff}x2.4"));
 
   cout << " & SD [$\\%$] & DD [$\\%$] & CD [$\\%$] & ND [$\\%$] & Sum [$\\%$] & "
        << "Ratio_{MC} $\\frac{\\text{double-arm}}{\\text{single-arm}}$"
@@ -115,7 +140,7 @@ void makePlots_diff2()
            << n_sel_nd_single/n_all_single*100. << " & "
            << n_sel_all_single/n_all_single*100.<< " & "
            << "\\multirow{2}{*}{" << (n_sel_all_double/n_all_double)/(n_sel_all_single/n_all_single)*100 << "}"
-           << "\\multirow{2}{*}{" << 1.87253/1.93764*100 << "}" //from data. sigma_had
+           << "\\multirow{2}{*}{" << (*vec_sigma_had)[1])/(*vec_sigma_had)[0])*100 << "}" //from data. sigma_had
            << "\\\\" << endl;
       cout << fixed << setprecision(1)
            << "Double-arm & "
@@ -126,7 +151,10 @@ void makePlots_diff2()
            << n_sel_all_double/n_all_double*100. << " & "
            << " " //multicolumn
            << "\\\\\\hline" << endl;
-
+      ///////////////SCALING DIFF TO 25%///////////////diff*x/(1+diff(x-1)=0.25 -> x=(0.25/diff+0.25)/0.75
+      double diff_frac = (n_sd1_single + n_sd2_single + n_dd_single + n_cd_single)/n_all_single;
+      double to25 = diff_frac!=0?(0.25/diff_frac-0.25)/0.75:0;
+      cout << endl << "fraction of diffraction: " << diff_frac*100. << " weight to 25%: " << setprecision(3) << to25*100. << endl << endl;
       ///////////////DRAWING/////////
       for(int cur=0; cur<int(type.size()); cur++)
         {

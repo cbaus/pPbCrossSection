@@ -96,9 +96,10 @@ void makePlots_eff()
       h_effgain_double->Draw(i<1?"HIST P":"HIST P SAME");
 
       c4->cd();
-      h_eff->GetXaxis()->SetRange(1,h_eff->GetNbinsX()-1);
+      TH1D* h_eff2=h_eff->Clone((string("h_eff")+list[i]).c_str());
+      h_eff2->GetXaxis()->SetRange(1,h_eff->GetNbinsX()-1);
       if(list[i] != string("Hijing"))
-        h_eff->Draw(i<1?"HIST P":"HIST P SAME");
+        h_eff2->Draw(i<1?"HIST P":"HIST P SAME");
     }
   c1->cd();
   CMSText(0,0,1);

@@ -254,8 +254,11 @@ int main()
 
           bool noise=0, beamgas=0;
 
-          beamgas      = (bptx_np_m || bptx_p_nm); // only single beam
+          //beamgas      = (bptx_np_m || bptx_p_nm); // only single beam
           noise         = bptx_quiet;// && !bptx_np_m && !bptx_p_nm; //not both and not single beam
+
+          if (unpaired.count(event->bxNb) && noise)
+            cout << iEvent << " BPTX quiet: " << noise << endl;
 
            if(unpaired.count(event->bxNb))
             {
@@ -396,8 +399,8 @@ int main()
           if(noise)                                                 h_noise_tracks_hf->Fill(hf_single_energy_max,event->Tracks.size());
           if(beamgas)                                               h_beamgas_tracks_hf->Fill(hf_single_energy_max,event->Tracks.size());
 
-          if((noise) && hf_single_energy_max > 3)        h_run_events_single->Fill(lumiPerTime,evtWeight);
-          if((noise) && hf_double_energy_max > 1.5)      h_run_events_double->Fill(lumiPerTime,evtWeight);
+          if((noise) && hf_single_energy_max > 8)        h_run_events_single->Fill(lumiPerTime,evtWeight);
+          if((noise) && hf_double_energy_max > 4)      h_run_events_double->Fill(lumiPerTime,evtWeight);
           if((noise) )                                   h_run_events->Fill(lumiPerTime,evtWeight);
                                                                         
 

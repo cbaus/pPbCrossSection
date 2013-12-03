@@ -1,3 +1,4 @@
+///main program for cross section measurement.
 #include "TCanvas.h"
 #include "TF1.h"
 #include "TFile.h"
@@ -240,15 +241,6 @@ void makePlots_cs(bool draw,double cut_value_single, double cut_value_double, do
       filename_ss.str(""); filename_ss << "data" << runname << "/data" << runname << "_h_hf_cut_double";
       TH1D* h_zb_double=(TH1D*)file->Get(filename_ss.str().c_str());
 
-      // filename_ss.str(""); filename_ss << "Epos" << runname << "/Epos" << runname << "_h_hf_cut_single";
-      // TH1D* h_epos_single=(TH1D*)file->Get(filename_ss.str().c_str());
-      // filename_ss.str(""); filename_ss << "Epos" << runname << "/Epos" << runname << "_h_hf_cut_double";
-      // TH1D* h_epos_double=(TH1D*)file->Get(filename_ss.str().c_str());
-      // filename_ss.str(""); filename_ss << "QGSJetII" << runname << "/QGSJetII" << runname << "_h_hf_cut_single";
-      // TH1D* h_epos_single=(TH1D*)file->Get(filename_ss.str().c_str());
-      // filename_ss.str(""); filename_ss << "QGSJetII" << runname << "/QGSJetII" << runname << "_h_hf_cut_double";
-      // TH1D* h_epos_double=(TH1D*)file->Get(filename_ss.str().c_str());
-
       TH1D *h_vis_single = (TH1D*)h_single->Clone("h_vis_single");
       TH1D *h_had_single = (TH1D*)h_single->Clone("h_had_single");
       TH1D *h_vis_double = (TH1D*)h_double->Clone("h_vis_double");
@@ -368,8 +360,8 @@ void makePlots_cs(bool draw,double cut_value_single, double cut_value_double, do
           const double n_noise_double = f_noise_double * n_zb_double;
           const double n_em_double = eff_em_double * 0.195; //relates to sigma_inel
 
-          const double A_single = (eff_acc_single/f_pileup_single) - f_noise_single;
-          const double A_double = (eff_acc_double/f_pileup_double) - f_noise_double;
+          const double A_single = eff_acc_single*(1/f_pileup_single - f_noise_single);
+          const double A_double = eff_acc_double*(1/f_pileup_double - f_noise_double);
           const double A_vis_single = (  1.  /f_pileup_single) - f_noise_single;
           const double A_vis_double = (  1.  /f_pileup_double) - f_noise_double;
 
@@ -700,11 +692,15 @@ void makePlots_cs(bool draw,double cut_value_single, double cut_value_double, do
 
   cout << " !! CORRECTIONS" << endl;
   cout << " !! single: noise =" << n_noise_runs_single << "/" << A_runs_single << "=" << n_noise_runs_single/A_runs_single << " b = "
-       << n_noise_runs_single/A_runs_single/sigmainel_single * 100. << "%"
-       << " !! corr_f_pilup    =" << f_pileup_runs_single << endl;
+       << n_noise_runs_single/A_runs_single/sigmainel_single * 100. << "%" << endl
+       << " !! corr_f_pilup    =" << f_pileup_runs_single << endl
+       << " !! em =" << n_em_runs_single << "/" << A_runs_single << "=" << n_em_runs_single/A_runs_single << " b = "
+       << n_em_runs_single/A_runs_single/sigmainel_single * 100. << "%" << endl << " !!" << endl;
   cout << " !! double: noise =" << n_noise_runs_double << "/" << A_runs_double << "=" << n_noise_runs_double/A_runs_double << " b = "
-       << n_noise_runs_double/A_runs_double/sigmainel_double * 100. << "%"
-       << " !! corr_f_pilup    =" << f_pileup_runs_double << endl << endl;
+       << n_noise_runs_double/A_runs_double/sigmainel_double * 100. << "%" << endl
+       << " !! corr_f_pilup    =" << f_pileup_runs_double << endl << " !! " << endl
+       << " "" em =" << n_em_runs_double << "/" << A_runs_double << "=" << n_em_runs_double/A_runs_double << " b = "
+       << n_em_runs_double/A_runs_double/sigmainel_double * 100. << "%" << endl  << endl;
 
   cout << endl << " ! SYSTEMATIC UNCERTAINTY" << endl << endl;
 

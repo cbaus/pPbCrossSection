@@ -97,32 +97,32 @@ void makePlots_cs_dependence(string filename = "histos.root")
   //Draw the modified monte carlo lines
   TCanvas* can1 = new TCanvas;
   TH1D* eposin=(TH1D*)file->Get("Epos/Epos_h_hf_cut_single");
-  TH1D* epossd2in=(TH1D*)file->Get("EposSDWeight2/EposSDWeight2_h_hf_cut_single");
+  TH1D* eposdiff2in=(TH1D*)file->Get("EposDiffWeight2/EposDiffWeight2_h_hf_cut_single");
   TH1D* qgsjetin=(TH1D*)file->Get("QGSJetII/QGSJetII_h_hf_cut_single");
   //Normalise to standard cut values. The lines all cross at this point
   eposin->Scale(g_crosscheck_had_single->Eval(8.)/eposin->Interpolate(8./modfactor));
-  epossd2in->Scale(g_crosscheck_had_single->Eval(8.)/epossd2in->Interpolate(8./modfactor));
+  eposdiff2in->Scale(g_crosscheck_had_single->Eval(8.)/eposdiff2in->Interpolate(8./modfactor));
   qgsjetin->Scale(g_crosscheck_had_single->Eval(8.)/qgsjetin->Interpolate(8./modfactor));
   TGraph* epos = new TGraph(eposin->GetNbinsX());
-  TGraph* epossd2 = new TGraph(eposin->GetNbinsX());
+  TGraph* eposdiff2 = new TGraph(eposin->GetNbinsX());
   TGraph* qgsjet = new TGraph(qgsjetin->GetNbinsX());
   for(int j=0; j<eposin->GetNbinsX(); j++)
     {
       int bin=j+1;
       epos->SetPoint(j,eposin->GetBinCenter(bin)*modfactor,eposin->GetBinContent(bin));
-      epossd2->SetPoint(j,epossd2in->GetBinCenter(bin)*modfactor,epossd2in->GetBinContent(bin));
+      eposdiff2->SetPoint(j,eposdiff2in->GetBinCenter(bin)*modfactor,eposdiff2in->GetBinContent(bin));
       qgsjet->SetPoint(j,qgsjetin->GetBinCenter(bin)*modfactor,qgsjetin->GetBinContent(bin));
     }
   epos->SetTitle("EPOS-LHC");
-  epossd2->SetTitle("EPOS-LHC (#sigma_{SD}x2)");
+  eposdiff2->SetTitle("EPOS-LHC (#sigma_{diff}x2)");
   qgsjet->SetTitle("QGSJetII-04");
   qgsjet->SetLineWidth(3);
-  epossd2->SetLineWidth(3);
+  eposdiff2->SetLineWidth(3);
   epos->SetLineWidth(3);
   epos->SetLineColor(kBlue);
-  epossd2->SetLineColor(kBlue);
+  eposdiff2->SetLineColor(kBlue);
   qgsjet->SetLineColor(kRed);
-  epossd2->SetLineStyle(6);
+  eposdiff2->SetLineStyle(6);
   qgsjet->SetLineStyle(9);
 
   g_crosscheck_single->GetYaxis()->SetRangeUser(1.5,2.5);
@@ -133,43 +133,43 @@ void makePlots_cs_dependence(string filename = "histos.root")
   leg1->AddEntry(g_crosscheck_single,"inelastic","p");
   leg1->AddEntry(g_crosscheck_had_single,"hadronic","p");
   leg1->AddEntry(epos,epos->GetTitle(),"l");
-  leg1->AddEntry(epossd2,epossd2->GetTitle(),"l");
+  leg1->AddEntry(eposdiff2,eposdiff2->GetTitle(),"l");
   leg1->AddEntry(qgsjet,qgsjet->GetTitle(),"l");
   SetLegAtt(leg1,1.2);
   leg1->Draw();
   epos->Draw("L SAME");
-  epossd2->Draw("L SAME");
+  eposdiff2->Draw("L SAME");
   qgsjet->Draw("L SAME");
   CMSText(0,1,1,"single-arm selection");
   can1->SaveAs((string("plots/cross_check_1_single")+string(".pdf")).c_str());
 
   TCanvas* can2 = new TCanvas;
   eposin=(TH1D*)file->Get("Epos/Epos_h_hf_cut_double");
-  epossd2in=(TH1D*)file->Get("EposSDWeight2/EposSDWeight2_h_hf_cut_double");
+  eposdiff2in=(TH1D*)file->Get("EposDiffWeight2/EposDiffWeight2_h_hf_cut_double");
   qgsjetin=(TH1D*)file->Get("QGSJetII/QGSJetII_h_hf_cut_double");
   eposin->Scale(g_crosscheck_had_double->Eval(4)/eposin->Interpolate(4/modfactor));
-  epossd2in->Scale(g_crosscheck_had_double->Eval(4)/epossd2in->Interpolate(4/modfactor));
+  eposdiff2in->Scale(g_crosscheck_had_double->Eval(4)/eposdiff2in->Interpolate(4/modfactor));
   qgsjetin->Scale(g_crosscheck_had_double->Eval(4)/qgsjetin->Interpolate(4/modfactor));
   TGraph* epos = new TGraph(eposin->GetNbinsX());
-  TGraph* epossd2 = new TGraph(epossd2in->GetNbinsX());
+  TGraph* eposdiff2 = new TGraph(eposdiff2in->GetNbinsX());
   TGraph* qgsjet = new TGraph(qgsjetin->GetNbinsX());
   for(int j=0; j<eposin->GetNbinsX(); j++)
     {
       int bin=j+1;
       epos->SetPoint(j,eposin->GetBinCenter(bin)*modfactor,eposin->GetBinContent(bin));
-      epossd2->SetPoint(j,epossd2in->GetBinCenter(bin)*modfactor,epossd2in->GetBinContent(bin));
+      eposdiff2->SetPoint(j,eposdiff2in->GetBinCenter(bin)*modfactor,eposdiff2in->GetBinContent(bin));
       qgsjet->SetPoint(j,qgsjetin->GetBinCenter(bin)*modfactor,qgsjetin->GetBinContent(bin));
     }
   epos->SetTitle("EPOS-LHC");
-  epossd2->SetTitle("EPOS-LHC (#sigma_{SD}x2)");
+  eposdiff2->SetTitle("EPOS-LHC (#sigma_{diff}x2)");
   qgsjet->SetTitle("QGSJetII-04");
   qgsjet->SetLineWidth(3);
-  epossd2->SetLineWidth(3);
+  eposdiff2->SetLineWidth(3);
   epos->SetLineWidth(3);
   epos->SetLineColor(kBlue);
-  epossd2->SetLineColor(kBlue);
+  eposdiff2->SetLineColor(kBlue);
   qgsjet->SetLineColor(kRed);
-  epossd2->SetLineStyle(6);
+  eposdiff2->SetLineStyle(6);
   qgsjet->SetLineStyle(9);
 
   g_crosscheck_double->GetYaxis()->SetRangeUser(1.5,2.5);
@@ -179,12 +179,12 @@ void makePlots_cs_dependence(string filename = "histos.root")
   leg2->AddEntry(g_crosscheck_double,"inelastic","p");
   leg2->AddEntry(g_crosscheck_had_double,"hadronic","p");
   leg2->AddEntry(epos,epos->GetTitle(),"l");
-  leg2->AddEntry(epossd2,epossd2->GetTitle(),"l");
+  leg2->AddEntry(eposdiff2,eposdiff2->GetTitle(),"l");
   leg2->AddEntry(qgsjet,qgsjet->GetTitle(),"l");
   SetLegAtt(leg2,1.2);
   leg2->Draw();
   epos->Draw("L SAME");
-  epossd2->Draw("L SAME");
+  eposdiff2->Draw("L SAME");
   qgsjet->Draw("L SAME");
   CMSText(0,1,1,"double-arm selection");
   can2->SaveAs((string("plots/cross_check_1_double")+string(".pdf")).c_str());

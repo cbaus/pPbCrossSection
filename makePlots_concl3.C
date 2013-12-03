@@ -90,26 +90,26 @@ void makePlots_concl3()
   f2.Close();
   ///!READ IN VALUES
 
-  TH1D* h_data = new TH1D("h_data","CMS;cross section;#sigma [b]",6,-0.5,5.5);
-  h_data->GetXaxis()->SetBinLabel(1,"inelastic");
-  h_data->GetXaxis()->SetBinLabel(2,"hadronic");
+  TH1D* h_data = new TH1D("h_data","CMS;;#sigma [b]",6,-0.5,5.5);
+  h_data->GetXaxis()->SetBinLabel(1,"#splitline{hadronic}{inelastic}");
+  h_data->GetXaxis()->SetBinLabel(2,"#splitline{visible}{(EM subtr.)}");
   h_data->GetXaxis()->SetBinLabel(3,"visible");
-  h_data->GetXaxis()->SetBinLabel(4,"inelastic");
-  h_data->GetXaxis()->SetBinLabel(5,"hadronic");
+  h_data->GetXaxis()->SetBinLabel(4,"#splitline{hadronic}{inelastic}");
+  h_data->GetXaxis()->SetBinLabel(5,"#splitline{visible}{(EM subtr.)}");
   h_data->GetXaxis()->SetBinLabel(6,"visible");
   TH1D * h_epos = new TH1D("h_epos","EPOS-LHC;;#sigma [b]",6,-0.5,5.5);
-  h_epos->GetXaxis()->SetBinLabel(1,"inelastic");
-  h_epos->GetXaxis()->SetBinLabel(2,"hadronic");
+  h_epos->GetXaxis()->SetBinLabel(1,"#splitline{hadronic}{inelastic}");
+  h_epos->GetXaxis()->SetBinLabel(2,"#splitline{visible}{(EM subtr.)}");
   h_epos->GetXaxis()->SetBinLabel(3,"visible");
-  h_epos->GetXaxis()->SetBinLabel(4,"inelastic");
-  h_epos->GetXaxis()->SetBinLabel(5,"hadronic");
+  h_epos->GetXaxis()->SetBinLabel(4,"#splitline{hadronic}{inelastic}");
+  h_epos->GetXaxis()->SetBinLabel(5,"#splitline{visible}{(EM subtr.)}");
   h_epos->GetXaxis()->SetBinLabel(6,"visible");
   TH1D * h_qgsjet = new TH1D("h_qgsjet","QGSJETII-04;;#sigma [b]",6,-0.5,5.5);
-  h_qgsjet->GetXaxis()->SetBinLabel(1,"inelastic");
-  h_qgsjet->GetXaxis()->SetBinLabel(2,"hadronic");
+  h_qgsjet->GetXaxis()->SetBinLabel(1,"#splitline{hadronic}{inelastic}");
+  h_qgsjet->GetXaxis()->SetBinLabel(2,"#splitline{visible}{(EM subtr.)}");
   h_qgsjet->GetXaxis()->SetBinLabel(3,"visible");
-  h_qgsjet->GetXaxis()->SetBinLabel(4,"inelastic");
-  h_qgsjet->GetXaxis()->SetBinLabel(5,"hadronic");
+  h_qgsjet->GetXaxis()->SetBinLabel(4,"#splitline{hadronic}{inelastic}");
+  h_qgsjet->GetXaxis()->SetBinLabel(5,"#splitline{visible}{(EM subtr.)}");
   h_qgsjet->GetXaxis()->SetBinLabel(6,"visible");
 
   h_data->SetBinContent(1,(*vec_sigma_inel)[1]);
@@ -152,6 +152,11 @@ void makePlots_concl3()
   double max = 2.7;
 
   h_data->GetYaxis()->SetRangeUser(min,max);
+
+  h_data->GetXaxis()->SetLabelSize(h_data->GetXaxis()->GetLabelSize()*0.9);
+  h_data->GetXaxis()->SetLabelOffset(h_data->GetXaxis()->GetLabelOffset()*1.7);
+  //h_data->GetXaxis()->LabelsOption("V");
+  h_data->GetXaxis()->SetTitleOffset(h_data->GetXaxis()->GetTitleOffset()*1.3);
 
   TLine* line = new TLine(2.5,min,2.5,max);
   line->SetLineWidth(2);
