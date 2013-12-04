@@ -482,12 +482,10 @@ void makePlots_cs(bool draw,double cut_value_single, double cut_value_double, do
 
       cout << "sigma_em_single=" << sigma_em_run_single/_CSEstimate*100 << "%"
            << " sigma_mc_single=" << sigma_mc_run_single/_CSEstimate*100 << "%"
-           << " sigma_mc_diff_single=" << fabs(eff_acc_single_sys-eff_acc_single) << "%"
            << " sigma_pu_single=" << sigma_pu_run_single/_CSEstimate*100  << "%"
            << " sigma_noise_single=" << sigma_oi_run_single/_CSEstimate*100  << "%"<< endl;
       cout << "sigma_em_double=" << sigma_em_run_double/_CSEstimate*100 << "%"
            << " sigma_mc_double=" << sigma_mc_run_double/_CSEstimate*100 << "%"
-           << " sigma_mc_diff_double=" << fabs(eff_acc_double_sys-eff_acc_double) << "%"
            << " sigma_pu_single=" << sigma_pu_run_double/_CSEstimate*100  << "%"
            << " sigma_oi_single=" << sigma_oi_run_double/_CSEstimate*100  << "%"<< endl;
 
@@ -706,20 +704,23 @@ void makePlots_cs(bool draw,double cut_value_single, double cut_value_double, do
   cout << " !! double: noise =" << n_noise_runs_double << "/" << A_runs_double << "=" << n_noise_runs_double/A_runs_double << " b = "
        << n_noise_runs_double/A_runs_double/sigmainel_double * 100. << "%" << endl
        << " !! corr_f_pilup    =" << f_pileup_runs_double << endl << " !! " << endl
-       << " "" em =" << n_em_runs_double << "/" << A_runs_double << "=" << n_em_runs_double/A_runs_double << " b = "
+       << " !! em =" << n_em_runs_double << "/" << A_runs_double << "=" << n_em_runs_double/A_runs_double << " b = "
        << n_em_runs_double/A_runs_double/sigmainel_double * 100. << "%" << endl  << endl;
 
   cout << endl << " ! SYSTEMATIC UNCERTAINTY" << endl << endl;
 
   cout << " ! sigma_em_single=" << sigma_em_runs_single/fit_runs_single->Parameter(0)*100 << "%" << endl
        << " ! sigma_mc_single=" << sigma_mc_runs_single/fit_runs_single->Parameter(0)*100 << "%" << endl
+       << " ! si_diffr_single=" << fabs(eff_acc_single_sys-eff_acc_single)*100. << "%" << endl //changed cross section
        << " ! sigma_pu_single=" << sigma_pu_runs_single/fit_runs_single->Parameter(0)*100  << "%" << endl
        << " ! si_noise_single=" << sigma_oi_runs_single/fit_runs_single->Parameter(0)*100  << "%" << endl <<endl;
   cout << " ! sigma_em_double=" << sigma_em_runs_double/fit_runs_double->Parameter(0)*100 << "%" << endl
        << " ! sigma_mc_double=" << sigma_mc_runs_double/fit_runs_double->Parameter(0)*100 << "%" << endl
+       << " ! si_diffr_double=" << fabs(eff_acc_double_sys-eff_acc_double)*100. << "%" << endl
        << " ! sigma_pu_double=" << sigma_pu_runs_double/fit_runs_double->Parameter(0)*100  << "%" << endl
        << " ! si_noise_double=" << sigma_oi_runs_double/fit_runs_double->Parameter(0)*100  << "%" << endl << endl;
   cout << " ! sigma_combine=" << fabs(fit_runs_single->Parameter(0)-fit_runs_double->Parameter(0))/2./sigmainel*100 << "%" << endl << endl;
+           
 
 
   //Write to files
