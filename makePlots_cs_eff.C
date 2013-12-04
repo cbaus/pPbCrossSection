@@ -24,6 +24,9 @@
 #include <sstream>
 #include <utility>
 
+#define _LumiCorrpPb 1.142 //only use if trees don't contain vdm calibration factor
+#define _LumiCorrPbp 1.138
+
 TVectorD corr_fac_em(2);
 TVectorD corr_fac_eme(2);
 TVectorD corr_fac_mc(4);
@@ -48,19 +51,38 @@ void makePlots_cs_eff(bool draw, double cut_value_single, double cut_value_doubl
   for(int n=0; n<int(type.size()); n++)
     {
       TFile* file = TFile::Open(filename.c_str());
+      TFile* file2 = TFile::Open("histos_test3.root");
 
       TH1D* a=(TH1D*)file->Get((string("data210885/data210885_h_hf_cut_") + type[n]).c_str());
       TH1D* a2=(TH1D*)file->Get((string("data210885/data210885_h_hf_cut_") + type[n] + string("_noise")).c_str());
-      TH1D* eposrew=(TH1D*)file->Get((string("EposDiffWeightOpt/EposDiffWeightOpt_h_hf_cut_") + type[n]).c_str());
-      TH1D* qgsrew=(TH1D*)file->Get((string("QGSJetIIDiffWeightOpt/QGSJetIIDiffWeightOpt_h_hf_cut_") + type[n]).c_str());
+      TH1D* h_events=(TH1D*)file->Get(string("data210885/data210885_h_lumi").c_str()); //zb
+      TH1D* h_lumi=(TH1D*)file->Get(string("data210885/data210885_h_run_events_lumi").c_str());
+      TH1D* eposrew=(TH1D*)file2->Get((string("EposDiffWeightOpt/EposDiffWeightOpt_h_hf_cut_") + type[n]).c_str());
+      TH1D* qgsrew=(TH1D*)file2->Get((string("QGSJetIIDiffWeightOpt/QGSJetIIDiffWeightOpt_h_hf_cut_") + type[n]).c_str());
       TH1D* b=(TH1D*)file->Get((string("Hijing/Hijing_h_hf_cut_") + type[n]).c_str());
       TH1D* c=(TH1D*)file->Get((string("Epos/Epos_h_hf_cut_")+ type[n]).c_str());
       TH1D* d=(TH1D*)file->Get((string("QGSJetII/QGSJetII_h_hf_cut_") + type[n]).c_str());
       TH1D* e=(TH1D*)file->Get((string("Starlight_DPMJet/Starlight_DPMJet_h_hf_cut_") + type[n]).c_str());
       TH1D* f=(TH1D*)file->Get((string("Starlight_Pythia/Starlight_Pythia_h_hf_cut_") + type[n]).c_str());
 
-      a->Scale(1./double(a->GetBinContent(1)));
-      a2->Scale(1./double(a2->GetBinContent(1)));
+
+      /////
+      //LUMI
+      double lumi_integral = 0;
+      double events_integral = 0;
+      for(int i=0; i<=h_lumi->GetNbinsX();i++)
+        {
+          const double lumicorr = _LumiCorrpPb; //might be different for other run than 210885
+          const double lumiPerLS=h_lumi->GetBinContent(i) * lumicorr;
+          const double lumiPerLS_error=h_lumi->GetBinError(i) * lumicorr; //not 100% correct since from profile but has no contribution
+          if (lumiPerLS<0.) {cerr << "lumi neg: " << i << endl; return;}
+          else if (lumiPerLS==0.) {continue;}
+          lumi_integral += lumiPerLS;
+          events_integral += h_events->GetBinContent(i);
+        }
+
+      //a->Scale(1./double(a->GetBinContent(1)));
+      //a2->Scale(1./double(a2->GetBinContent(1)));
       b->Scale(1./double(b->GetBinContent(1)));
       c->Scale(1./double(c->GetBinContent(1)));
       d->Scale(1./double(d->GetBinContent(1)));
@@ -123,10 +145,10 @@ void makePlots_cs_eff(bool draw, double cut_value_single, double cut_value_doubl
       a2->GetXaxis()->SetRange(2,a2->GetNbinsX()*(type[n]=="double"?0.5:0.75));
 
       b->GetYaxis()->SetRangeUser(0.8,1.001);
-      a2->GetYaxis()->SetRangeUser(type[n]=="double"?1e-5:1e-5,1.01);
+      a2->GetYaxis()->SetRangeUser(2e-5,100);//type[n]=="double"?1e-5:1e-5,1.01);
 
       b->GetXaxis()->SetTitle("E_{HF} [GeV]");
-      b->GetYaxis()->SetTitle("event fraction");
+      b->GetYaxis()->SetTitle("efficiency");
       b->GetXaxis()->SetLabelSize(b->GetXaxis()->GetLabelSize()*1.2);
       b->GetYaxis()->SetLabelSize(b->GetYaxis()->GetLabelSize()*1.2);
       b->GetXaxis()->SetTitleSize(b->GetXaxis()->GetTitleSize()*1.1);
@@ -181,7 +203,7 @@ void makePlots_cs_eff(bool draw, double cut_value_single, double cut_value_doubl
 
           a->GetYaxis()->SetRangeUser(0,1.01);
           a->GetXaxis()->SetTitle("E_{HF} [GeV]");
-          a->GetYaxis()->SetTitle("event fraction");
+          a->GetYaxis()->SetTitle("efficiency");
 
           can1->SaveAs((string("plots/full_p_space_eff_PAS_")+type[n]+string(".pdf")).c_str());
         }
@@ -214,7 +236,17 @@ void makePlots_cs_eff(bool draw, double cut_value_single, double cut_value_doubl
           const double n_sel_zb = a->GetBinContent(i);
           //const double n_zb     = 1;
 
-
+          ///////////////////////////////////////////////////////////////////////
+          //Number of events
+          const double n_zb = (events_integral/lumi_integral);
+          const double n_noise = f_noise * n_zb;
+          const double n_em = f_em * 0.195; //these are not n but already n/lumi
+          if(i!=1)
+            {
+              a2->SetBinContent(i,n_noise);
+              e->SetBinContent(i,e->GetBinContent(i)*0.195);
+              f->SetBinContent(i,f->GetBinContent(i)*0.195);
+            }
           if(i==a->FindBin(cut_value_single) && type[n]==string("single"))
             {
               // if((i-1)%10 == 0)
@@ -226,6 +258,8 @@ void makePlots_cs_eff(bool draw, double cut_value_single, double cut_value_doubl
                 << endl << "f_em= " << f_em << " ± " << f_eme << " ( " << f_eme/f_em*100. << "%)"
                 << endl << "f_noise= " << f_noise
                 << endl << "n_sel_zb= " << n_sel_zb << endl << endl;
+
+              cout << n_zb << " " << n_em << " " << n_noise << endl;
 
               corr_fac_em[0] = f_em;
               corr_fac_mc[0] = f_mc;
@@ -255,6 +289,8 @@ void makePlots_cs_eff(bool draw, double cut_value_single, double cut_value_doubl
                 << endl << "f_noise= " << f_noise
                 << endl << "n_sel_zb= " << n_sel_zb << endl << endl;
 
+              cout << n_zb << " " << n_em << " " << n_noise << endl;
+
               corr_fac_em[1] = f_em;
               corr_fac_mc[1] = f_mc;
               corr_fac_eme[1] = f_eme;
@@ -279,13 +315,13 @@ void makePlots_cs_eff(bool draw, double cut_value_single, double cut_value_doubl
         {
           TCanvas* can2 = new TCanvas;
           a2->GetXaxis()->SetTitle("E_{HF} [GeV]");
-          a2->GetYaxis()->SetTitle("event fraction");
+          a2->GetYaxis()->SetTitle("N/#it{L} [b]");
           a2->GetXaxis()->SetLabelSize(a2->GetXaxis()->GetLabelSize()*1.2);
           a2->GetYaxis()->SetLabelSize(a2->GetYaxis()->GetLabelSize()*1.2);
           a2->GetXaxis()->SetTitleSize(a2->GetXaxis()->GetTitleSize()*1.1);
           a2->GetYaxis()->SetTitleSize(a2->GetYaxis()->GetTitleSize()*1.1);
           a2->GetXaxis()->SetTitleOffset(a2->GetXaxis()->GetTitleOffset()*1.1);
-          a2->GetYaxis()->SetTitleOffset(a2->GetYaxis()->GetTitleOffset()*1.05);
+          a2->GetYaxis()->SetTitleOffset(a2->GetYaxis()->GetTitleOffset()*1.0);
           a2->Draw("HIST l");
           e->Draw("HIST l SAME");
           f->Draw("HIST l SAME");
@@ -320,7 +356,7 @@ void makePlots_cs_eff(bool draw, double cut_value_single, double cut_value_doubl
           SetLegAtt(leg2,1.1);
 #endif
 
-          TLine* line = new TLine(cut_value,type[n]=="single"?15e-4:0,cut_value,type[n]=="single"?1.01:5e-3);
+          TLine* line = new TLine(cut_value,type[n]=="single"?1e-2:0,cut_value,type[n]=="single"?100:2e-2);
           line->SetLineWidth(2);
           line->SetLineStyle(2);
           line->Draw("SAME");
