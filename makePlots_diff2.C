@@ -59,7 +59,7 @@ void makePlots_diff2()
   type.push_back(string("double"));
 
   vector<string> list;
-  list.push_back(string("Epos"));
+  list.push_back(string("EposDiffWeightOpt"));
   //list.push_back(string("Hijing"));
   list.push_back(string("QGSJetII"));
   list.push_back(string("EposDiffWeight150"));

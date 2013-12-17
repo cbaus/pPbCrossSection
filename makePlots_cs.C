@@ -34,7 +34,7 @@ using namespace std;
 #define _CSEstimate 2.0608 //used for pileup
 #define _CSEstimate_single 2.0587 //used for pull?
 #define _CSEstimate_double 2.0630
-#define _CSEstimate_e 0.0136//relative. this is needed for the pileup error. enter uncertainty + stat but without lumi error sqrt(sqrt(2.4^2+2.6^2)÷2+0.3^2)
+#define _CSEstimate_e 0.0141//relative. this is needed for the pileup error. enter uncertainty + stat but without lumi error sqrt(sqrt(2.7^2+2.7^2)÷2+0.3^2)
 
 //*********************************************************************************
 
@@ -169,9 +169,13 @@ void makePlots_cs(bool draw,double cut_value_single, double cut_value_double, do
   double N = double(run_num.size());
   double fnoise_e_single = sqrt( (f_noise2_avg_single - f_noise_avg_single*f_noise_avg_single/N)/(N-1) );
   double fnoise_e_double = sqrt( (f_noise2_avg_double - f_noise_avg_double*f_noise_avg_double/N)/(N-1) );
+  f_noise_avg_single/=N;
+  f_noise_avg_double/=N;
+  double fnoise_e_single_frac = fnoise_e_single / f_noise_avg_single;
+  double fnoise_e_double_frac = fnoise_e_double / f_noise_avg_double;
   cout << "Noise Uncertainty" << endl
-       << "single: mean=" << f_noise_avg_single/N << " rms=" << fnoise_e_single << endl
-       << "double: mean=" << f_noise_avg_double/N << " rms=" << fnoise_e_double << endl
+       << "single: mean=" << f_noise_avg_single << " rms=" << fnoise_e_single << endl
+       << "double: mean=" << f_noise_avg_double << " rms=" << fnoise_e_double << endl
        << endl;
   if(draw)
     {
@@ -197,7 +201,7 @@ void makePlots_cs(bool draw,double cut_value_single, double cut_value_double, do
       TLine* line = 0;
       double line_y;
 
-      line_y=f_noise_avg_single/N;
+      line_y=f_noise_avg_single;
       line = new TLine(-0.5,line_y,run_num.size()-0.5,line_y);
       line->SetLineWidth(2); line->SetLineColor(kRed); line->SetLineStyle(1); line->Draw("SAME");
       line = new TLine(-0.5,line_y-fnoise_e_single,run_num.size()-0.5,line_y-fnoise_e_single);
@@ -205,7 +209,7 @@ void makePlots_cs(bool draw,double cut_value_single, double cut_value_double, do
       line = new TLine(-0.5,line_y+fnoise_e_single,run_num.size()-0.5,line_y+fnoise_e_single);
       line->SetLineWidth(2); line->SetLineColor(kRed); line->SetLineStyle(3); line->Draw("SAME");
 
-      line_y=f_noise_avg_double/N;
+      line_y=f_noise_avg_double;
       line = new TLine(-0.5,line_y,run_num.size()-0.5,line_y);
       line->SetLineWidth(2); line->SetLineColor(kBlue); line->SetLineStyle(1); line->Draw("SAME");
       line = new TLine(-0.5,line_y-fnoise_e_double,run_num.size()-0.5,line_y-fnoise_e_double);
@@ -549,7 +553,7 @@ void makePlots_cs(bool draw,double cut_value_single, double cut_value_double, do
               projection_single->SetTitle("single-arm selection;#sigma_{inel} [b];weighted count");
               projection_double->SetTitle("double-arm selection;#sigma_{inel} [b];weighted count");
 
-              TLegend* leg = new TLegend(0.4,0.75,0.85,0.9);
+              TLegend* leg = new TLegend(0.25,0.75,0.7,0.9);
               leg->AddEntry(projection_single,"","lp");
               leg->AddEntry(projection_double,"","lp");
 #ifdef __CINT__
@@ -567,6 +571,9 @@ void makePlots_cs(bool draw,double cut_value_single, double cut_value_double, do
               m_single->Draw("SAME");
               m_double->Draw("SAME");
               leg->Draw();
+#ifdef __CINT__
+              CMSText(true,false,true,"one example run");
+#endif
               c1->SaveAs((string("plots/CS_run_proj")+string(".pdf")).c_str());
             }
         }
@@ -691,17 +698,17 @@ void makePlots_cs(bool draw,double cut_value_single, double cut_value_double, do
   double staterr2=fit_runs_double->ParError(0);
   double staterr = (staterr1 + staterr2)/2.;
   cout << endl << endl << " !!! CROSS SECTION" << endl << fixed << setprecision(5)
-       << " !!! sigma_inel_single: " << sigmainel_single << " b +- (" << staterr1 << " = " << staterr1/sigmainel_single*100 << "% (stat)) " << endl
-       << " !!! sigma_inel_double: " << sigmainel_double << " b +- (" << staterr2 << " = " << staterr2/sigmainel_double*100 << "% (stat)) " << endl
-       << " !!! sigma_inel       : " << sigmainel        << " b +- (" << staterr << " = " << staterr/sigmainel*100 << "% (stat))" << endl << endl;
+       << " !!! sigma_inel_single: " << sigmainel_single << " b ± (" << staterr1 << " = " << staterr1/sigmainel_single*100 << "% (stat)) " << endl
+       << " !!! sigma_inel_double: " << sigmainel_double << " b ± (" << staterr2 << " = " << staterr2/sigmainel_double*100 << "% (stat)) " << endl
+       << " !!! sigma_inel       : " << sigmainel        << " b ± (" << staterr << " = " << staterr/sigmainel*100 << "% (stat))" << endl << endl;
 
   cout << " !! CORRECTIONS" << endl;
-  cout << " !! single: noise =" << n_noise_runs_single << "/" << A_runs_single << "=" << n_noise_runs_single/A_runs_single << " b = "
+  cout << " !! single: noise =" << n_noise_runs_single << "±" << n_noise_runs_single*fnoise_e_single_frac << "/" << A_runs_single << "=" << n_noise_runs_single/A_runs_single << " b = "
        << n_noise_runs_single/A_runs_single/sigmainel_single * 100. << "%" << endl
        << " !! corr_f_pilup    =" << f_pileup_runs_single << endl
        << " !! em =" << n_em_runs_single << "/" << A_runs_single << "=" << n_em_runs_single/A_runs_single << " b = "
        << n_em_runs_single/A_runs_single/sigmainel_single * 100. << "%" << endl << " !!" << endl;
-  cout << " !! double: noise =" << n_noise_runs_double << "/" << A_runs_double << "=" << n_noise_runs_double/A_runs_double << " b = "
+  cout << " !! double: noise =" << n_noise_runs_double << "±" << n_noise_runs_double*fnoise_e_double_frac <<"/" << A_runs_double << "=" << n_noise_runs_double/A_runs_double << " b = "
        << n_noise_runs_double/A_runs_double/sigmainel_double * 100. << "%" << endl
        << " !! corr_f_pilup    =" << f_pileup_runs_double << endl << " !! " << endl
        << " !! em =" << n_em_runs_double << "/" << A_runs_double << "=" << n_em_runs_double/A_runs_double << " b = "
@@ -711,12 +718,12 @@ void makePlots_cs(bool draw,double cut_value_single, double cut_value_double, do
 
   cout << " ! sigma_em_single=" << sigma_em_runs_single/fit_runs_single->Parameter(0)*100 << "%" << endl
        << " ! sigma_mc_single=" << sigma_mc_runs_single/fit_runs_single->Parameter(0)*100 << "%" << endl
-       << " ! si_diffr_single=" << fabs(eff_acc_single_sys-eff_acc_single)*100. << "%" << endl //changed cross section
+       << " ! si_diffr_single=" << fabs(1./eff_acc_single_sys-1./eff_acc_single)*100. << "%" << endl //changed cross section
        << " ! sigma_pu_single=" << sigma_pu_runs_single/fit_runs_single->Parameter(0)*100  << "%" << endl
        << " ! si_noise_single=" << sigma_oi_runs_single/fit_runs_single->Parameter(0)*100  << "%" << endl <<endl;
   cout << " ! sigma_em_double=" << sigma_em_runs_double/fit_runs_double->Parameter(0)*100 << "%" << endl
        << " ! sigma_mc_double=" << sigma_mc_runs_double/fit_runs_double->Parameter(0)*100 << "%" << endl
-       << " ! si_diffr_double=" << fabs(eff_acc_double_sys-eff_acc_double)*100. << "%" << endl
+       << " ! si_diffr_double=" << fabs(1./eff_acc_double_sys-1./eff_acc_double)*100. << "%" << endl
        << " ! sigma_pu_double=" << sigma_pu_runs_double/fit_runs_double->Parameter(0)*100  << "%" << endl
        << " ! si_noise_double=" << sigma_oi_runs_double/fit_runs_double->Parameter(0)*100  << "%" << endl << endl;
   cout << " ! sigma_combine=" << fabs(fit_runs_single->Parameter(0)-fit_runs_double->Parameter(0))/2./sigmainel*100 << "%" << endl << endl;
@@ -842,10 +849,10 @@ void makePlots_cs(bool draw,double cut_value_single, double cut_value_double, do
            << "mean = " << pull_avg_double/dN << " sigma = " << sigma_pull_double << endl << endl;
 
       cout << "GAUSSIAN FITS (Pull)" << endl
-           << "single: mean=" << fit_pull_single->Parameter(1) << " +- " << fit_pull_single->ParError(1) << " "
-           << "sigma=" << fit_pull_single->Parameter(2) << " +- " << fit_pull_single->ParError(2) << endl
-           << "double: mean=" << fit_pull_double->Parameter(1) << " +- " << fit_pull_double->ParError(1) << " "
-           << "sigma=" << fit_pull_double->Parameter(2) << " +- " << fit_pull_double->ParError(2) << endl;
+           << "single: mean=" << fit_pull_single->Parameter(1) << " ± " << fit_pull_single->ParError(1) << " "
+           << "sigma=" << fit_pull_single->Parameter(2) << " ± " << fit_pull_single->ParError(2) << endl
+           << "double: mean=" << fit_pull_double->Parameter(1) << " ± " << fit_pull_double->ParError(1) << " "
+           << "sigma=" << fit_pull_double->Parameter(2) << " ± " << fit_pull_double->ParError(2) << endl;
       can5->SaveAs((string("plots/CS_pull")+string(".pdf")).c_str());
 
 

@@ -166,7 +166,7 @@ void makePlots_cs_eff(bool draw, double cut_value_single, double cut_value_doubl
           c->Draw("HIST L SAME");
           d->Draw("HIST L SAME");
 
-          TLine* line = new TLine(cut_value,0.8,cut_value,1.001);
+          TLine* line = new TLine(cut_value,type[n]=="single"?0.8:0.88,cut_value,1.001);
           line->SetLineWidth(2);
           line->SetLineStyle(2);
           line->Draw("SAME");
@@ -256,10 +256,8 @@ void makePlots_cs_eff(bool draw, double cut_value_single, double cut_value_doubl
                 << endl << "f_mc= " << f_mc << " ± " << f_mce << " ( " << f_mce/f_mc*100. << "%)"
                 << endl << "f_mc_scaled= " << f_mcsys << " ± " << f_mcesys << " ( " << f_mcesys/f_mcsys*100. << "%)"
                 << endl << "f_em= " << f_em << " ± " << f_eme << " ( " << f_eme/f_em*100. << "%)"
-                << endl << "f_noise= " << f_noise
-                << endl << "n_sel_zb= " << n_sel_zb << endl << endl;
-
-              cout << n_zb << " " << n_em << " " << n_noise << endl;
+                << endl << "n_em= " << n_em << " ± " << f_eme/f_em*n_em << " ( " << f_eme/f_em*100. << "%)"
+                << endl << "for f_noise and n_noise consult makePlots_cs.C" << endl << endl;
 
               corr_fac_em[0] = f_em;
               corr_fac_mc[0] = f_mc;
@@ -267,13 +265,6 @@ void makePlots_cs_eff(bool draw, double cut_value_single, double cut_value_doubl
               corr_fac_eme[0] = f_eme;
               corr_fac_mce[0] = f_mce;
               corr_fac_mce[2] = f_mcesys;
-              cout << endl << endl << "Trigger & \\EPOS & \\HIJING & \\QGSJET \\\\\\hline\\hline" << endl;
-              cout <<  " single-arm & "
-                   << setprecision(3)
-                   << c->GetBinContent(i)/c->GetBinContent(1) << " & "
-                   << b->GetBinContent(i)/b->GetBinContent(1) << " & "
-                   << d->GetBinContent(i)/d->GetBinContent(1)
-                   << " \\\\\\hline" << endl;
 
               corr_fac_epos[0] = c->GetBinContent(i);
               corr_fac_qgsjet[0] = d->GetBinContent(i);
@@ -286,10 +277,8 @@ void makePlots_cs_eff(bool draw, double cut_value_single, double cut_value_doubl
                 << endl << "f_mc= " << f_mc << " ± " << f_mce << " ( " << f_mce/f_mc*100. << "%)"
                 << endl << "f_mc_scaled= " << f_mcsys << " ± " << f_mcesys << " ( " << f_mcesys/f_mcsys*100. << "%)"
                 << endl << "f_em= " << f_em << " ± " << f_eme << " ( " << f_eme/f_em*100. << "%)"
-                << endl << "f_noise= " << f_noise
-                << endl << "n_sel_zb= " << n_sel_zb << endl << endl;
-
-              cout << n_zb << " " << n_em << " " << n_noise << endl;
+                << endl << "n_em= " << n_em << " ± " << f_eme/f_em*n_em << " ( " << f_eme/f_em*100. << "%)"
+                << endl << "for f_noise and n_noise consult makePlots_cs.C" << endl << endl;
 
               corr_fac_em[1] = f_em;
               corr_fac_mc[1] = f_mc;
@@ -297,12 +286,6 @@ void makePlots_cs_eff(bool draw, double cut_value_single, double cut_value_doubl
               corr_fac_mce[1] = f_mce;
               corr_fac_mc[3] = f_mcsys;
               corr_fac_mce[3] = f_mcesys;
-              cout <<  " double-arm & "
-                   << setprecision(3)
-                   << c->GetBinContent(i)/c->GetBinContent(1) << " & "
-                   << b->GetBinContent(i)/b->GetBinContent(1) << " & "
-                   << d->GetBinContent(i)/d->GetBinContent(1)
-                   << " \\\\\\hline" << endl;
 
               corr_fac_epos[1] = c->GetBinContent(i);
               corr_fac_qgsjet[1] = d->GetBinContent(i);

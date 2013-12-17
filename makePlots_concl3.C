@@ -31,29 +31,35 @@ void makePlots_concl3()
   gStyle->SetPadTopMargin(0.07);
 
   //Uncertainty values
-  double s_lumi = 3.2, d_lumi = 3.2;
+  double s_lumi = 3.5, d_lumi = 3.5;
   double s_pu = 0.1, d_pu = 0.1;
   double s_acc = 0.5, d_acc = 1.6;
-  double s_sd2 = 1.3, d_sd2 = 1.6;
+  double s_diff = 1.5, d_diff = 2.0;
   double s_em = 0.2, d_em = 0.1;
   double s_mod = 1.7, d_mod = 0.8;
   double s_sel = 0.6, d_sel = 0.2;
   double s_noi = 1.2, d_noi = 0.2;
 
+  double s_withoutl = sqrt(pow(s_pu,2)+pow(s_acc,2)+pow(s_diff,2)+pow(s_em,2)+pow(s_mod,2)+pow(s_sel,2)+pow(s_noi,2));
+  double d_withoutl = sqrt(pow(d_pu,2)+pow(d_acc,2)+pow(d_diff,2)+pow(d_em,2)+pow(d_mod,2)+pow(d_sel,2)+pow(d_noi,2));
   double s_vis = sqrt(pow(s_lumi,2)+pow(s_pu,2)+pow(s_sel,2)+pow(s_noi,2));
   double d_vis = sqrt(pow(d_lumi,2)+pow(d_pu,2)+pow(d_sel,2)+pow(d_noi,2));
   double s_had = sqrt(pow(s_lumi,2)+pow(s_pu,2)+pow(s_em,2)+pow(s_sel,2)+pow(s_noi,2));
   double d_had = sqrt(pow(d_lumi,2)+pow(d_pu,2)+pow(d_em,2)+pow(d_sel,2)+pow(d_noi,2));
-  double s_inel = sqrt(pow(s_lumi,2)+pow(s_pu,2)+pow(s_acc,2)+pow(s_sd2,2)+pow(s_em,2)+pow(s_mod,2)+pow(s_sel,2)+pow(s_noi,2));
-  double d_inel = sqrt(pow(d_lumi,2)+pow(d_pu,2)+pow(d_acc,2)+pow(d_sd2,2)+pow(d_em,2)+pow(d_mod,2)+pow(d_sel,2)+pow(d_noi,2));
-  
+  double s_inel = sqrt(pow(s_lumi,2)+pow(s_pu,2)+pow(s_acc,2)+pow(s_diff,2)+pow(s_em,2)+pow(s_mod,2)+pow(s_sel,2)+pow(s_noi,2));
+  double d_inel = sqrt(pow(d_lumi,2)+pow(d_pu,2)+pow(d_acc,2)+pow(d_diff,2)+pow(d_em,2)+pow(d_mod,2)+pow(d_sel,2)+pow(d_noi,2));
+
   cout << "s_vis=" << s_vis << endl;
   cout << "d_vis=" << d_vis << endl;
   cout << "s_had=" << s_had << endl;
   cout << "d_had=" << d_had << endl;
   cout << "s_inel=" << s_inel << endl;
   cout << "d_inel=" << d_inel << endl;
+  cout << endl;
 
+  cout << "single (without lumi)=" << s_withoutl << endl;
+  cout << "double (without lumi)=" << d_withoutl << endl;
+  cout << endl;
 
 
   ///READ IN VALUES
