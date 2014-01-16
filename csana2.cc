@@ -1,7 +1,7 @@
-#define _MAXEVT -10000
+#define _MAXEVT 20000
 #define _SkipHFRings 1 //skip 41 and 29 as suggested by HCAL DPG 
 #define _HFEnergyScale 1.0 //1.0 //0.8
-#define _HFEnergyCalibration 1 //0 or 1
+#define _HFEnergyCalibration 1 //0 or 1 (rescale MC) or 2 this does not scale MC but data according to raddam from lev
 
 #include "TChain.h"
 #include "TFile.h"
@@ -59,7 +59,7 @@ int main()
 
   //*************************************************************INPUT***********************************************************
   // sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Data210614/*_*.root"); sample_name.push_back("data210614"); sample_type.push_back(DATA);
-  // sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Data210885/*_*.root"); sample_name.push_back("data210885"); sample_type.push_back(DATA);
+  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Data210885/*_*.root"); sample_name.push_back("data210885"); sample_type.push_back(DATA);
   // sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data210998/*_*.root"); sample_name.push_back("data210998"); sample_type.push_back(DATA);
   // sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211000/*.root"); sample_name.push_back("data211000"); sample_type.push_back(DATA);
   // sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211001/*.root"); sample_name.push_back("data211001"); sample_type.push_back(DATA);
@@ -72,31 +72,89 @@ int main()
   // sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211538/*.root"); sample_name.push_back("data211538"); sample_type.push_back(DATA);
   // sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Data211607/*_*.root"); sample_name.push_back("data211607"); sample_type.push_back(DATA);
 
-  // sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Epos/*.root"); sample_name.push_back("Epos"); sample_type.push_back(MC);
+  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Epos/*.root"); sample_name.push_back("Epos"); sample_type.push_back(MC);
   // sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Epos/*.root"); sample_name.push_back("EposDiffWeight150"); sample_type.push_back(MC);
   // sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Epos/*.root"); sample_name.push_back("EposDiffWeight200"); sample_type.push_back(MC);
   // sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Epos/*.root"); sample_name.push_back("EposDiffWeight299"); sample_type.push_back(MC);
-  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Epos/*.root"); sample_name.push_back("EposDiffWeightOpt"); sample_type.push_back(MC);
-  // sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Epos_SL/*.root"); sample_name.push_back("Epos_SL"); sample_type.push_back(MC);
-  // sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Hijing/*.root"); sample_name.push_back("Hijing"); sample_type.push_back(MC);
-  // sample_fname.push_back("/afs/cern.ch/work/c/cbaus/public/castortree/pPb_QGSJetII/treeMC.root"); sample_name.push_back("QGSJetII"); sample_type.push_back(MC);
+  // sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Epos/*.root"); sample_name.push_back("EposDiffWeightOpt"); sample_type.push_back(MC);
+  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Epos_SL/*.root"); sample_name.push_back("Epos_SL"); sample_type.push_back(MC);
+  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Hijing/*.root"); sample_name.push_back("Hijing"); sample_type.push_back(MC);
+  sample_fname.push_back("/afs/cern.ch/work/c/cbaus/public/castortree/pPb_QGSJetII/treeMC.root"); sample_name.push_back("QGSJetII"); sample_type.push_back(MC);
   // sample_fname.push_back("/afs/cern.ch/work/c/cbaus/public/castortree/pPb_QGSJetII/treeMC.root"); sample_name.push_back("QGSJetIIDiffWeight150"); sample_type.push_back(MC);
   // sample_fname.push_back("/afs/cern.ch/work/c/cbaus/public/castortree/pPb_QGSJetII/treeMC.root"); sample_name.push_back("QGSJetIIDiffWeight200"); sample_type.push_back(MC);
   // sample_fname.push_back("/afs/cern.ch/work/c/cbaus/public/castortree/pPb_QGSJetII/treeMC.root"); sample_name.push_back("QGSJetIIDiffWeight452"); sample_type.push_back(MC);
-  sample_fname.push_back("/afs/cern.ch/work/c/cbaus/public/castortree/pPb_QGSJetII/treeMC.root"); sample_name.push_back("QGSJetIIDiffWeightOpt"); sample_type.push_back(MC);
-  // sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/StarlightDPMjet_v2/treeMC.root"); sample_name.push_back("Starlight_DPMJet");  sample_type.push_back(MC);
-  // sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/StarlightPythia/treeMC.root"); sample_name.push_back("Starlight_Pythia");  sample_type.push_back(MC);
+  // sample_fname.push_back("/afs/cern.ch/work/c/cbaus/public/castortree/pPb_QGSJetII/treeMC.root"); sample_name.push_back("QGSJetIIDiffWeightOpt"); sample_type.push_back(MC);
+  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/StarlightDPMjet_v2/treeMC.root"); sample_name.push_back("Starlight_DPMJet");  sample_type.push_back(MC);
+  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/StarlightPythia/treeMC.root"); sample_name.push_back("Starlight_Pythia");  sample_type.push_back(MC);
 
-#if _HFEnergyCalibration
+#if _HFEnergyCalibration > 1
   TFile calibfile("plots/hf_calibration_data.root");
   TVectorD* hf_calibration = NULL;
   hf_calibration=(TVectorD*)calibfile.Get("hf_calibration");
   hf_calibration->Print();
 #endif
 
+  vector<double> c_lev_m,c_lev_m_e,c_lev_p,c_lev_p_e;
+  //TGraphErrors* gr_lev_p = new TGraphErrors(c_lev_m.size(),&c_lev_m.front());
+  c_lev_m.push_back(1.07); //-29 //12 //innermost
+  c_lev_m.push_back(0.97);
+  c_lev_m.push_back(0.95);
+  c_lev_m.push_back(0.99);
+  c_lev_m.push_back(0.96);
+  c_lev_m.push_back(0.91);
+  c_lev_m.push_back(0.92);
+  c_lev_m.push_back(0.86);
+  c_lev_m.push_back(0.80);
+  c_lev_m.push_back(0.72);
+  c_lev_m.push_back(0.69);
+  c_lev_m.push_back(0.83);
+  c_lev_m.push_back(0.73); //-41 //0
+
+  c_lev_p.push_back(1.01);
+  c_lev_p.push_back(0.94);
+  c_lev_p.push_back(0.91);
+  c_lev_p.push_back(0.89);
+  c_lev_p.push_back(0.87);
+  c_lev_p.push_back(0.92);
+  c_lev_p.push_back(0.84);
+  c_lev_p.push_back(0.85);
+  c_lev_p.push_back(0.83);
+  c_lev_p.push_back(0.67);
+  c_lev_p.push_back(0.61);
+  c_lev_p.push_back(0.75);
+  c_lev_p.push_back(0.66);
+
+  c_lev_m_e.push_back(0.23);
+  c_lev_m_e.push_back(0.04);
+  c_lev_m_e.push_back(0.03);
+  c_lev_m_e.push_back(0.03);
+  c_lev_m_e.push_back(0.03);
+  c_lev_m_e.push_back(0.03);
+  c_lev_m_e.push_back(0.03);
+  c_lev_m_e.push_back(0.03);
+  c_lev_m_e.push_back(0.03);
+  c_lev_m_e.push_back(0.04);
+  c_lev_m_e.push_back(0.06);
+  c_lev_m_e.push_back(0.10);
+  c_lev_m_e.push_back(0.09);
+
+  c_lev_p_e.push_back(0.21);
+  c_lev_p_e.push_back(0.04);
+  c_lev_p_e.push_back(0.03);
+  c_lev_p_e.push_back(0.03);
+  c_lev_p_e.push_back(0.03);
+  c_lev_p_e.push_back(0.03);
+  c_lev_p_e.push_back(0.03);
+  c_lev_p_e.push_back(0.03);
+  c_lev_p_e.push_back(0.03);
+  c_lev_p_e.push_back(0.03);
+  c_lev_p_e.push_back(0.07);
+  c_lev_p_e.push_back(0.09);
+  c_lev_p_e.push_back(0.08);
+
   //**************************************************************OUTPUT*********************************************************
 
-  TFile* out_file = new TFile("histos_test3.root","RECREATE");
+  TFile* out_file = new TFile("histos_deleteme.root","RECREATE");
 
   TH1D* h_zero_count_zb_coll;
   TH1D* h_zero_count_zb_no_coll;
@@ -572,9 +630,19 @@ int main()
               const double eta = it->Eta;
               const int Ieta = it->Eta > 0?it->IetaAbs:-it->IetaAbs;
               double tower_e = it->Energy * _HFEnergyScale;
-#if _HFEnergyCalibration
+              double c_lev = eta<0?c_lev_m[-Ieta-29]:c_lev_p[Ieta-29];
+#if _HFEnergyCalibration == 1
               if(sample_type[sample]==MC)
-                tower_e /= (*hf_calibration)[IetaToRing(Ieta)];
+                {
+                  //cout << "Ieta: " << Ieta << "tower e: " << tower_e << " -> " << tower_e/c_lev << endl;
+                  tower_e /= (*hf_calibration)[IetaToRing(Ieta)];
+                }
+#endif#if _HFEnergyCalibration == 2
+              if(sample_type[sample]==DATA)
+                {
+                  //cout << "Ieta: " << Ieta << "tower e: " << tower_e << " -> " << tower_e/c_lev << endl;
+                  tower_e /= c_lev;//(*hf_calibration)[IetaToRing(Ieta)];
+                }
 #endif
               //cout << it->IetaAbs << " " << eta << " " << tower_e << endl;
 
@@ -816,8 +884,28 @@ int main()
                 h_perf_hf_totE_eta_single_3gev->Fill(it->Eta,it->Energy);
               if(coll && event->Tracks.size()>=1)
                 {
-                  h_perf_hf_totE_eta_lev_m->Fill(it->Eta,it->Energy);
-                  h_perf_hf_totE_eta_lev_p->Fill(it->Eta,it->Energy);
+                  const double eta = it->Eta;
+                  const int Ieta = eta>0?it->IetaAbs:-it->IetaAbs;
+                  const double c_lev = eta<0?c_lev_m[-Ieta-29]:c_lev_p[Ieta-29];
+                  double tower_e = it->Energy;
+#if _HFEnergyCalibration == 1 
+                  if(sample_type[sample]==MC)
+                    {
+                      //cout << "Ieta: " << Ieta << "tower e: " << tower_e << " -> " << tower_e/c_lev << endl;
+                      tower_e /= (*hf_calibration)[IetaToRing(Ieta)];
+                      cout << Ieta << " " << eta << " " << c_lev << endl;
+                    }
+#endif
+#if _HFEnergyCalibration == 2 
+                  if(sample_type[sample]==DATA)
+                    {
+                      //cout << "Ieta: " << Ieta << "tower e: " << tower_e << " -> " << tower_e/c_lev << endl;
+                      tower_e /= c_lev;
+                      cout << Ieta << " " << eta << " " << c_lev << endl;
+                    }
+#endif
+                  h_perf_hf_totE_eta_lev_m->Fill(it->Eta,tower_e);
+                  h_perf_hf_totE_eta_lev_p->Fill(it->Eta,tower_e);
                   h_perf_hf_totE_eta_lev_n_m->Fill(it->Eta);
                   h_perf_hf_totE_eta_lev_n_p->Fill(it->Eta);
                 }

@@ -45,13 +45,15 @@ void style() {
 
 // #################################################################################
 // helper function to specify that proton/lead data is used
-void CMSText(const bool data, const bool left, const bool top, const std::string str3, const std::string str2, const std::string str1) {
+void CMSText(const int data, const bool left, const bool top, const std::string str3, const std::string str2, const std::string str1) {
   const double marg = 0.005, margY = 0.03;
   std::string text;
   if(data)
     text=std::string("CMS Preliminary");
-  else
+  if(data==0)
     text=std::string("CMS Simulation");
+  if(data==2)
+    text=std::string("CMS");
   double size = 0.05;
   if(str1.length() != 0)
     size += 0.05;

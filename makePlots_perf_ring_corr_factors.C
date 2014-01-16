@@ -72,7 +72,7 @@ void Show(TH1D* a, TH1D* b, TH1D* c, TH1D* epossl, TH1D* d, string type)
 
   vector<double> c_lev_m,c_lev_m_e,c_lev_p,c_lev_p_e;
   //TGraphErrors* gr_lev_p = new TGraphErrors(c_lev_m.size(),&c_lev_m.front());
-  c_lev_m.push_back(1.07); //-41 //12
+  c_lev_m.push_back(1.07); //-29 //0
   c_lev_m.push_back(0.97);
   c_lev_m.push_back(0.95);
   c_lev_m.push_back(0.99);
@@ -84,9 +84,9 @@ void Show(TH1D* a, TH1D* b, TH1D* c, TH1D* epossl, TH1D* d, string type)
   c_lev_m.push_back(0.72);
   c_lev_m.push_back(0.69);
   c_lev_m.push_back(0.83);
-  c_lev_m.push_back(0.73); //-29 //0
+  c_lev_m.push_back(0.73); //-41 //12
 
-  c_lev_p.push_back(1.01);
+  c_lev_p.push_back(1.01); //29 //0
   c_lev_p.push_back(0.94);
   c_lev_p.push_back(0.91);
   c_lev_p.push_back(0.89);
@@ -98,7 +98,7 @@ void Show(TH1D* a, TH1D* b, TH1D* c, TH1D* epossl, TH1D* d, string type)
   c_lev_p.push_back(0.67);
   c_lev_p.push_back(0.61);
   c_lev_p.push_back(0.75);
-  c_lev_p.push_back(0.66);
+  c_lev_p.push_back(0.66); //41 //12
 
   c_lev_m_e.push_back(0.23);
   c_lev_m_e.push_back(0.04);
