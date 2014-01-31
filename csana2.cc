@@ -87,7 +87,7 @@ int main()
   sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/StarlightDPMjet_v2/treeMC.root"); sample_name.push_back("Starlight_DPMJet");  sample_type.push_back(MC);
   sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/StarlightPythia/treeMC.root"); sample_name.push_back("Starlight_Pythia");  sample_type.push_back(MC);
 
-#if _HFEnergyCalibration > 1
+#if _HFEnergyCalibration == 1
   TFile calibfile("plots/hf_calibration_data.root");
   TVectorD* hf_calibration = NULL;
   hf_calibration=(TVectorD*)calibfile.Get("hf_calibration");
@@ -637,7 +637,8 @@ int main()
                   //cout << "Ieta: " << Ieta << "tower e: " << tower_e << " -> " << tower_e/c_lev << endl;
                   tower_e /= (*hf_calibration)[IetaToRing(Ieta)];
                 }
-#endif#if _HFEnergyCalibration == 2
+#endif
+#if _HFEnergyCalibration == 2
               if(sample_type[sample]==DATA)
                 {
                   //cout << "Ieta: " << Ieta << "tower e: " << tower_e << " -> " << tower_e/c_lev << endl;
