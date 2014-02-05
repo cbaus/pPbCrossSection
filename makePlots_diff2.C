@@ -90,7 +90,7 @@ void makePlots_diff2()
   for(int i=0; i<int(list.size()); i++)
     {
       cout << i+1 << "/" << int(list.size()) << endl;
-      TFile* file = TFile::Open("histos_test3.root");
+      TFile* file = TFile::Open("histos_deleteme.root");
       file->cd();
 
       TH1D* sd1_single=(TH1D*)file->Get(string(list[i]+string("/")+list[i]+string("_h_mc_diff_e_single_SD1")).c_str());

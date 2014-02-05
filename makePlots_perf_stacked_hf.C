@@ -35,8 +35,8 @@ void makePlots_perf_stacked_hf()
   // ShowStack(a,a2,b,c,d,e,f,"m");
   // }
   {
-    TFile* file2 = TFile::Open("histos.root");
-    TFile* file = TFile::Open("histos.root");
+    TFile* file2 = TFile::Open("histos_deleteme.root");
+    TFile* file = TFile::Open("histos_deleteme.root");
   TH1D* a=(TH1D*)file2->Get("data210885/data210885_h_hf_hits_coll_single");
   TH1D* a2=(TH1D*)file2->Get("data210885/data210885_h_hf_hits_noise_single");
   TH1D* b=(TH1D*)file->Get("Hijing/Hijing_h_hf_hits_coll_single");
@@ -48,8 +48,8 @@ void makePlots_perf_stacked_hf()
   ShowStack(a,a2,b,c,d,e,f,"single");
   }
   {
-  TFile* file2 = TFile::Open("histos.root");
-  TFile* file = TFile::Open("histos.root");
+  TFile* file2 = TFile::Open("histos_deleteme.root");
+  TFile* file = TFile::Open("histos_deleteme.root");
   TH1D* a=(TH1D*)file2->Get("data210885/data210885_h_hf_hits_coll_double");
   TH1D* a2=(TH1D*)file2->Get("data210885/data210885_h_hf_hits_noise_double");
   TH1D* b=(TH1D*)file->Get("Hijing/Hijing_h_hf_hits_coll_double");

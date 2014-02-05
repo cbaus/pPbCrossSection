@@ -1,9 +1,9 @@
 LDFLAGS += -Wl,--no-as-needed $(shell root-config --libs) -ggdb3
 CXXFLAGS += $(shell root-config --cflags) -ggdb3 -I.
-CXXFLAGS += -Wextra
+CXXFLAGS += -Wextra -std=c++0x
 
 DEP_OBJ=CastorTreeVariables.o CastorTreeVariablesDict.o ParticleInfo.o
-EXE=csana2 noiseana vdmAna
+EXE=csana2 noiseana vdmAna neutronana
 
 all: $(EXE)
 

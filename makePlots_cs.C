@@ -38,7 +38,7 @@ using namespace std;
 
 //*********************************************************************************
 
-void makePlots_cs(bool draw = 1,double cut_value_single = 8., double cut_value_double = 4, double modfactor = 1.0, string filename = "histos.root");
+void makePlots_cs(bool draw = 1,double cut_value_single = 8., double cut_value_double = 4, double modfactor = 1.0, string filename = "histos_deleteme.root");
 string cutToString(double cut);
 
 //available cuts single 5, 6.4, 7.2, 8, 8.8, 9.6, 10, 15, 20
@@ -71,13 +71,13 @@ void makePlots_cs(bool draw,double cut_value_single, double cut_value_double, do
   run_num.push_back(211000);
   run_num.push_back(211001);
   run_num.push_back(211032);
-  run_num.push_back(211256);
-  run_num.push_back(211371);
-  run_num.push_back(211390);
-  run_num.push_back(211460);
-  run_num.push_back(211532);
-  run_num.push_back(211538);
-  run_num.push_back(211607);
+  //run_num.push_back(211256);
+  //run_num.push_back(211371);
+  //run_num.push_back(211390);
+  //run_num.push_back(211460);
+  //run_num.push_back(211532);
+  //run_num.push_back(211538);
+  //run_num.push_back(211607);
 
   //Histogram with all runs
   TH1D* h_runs_single = new TH1D("h_runs_single","",run_num.size(),-0.5,run_num.size()-0.5);// h_runs_single->SetName("h_runs_single");
@@ -167,8 +167,8 @@ void makePlots_cs(bool draw,double cut_value_single, double cut_value_double, do
       f_noise2_avg_double += pow(f_noise_double,2);
     }
   double N = double(run_num.size());
-  double fnoise_e_single = sqrt( (f_noise2_avg_single - f_noise_avg_single*f_noise_avg_single/N)/(N-1) );
-  double fnoise_e_double = sqrt( (f_noise2_avg_double - f_noise_avg_double*f_noise_avg_double/N)/(N-1) );
+  double fnoise_e_single = TMath::Min(sqrt( (f_noise2_avg_single - f_noise_avg_single*f_noise_avg_single/N)/(N-1) ), f_noise_avg_single*0.05);
+  double fnoise_e_double = TMath::Min(sqrt( (f_noise2_avg_double - f_noise_avg_double*f_noise_avg_double/N)/(N-1) ), f_noise_avg_double*0.05);
   f_noise_avg_single/=N;
   f_noise_avg_double/=N;
   double fnoise_e_single_frac = fnoise_e_single / f_noise_avg_single;
@@ -219,13 +219,32 @@ void makePlots_cs(bool draw,double cut_value_single, double cut_value_double, do
 
       can4->SaveAs("plots/noise_runs_final.pdf");
     }
+      ///////////////////////////////////////////////////////////////////////
+      //Acceptance (For eposDiffWeightOpt index is to 2 and 3 here)
+      const double eff_acc_single = (*f_mc)[0];
+      const double eff_acc_double = (*f_mc)[1];
+      const double eff_acc_single_e = (*f_mce)[0];
+      const double eff_acc_double_e = (*f_mce)[1];
 
+      const double eff_acc_single_sys = (*f_mc)[2]; //systematic uncertainty check with optimised diffractive cross section
+      const double eff_acc_double_sys = (*f_mc)[3];
+      const double eff_acc_single_e_sys = (*f_mce)[2];
+      const double eff_acc_double_e_sys = (*f_mce)[3];
+
+      ///////////////////////////////////////////////////////////////////////
+      //EM
+      const double eff_em_single = (*f_em)[0];
+      const double eff_em_double = (*f_em)[1];
+      const double eff_em_single_e = (*f_eme)[0];
+      const double eff_em_double_e = (*f_eme)[1];
+
+      ///////////////////////////////////////////////////////////////////////
   for (int run=0; run<int(run_num.size()); run++)
     {
       bool pPb=false;
       if(run_num[run] <= 211256) pPb=true;
       cout << endl << " Processing ... run: " << run_num[run] << "(pPb=" << pPb << ")" << endl << endl;
-      TFile* file = TFile::Open("histos.root");
+      TFile* file = TFile::Open(filename.c_str());
       ostringstream runname_ss;
       runname_ss << run_num[run];
       string runname = runname_ss.str();
@@ -251,26 +270,7 @@ void makePlots_cs(bool draw,double cut_value_single, double cut_value_double, do
       TH1D *h_had_double = (TH1D*)h_double->Clone("h_had_double");
 
 
-      ///////////////////////////////////////////////////////////////////////
-      //Acceptance (For eposDiffWeightOpt index is to 2 and 3 here)
-      const double eff_acc_single = (*f_mc)[0];
-      const double eff_acc_double = (*f_mc)[1];
-      const double eff_acc_single_e = (*f_mce)[0];
-      const double eff_acc_double_e = (*f_mce)[1];
 
-      const double eff_acc_single_sys = (*f_mc)[2]; //systematic uncertainty check with optimised diffractive cross section
-      const double eff_acc_double_sys = (*f_mc)[3];
-      const double eff_acc_single_e_sys = (*f_mce)[2];
-      const double eff_acc_double_e_sys = (*f_mce)[3];
-
-      ///////////////////////////////////////////////////////////////////////
-      //EM
-      const double eff_em_single = (*f_em)[0];
-      const double eff_em_double = (*f_em)[1];
-      const double eff_em_single_e = (*f_eme)[0];
-      const double eff_em_double_e = (*f_eme)[1];
-
-      ///////////////////////////////////////////////////////////////////////
       //Noise
       double f_noise_single = h_noise_single->GetBinContent(h_noise_single->FindBin(cut_value_single))/h_noise_single->GetBinContent(1);
       double f_noise_double = h_noise_double->GetBinContent(h_noise_double->FindBin(cut_value_double))/h_noise_double->GetBinContent(1);
