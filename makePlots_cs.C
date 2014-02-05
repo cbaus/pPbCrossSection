@@ -220,12 +220,31 @@ void makePlots_cs(bool draw,double cut_value_single, double cut_value_double, do
       can4->SaveAs("plots/noise_runs_final.pdf");
     }
 
+  ///////////////////////////////////////////////////////////////////////
+  //Acceptance (For eposDiffWeightOpt index is to 2 and 3 here)
+  const double eff_acc_single = (*f_mc)[0];
+  const double eff_acc_double = (*f_mc)[1];
+  const double eff_acc_single_e = (*f_mce)[0];
+  const double eff_acc_double_e = (*f_mce)[1];
+
+  const double eff_acc_single_sys = (*f_mc)[2]; //systematic uncertainty check with optimised diffractive cross section
+  const double eff_acc_double_sys = (*f_mc)[3];
+  const double eff_acc_single_e_sys = (*f_mce)[2];
+  const double eff_acc_double_e_sys = (*f_mce)[3];
+
+  ///////////////////////////////////////////////////////////////////////
+  //EM
+  const double eff_em_single = (*f_em)[0];
+  const double eff_em_double = (*f_em)[1];
+  const double eff_em_single_e = (*f_eme)[0];
+  const double eff_em_double_e = (*f_eme)[1];
+
   for (int run=0; run<int(run_num.size()); run++)
     {
       bool pPb=false;
       if(run_num[run] <= 211256) pPb=true;
       cout << endl << " Processing ... run: " << run_num[run] << "(pPb=" << pPb << ")" << endl << endl;
-      TFile* file = TFile::Open("histos.root");
+      TFile* file = TFile::Open(filename.c_str());
       ostringstream runname_ss;
       runname_ss << run_num[run];
       string runname = runname_ss.str();
@@ -250,25 +269,6 @@ void makePlots_cs(bool draw,double cut_value_single, double cut_value_double, do
       TH1D *h_vis_double = (TH1D*)h_double->Clone("h_vis_double");
       TH1D *h_had_double = (TH1D*)h_double->Clone("h_had_double");
 
-
-      ///////////////////////////////////////////////////////////////////////
-      //Acceptance (For eposDiffWeightOpt index is to 2 and 3 here)
-      const double eff_acc_single = (*f_mc)[0];
-      const double eff_acc_double = (*f_mc)[1];
-      const double eff_acc_single_e = (*f_mce)[0];
-      const double eff_acc_double_e = (*f_mce)[1];
-
-      const double eff_acc_single_sys = (*f_mc)[2]; //systematic uncertainty check with optimised diffractive cross section
-      const double eff_acc_double_sys = (*f_mc)[3];
-      const double eff_acc_single_e_sys = (*f_mce)[2];
-      const double eff_acc_double_e_sys = (*f_mce)[3];
-
-      ///////////////////////////////////////////////////////////////////////
-      //EM
-      const double eff_em_single = (*f_em)[0];
-      const double eff_em_double = (*f_em)[1];
-      const double eff_em_single_e = (*f_eme)[0];
-      const double eff_em_double_e = (*f_eme)[1];
 
       ///////////////////////////////////////////////////////////////////////
       //Noise
