@@ -50,7 +50,7 @@ void makePlots_cs_purvseff(bool draw, string filename)
   //available cuts double 1.5, 2, 2.25, 2.5, 2.75, 3, 3.5, 4, 5
   set<double> cut_value_single; cut_value_single.insert(8);
   set<double> cut_value_double; cut_value_double.insert(4);
-  set<double> cut_value2_single; cut_value2_single.insert(6.4); cut_value2_single.insert(10);
+  set<double> cut_value2_single; cut_value2_single.insert(6); cut_value2_single.insert(10);
   set<double> cut_value2_double; cut_value2_double.insert(3); cut_value2_double.insert(5);
 
   vector<string> type; type.push_back("single"); type.push_back("double");

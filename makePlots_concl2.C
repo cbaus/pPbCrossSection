@@ -17,7 +17,7 @@ void SetAttributes(TGraphErrors* theGraph, int colour, int marker)
 {
   theGraph->SetMarkerSize(1.8);
   theGraph->SetLineWidth(2.1);
-  theGraph->SetFillColor(kWhite);
+  theGraph->SetFillColor(colour);
   theGraph->SetLineColor(colour);
   theGraph->SetMarkerColor(colour);
   theGraph->SetMarkerStyle(marker);
@@ -85,6 +85,7 @@ void makePlots_concl2()
   g_fnal->SetPoint(1,GetSqrtS(200),1.765);  g_fnal->SetPointError(1,0,0.053);
   g_fnal->SetPoint(2,GetSqrtS(280),1.752);  g_fnal->SetPointError(2,0,0.053);
 
+  //from David D'Enterria
   TGraphErrors* g_glauber  = new TGraphErrors(9);
   g_glauber->SetName("g_glauber");
   g_glauber->SetTitle("(COMPETE+TOTEM)+Glauber");
@@ -99,6 +100,8 @@ void makePlots_concl2()
   g_glauber->SetPoint(7,5020,2.12448);
   g_glauber->SetPoint(8,8800,2.16933);
 
+  //bin/crmc -o hepmc -m 7 -n 1 -i1 -I208 -p4000 -P-1580 -T --out test -s124
+  //in models.F or in epos-sem.f change niter = 50000
   TGraphErrors* g_eposlhc  = new TGraphErrors(7);
   g_eposlhc->SetName("g_eposlhc");
   g_eposlhc->SetTitle("EPOS-LHC");
@@ -123,6 +126,20 @@ void makePlots_concl2()
   g_q4->SetPoint(5,2000,2.100428);
   g_q4->SetPoint(6,5020,2.176422);
 
+  //from Andras Ster email 2014-05-15
+  TGraphErrors* g_dipsy  = new TGraphErrors(8);
+  g_dipsy->SetName("g_dipsy");
+  g_dipsy->SetTitle("DIPSY");
+  SetAttributes(g_dipsy,kMagenta,3);
+  g_dipsy->SetPoint(0,200,1.783);  g_dipsy->SetPointError(0,0,0.003);
+  g_dipsy->SetPoint(1,400,1.847);  g_dipsy->SetPointError(1,0,0.003);
+  g_dipsy->SetPoint(2,600,1.882);  g_dipsy->SetPointError(2,0,0.002);
+  g_dipsy->SetPoint(3,1000,1.923);  g_dipsy->SetPointError(3,0,0.004);
+  g_dipsy->SetPoint(4,2000,1.975);  g_dipsy->SetPointError(4,0,0.004);
+  g_dipsy->SetPoint(5,5000,2.042);  g_dipsy->SetPointError(5,0,0.004);
+  g_dipsy->SetPoint(6,7000,2.054);  g_dipsy->SetPointError(6,0,0.004);
+  g_dipsy->SetPoint(7,9000,2.074);  g_dipsy->SetPointError(7,0,0.005);
+
   TGraphErrors* g_cms  = new TGraphErrors(1);
   g_cms->SetName("g_cms");
   g_cms->SetTitle("CMS");
@@ -139,6 +156,7 @@ void makePlots_concl2()
   leg1->AddEntry(g_glauber,"(COMPETE+TOTEM)+Glauber","l");
   leg1->AddEntry(g_eposlhc,"EPOS-LHC","l");
   leg1->AddEntry(g_q4,"QGSJetII-04","l");
+  leg1->AddEntry(g_dipsy,"DIPSY","l");
 
   TCanvas* can1 = new TCanvas;
   g_ihep->GetXaxis()->SetLimits(5,9000);
@@ -151,10 +169,11 @@ void makePlots_concl2()
   g_glauber->Draw("C");
   g_eposlhc->Draw("C");
   g_q4->Draw("C");
+  g_dipsy->Draw("xl");
   g_cms->Draw("P");
   can1->SetLogx();
   leg1->Draw();
   CMSText(1,0,1,"","","pPb collisions");
-  can1->SaveAs((string("plots/concl_2")+string(".pdf")).c_str());
+  can1->SaveAs((string("plots/concl_2_paper")+string(".pdf")).c_str());
 
 }

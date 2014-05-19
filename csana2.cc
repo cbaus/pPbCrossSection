@@ -1,5 +1,5 @@
-#define _MAXEVT 20000
-#define _SkipHFRings 1 //skip 41 and 29 as suggested by HCAL DPG 
+#define _MAXEVT -10000
+#define _SkipHFRings 1 //skip 41 and 29 as suggested by HCAL DPG
 #define _HFEnergyScale 1.0 //1.0 //0.8
 #define _HFEnergyCalibration 1 //0 or 1 (rescale MC) or 2 this does not scale MC but data according to raddam from lev
 
@@ -58,35 +58,36 @@ int main()
     }
 
   //*************************************************************INPUT***********************************************************
-  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Data210614/*_*.root"); sample_name.push_back("data210614"); sample_type.push_back(DATA);
-  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Data210885/*_*.root"); sample_name.push_back("data210885"); sample_type.push_back(DATA);
-  sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data210998/*_*.root"); sample_name.push_back("data210998"); sample_type.push_back(DATA);
-  sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211000/*.root"); sample_name.push_back("data211000"); sample_type.push_back(DATA);
-  sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211001/*.root"); sample_name.push_back("data211001"); sample_type.push_back(DATA);
-  sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211032/*.root"); sample_name.push_back("data211032"); sample_type.push_back(DATA);
-  sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211256/*.root"); sample_name.push_back("data211256"); sample_type.push_back(DATA);
-  sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211371/*.root"); sample_name.push_back("data211371"); sample_type.push_back(DATA);
-  sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211390/*.root"); sample_name.push_back("data211390"); sample_type.push_back(DATA);
-  sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211460/*.root"); sample_name.push_back("data211460"); sample_type.push_back(DATA);
-  sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211532/*.root"); sample_name.push_back("data211532"); sample_type.push_back(DATA);
-  sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211538/*.root"); sample_name.push_back("data211538"); sample_type.push_back(DATA);
-  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Data211607/*_*.root"); sample_name.push_back("data211607"); sample_type.push_back(DATA);
+  //    sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Data210614/*_*.root"); sample_name.push_back("data210614"); sample_type.push_back(DATA);
+  //    sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Data210885/*_*.root"); sample_name.push_back("data210885"); sample_type.push_back(DATA);
+  //    sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data210998/*_*.root"); sample_name.push_back("data210998"); sample_type.push_back(DATA);
+  //    sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211000/*.root"); sample_name.push_back("data211000"); sample_type.push_back(DATA);
+  //    sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211001/*.root"); sample_name.push_back("data211001"); sample_type.push_back(DATA);
+  //    sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211032/*.root"); sample_name.push_back("data211032"); sample_type.push_back(DATA);
+  //    sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211256/*.root"); sample_name.push_back("data211256"); sample_type.push_back(DATA);
+  //    sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211371/*.root"); sample_name.push_back("data211371"); sample_type.push_back(DATA);
+  //    sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211390/*.root"); sample_name.push_back("data211390"); sample_type.push_back(DATA);
+  //    sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211460/*.root"); sample_name.push_back("data211460"); sample_type.push_back(DATA);
+  //    sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211532/*.root"); sample_name.push_back("data211532"); sample_type.push_back(DATA);
+  //    sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211538/*.root"); sample_name.push_back("data211538"); sample_type.push_back(DATA);
+  //    sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Data211607/*_*.root"); sample_name.push_back("data211607"); sample_type.push_back(DATA);
 
   sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Epos/*.root"); sample_name.push_back("Epos"); sample_type.push_back(MC);
-  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Epos/*.root"); sample_name.push_back("EposDiffWeight150"); sample_type.push_back(MC);
-  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Epos/*.root"); sample_name.push_back("EposDiffWeight200"); sample_type.push_back(MC);
-  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Epos/*.root"); sample_name.push_back("EposDiffWeight299"); sample_type.push_back(MC);
-  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Epos/*.root"); sample_name.push_back("EposDiffWeightOpt"); sample_type.push_back(MC);
-  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Epos_SL/*.root"); sample_name.push_back("Epos_SL"); sample_type.push_back(MC);
+  //    sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Epos/*.root"); sample_name.push_back("EposDiffWeight150"); sample_type.push_back(MC);
+  //    sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Epos/*.root"); sample_name.push_back("EposDiffWeight200"); sample_type.push_back(MC);
+  //    sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Epos/*.root"); sample_name.push_back("EposDiffWeight299"); sample_type.push_back(MC);
+  //    sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Epos/*.root"); sample_name.push_back("EposDiffWeightOpt"); sample_type.push_back(MC);
+  //    sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Epos_SL/*.root"); sample_name.push_back("Epos_SL"); sample_type.push_back(MC);
   sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Hijing/*.root"); sample_name.push_back("Hijing"); sample_type.push_back(MC);
   sample_fname.push_back("/afs/cern.ch/work/c/cbaus/public/castortree/pPb_QGSJetII/treeMC.root"); sample_name.push_back("QGSJetII"); sample_type.push_back(MC);
-  sample_fname.push_back("/afs/cern.ch/work/c/cbaus/public/castortree/pPb_QGSJetII/treeMC.root"); sample_name.push_back("QGSJetIIDiffWeight150"); sample_type.push_back(MC);
-  sample_fname.push_back("/afs/cern.ch/work/c/cbaus/public/castortree/pPb_QGSJetII/treeMC.root"); sample_name.push_back("QGSJetIIDiffWeight200"); sample_type.push_back(MC);
-  sample_fname.push_back("/afs/cern.ch/work/c/cbaus/public/castortree/pPb_QGSJetII/treeMC.root"); sample_name.push_back("QGSJetIIDiffWeight452"); sample_type.push_back(MC);
-  sample_fname.push_back("/afs/cern.ch/work/c/cbaus/public/castortree/pPb_QGSJetII/treeMC.root"); sample_name.push_back("QGSJetIIDiffWeightOpt"); sample_type.push_back(MC);
-  sample_fname.push_back("/afs/cern.ch/work/c/cbaus/public/castortree/pPb_DPMJet/treeMC.root"); sample_name.push_back("DPMJet"); sample_type.push_back(MC);
+  //    sample_fname.push_back("/afs/cern.ch/work/c/cbaus/public/castortree/pPb_QGSJetII/treeMC.root"); sample_name.push_back("QGSJetIIDiffWeight150"); sample_type.push_back(MC);
+  //    sample_fname.push_back("/afs/cern.ch/work/c/cbaus/public/castortree/pPb_QGSJetII/treeMC.root"); sample_name.push_back("QGSJetIIDiffWeight200"); sample_type.push_back(MC);
+  //    sample_fname.push_back("/afs/cern.ch/work/c/cbaus/public/castortree/pPb_QGSJetII/treeMC.root"); sample_name.push_back("QGSJetIIDiffWeight452"); sample_type.push_back(MC);
+  //    sample_fname.push_back("/afs/cern.ch/work/c/cbaus/public/castortree/pPb_QGSJetII/treeMC.root"); sample_name.push_back("QGSJetIIDiffWeightOpt"); sample_type.push_back(MC);
+  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/DPMJet/treeMC.root"); sample_name.push_back("DPMJet"); sample_type.push_back(MC);
   sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/StarlightDPMjet_v2/treeMC.root"); sample_name.push_back("Starlight_DPMJet");  sample_type.push_back(MC);
   sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/StarlightPythia/treeMC.root"); sample_name.push_back("Starlight_Pythia");  sample_type.push_back(MC);
+  //    sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/DPMJet_pp/treeMC.root"); sample_name.push_back("DPMJet_pp"); sample_type.push_back(MC);
 
 #if _HFEnergyCalibration == 1
   TFile calibfile("plots/hf_calibration_data.root");
@@ -247,6 +248,16 @@ int main()
   TH1D* h_mc_diffraction_ND;
   TH1D* h_mc_diffraction_all;
 
+  TH1D* h_mc_pt_single;
+  TH1D* h_mc_pt_double;
+  TH1D* h_mc_pt_single_sel;
+  TH1D* h_mc_pt_double_sel;
+
+  TH1D* h_mc_pt_single_cut;
+  TH1D* h_mc_pt_double_cut;
+  TH1D* h_mc_pt_single_bg;
+  TH1D* h_mc_pt_double_bg;
+
   TH1D* h_mc_lrg_single;
   TH1D* h_mc_lrg_double;
   TH1D* h_mc_lrg_SD1;
@@ -255,6 +266,44 @@ int main()
   TH1D* h_mc_lrg_CD;
   TH1D* h_mc_lrg_ND;
   TH1D* h_mc_lrg_all;
+
+  TH1D* h_mc_lrg_plus_single;
+  TH1D* h_mc_lrg_plus_double;
+  TH1D* h_mc_lrg_plus_SD1;
+  TH1D* h_mc_lrg_plus_SD2;
+  TH1D* h_mc_lrg_plus_DD;
+  TH1D* h_mc_lrg_plus_CD;
+  TH1D* h_mc_lrg_plus_ND;
+  TH1D* h_mc_lrg_plus_all;
+
+  TH1D* h_mc_lrg_minus_single;
+  TH1D* h_mc_lrg_minus_double;
+  TH1D* h_mc_lrg_minus_SD1;
+  TH1D* h_mc_lrg_minus_SD2;
+  TH1D* h_mc_lrg_minus_DD;
+  TH1D* h_mc_lrg_minus_CD;
+  TH1D* h_mc_lrg_minus_ND;
+  TH1D* h_mc_lrg_minus_all;
+
+  TH1D* h_mc_lrg_1GeV_single;
+  TH1D* h_mc_lrg_1GeV_double;
+  TH1D* h_mc_lrg_1GeV_all;
+  TH1D* h_mc_lrg_5GeV_single;
+  TH1D* h_mc_lrg_5GeV_double;
+  TH1D* h_mc_lrg_5GeV_all;
+
+  TH1D* h_mc_diff_pt_single_SD1;
+  TH1D* h_mc_diff_pt_single_SD2;
+  TH1D* h_mc_diff_pt_single_DD;
+  TH1D* h_mc_diff_pt_single_CD;
+  TH1D* h_mc_diff_pt_single_ND;
+  TH1D* h_mc_diff_pt_single_all;
+  TH1D* h_mc_diff_pt_double_SD1;
+  TH1D* h_mc_diff_pt_double_SD2;
+  TH1D* h_mc_diff_pt_double_DD;
+  TH1D* h_mc_diff_pt_double_CD;
+  TH1D* h_mc_diff_pt_double_ND;
+  TH1D* h_mc_diff_pt_double_all;
 
   TH1D* h_mc_diff_e_single_SD1;
   TH1D* h_mc_diff_e_single_SD2;
@@ -314,28 +363,29 @@ int main()
         return 0;
       }
 
-      if (tree->GetEntries() == 0) {
+      double n_total = double(tree->GetEntries());
+      if (n_total == 0.) {
         cout << "No events found in file \"" << sample_fname[sample] << "\"" << endl;
         return 0;
       }
 
       //________________________________________________________________________________
 
-//       tree->SetBranchStatus("*", 1);
-//       tree->SetBranchStatus("event", 1);
-//       tree->SetBranchStatus("genProcessID", 1);
-//       tree->SetBranchStatus("GEN*", 1);
-//       tree->SetBranchStatus("*HFtowers*", 1);
-//       tree->SetBranchStatus("CASTOR*", 1);
-//       tree->SetBranchStatus("*lumi*", 1);
-//       tree->SetBranchStatus("*Lumi*", 1);
+      //       tree->SetBranchStatus("*", 1);
+      //       tree->SetBranchStatus("event", 1);
+      //       tree->SetBranchStatus("genProcessID", 1);
+      //       tree->SetBranchStatus("GEN*", 1);
+      //       tree->SetBranchStatus("*HFtowers*", 1);
+      //       tree->SetBranchStatus("CASTOR*", 1);
+      //       tree->SetBranchStatus("*lumi*", 1);
+      //       tree->SetBranchStatus("*Lumi*", 1);
 
-//       tree->SetBranchStatus("HLT_PAZeroBias_v1",1);
-//       tree->SetBranchStatus("HLT_PAL1Tech53_MB_SingleTrack_v1",1);
-//       tree->SetBranchStatus("HLT_PARandom_v1",1);
-//       tree->SetBranchStatus("L1Tech_BPTX_plus_AND_minus.v0_DecisionBeforeMask",1);
-//       tree->SetBranchStatus("L1Tech_BPTX_plus_AND_NOT_minus.v0_DecisionBeforeMask",1);
-//       tree->SetBranchStatus("L1Tech_BPTX_minus_AND_not_plus.v0_DecisionBeforeMask",1);
+      //       tree->SetBranchStatus("HLT_PAZeroBias_v1",1);
+      //       tree->SetBranchStatus("HLT_PAL1Tech53_MB_SingleTrack_v1",1);
+      //       tree->SetBranchStatus("HLT_PARandom_v1",1);
+      //       tree->SetBranchStatus("L1Tech_BPTX_plus_AND_minus.v0_DecisionBeforeMask",1);
+      //       tree->SetBranchStatus("L1Tech_BPTX_plus_AND_NOT_minus.v0_DecisionBeforeMask",1);
+      //       tree->SetBranchStatus("L1Tech_BPTX_minus_AND_not_plus.v0_DecisionBeforeMask",1);
 
       //________________________________________________________________________________
 
@@ -381,9 +431,9 @@ int main()
       h_hf_hits_coll_double       = new TH1D((add + string("_h_hf_hits_coll_double")).c_str(),"",100,log10(0.5),log10(500.));
       h_hf_hits_plus              = new TH1D((add + string("_h_hfp_hits_coll")).c_str(),"",100,log10(0.5),log10(500.));
       h_hf_hits_minus             = new TH1D((add + string("_h_hfm_hits_coll")).c_str(),"",100,log10(0.5),log10(500.));
-      h_hf_hitdistr_coll         = new TH1D((add + string("_h_hf_hitdistr_coll")).c_str(),"",100,log10(0.5),log10(500.));
-      h_hf_hitdistr_coll_p       = new TH1D((add + string("_h_hf_hitdistr_coll_p")).c_str(),"",100,log10(0.5),log10(500.));
-      h_hf_hitdistr_coll_m       = new TH1D((add + string("_h_hf_hitdistr_coll_m")).c_str(),"",100,log10(0.5),log10(500.));
+      h_hf_hitdistr_coll          = new TH1D((add + string("_h_hf_hitdistr_coll")).c_str(),"",100,log10(0.5),log10(500.));
+      h_hf_hitdistr_coll_p        = new TH1D((add + string("_h_hf_hitdistr_coll_p")).c_str(),"",100,log10(0.5),log10(500.));
+      h_hf_hitdistr_coll_m        = new TH1D((add + string("_h_hf_hitdistr_coll_m")).c_str(),"",100,log10(0.5),log10(500.));
 
       BinLogX(h_hf_hits_coll_single);
       BinLogX(h_hf_hits_coll_double);
@@ -422,9 +472,9 @@ int main()
           h_hf_hits_noise_double      = new TH1D((add + string("_h_hf_hits_noise_double")).c_str(),"",100,log10(0.5),log10(500.));
           h_hf_hits_noise_plus        = new TH1D((add + string("_h_hfp_hits_noise")).c_str(),"",100,log10(0.5),log10(500.));
           h_hf_hits_noise_minus       = new TH1D((add + string("_h_hfm_hits_noise")).c_str(),"",100,log10(0.5),log10(500.));
-          h_hf_hitdistr_noise        = new TH1D((add + string("_h_hf_hitdistr_noise")).c_str(),"",100,log10(0.5),log10(500.));
-          h_hf_hitdistr_noise_p      = new TH1D((add + string("_h_hf_hitdistr_noise_p")).c_str(),"",100,log10(0.5),log10(500.));
-          h_hf_hitdistr_noise_m      = new TH1D((add + string("_h_hf_hitdistr_noise_m")).c_str(),"",100,log10(0.5),log10(500.));
+          h_hf_hitdistr_noise         = new TH1D((add + string("_h_hf_hitdistr_noise")).c_str(),"",100,log10(0.5),log10(500.));
+          h_hf_hitdistr_noise_p       = new TH1D((add + string("_h_hf_hitdistr_noise_p")).c_str(),"",100,log10(0.5),log10(500.));
+          h_hf_hitdistr_noise_m       = new TH1D((add + string("_h_hf_hitdistr_noise_m")).c_str(),"",100,log10(0.5),log10(500.));
           BinLogX(h_hf_hits_noise_single);
           BinLogX(h_hf_hits_noise_double);
           BinLogX(h_hf_hits_noise_plus);
@@ -444,7 +494,7 @@ int main()
           h_run_events_lumi = new TProfile((add+string("_h_run_events_lumi")).c_str(),run_str.str().c_str(),2000,0,2000,"s");
 
 
-          h_random_trig_tracks_hf     = new TH2D((add + string("_h_random_trig_tracks_hf")).c_str(),"",200,0,20,20,0,20);
+          h_random_trig_tracks_hf          = new TH2D((add + string("_h_random_trig_tracks_hf")).c_str(),"",200,0,20,20,0,20);
 
           h_hf_noise_all_lumi              = new TH1D((add + string("_h_hf_noise_all_lumi")).c_str(),"",2000,0,2000);
           h_hf_noise_selected_single_lumi  = new TH1D((add + string("_h_hf_noise_selected_single_lumi")).c_str(),"",2000,0,2000);
@@ -475,8 +525,8 @@ int main()
       h_perf_hf_totE_ZBSingleTrack_noise   = new TH1D((add + string("_h_perf_hf_totE_ZBSingleTrack_noise")).c_str(),"",500,0,10);
       h_perf_hf_totE_eta_single_3gev       = new TH1D((add + string("_h_perf_hf_totE_eta_single_3gev")).c_str(),"",100,-5.2,5.2);
       h_perf_hf_totE_eta_double_1dot5gev   = new TH1D((add + string("_h_perf_hf_totE_eta_double_1dot5gev")).c_str(),"",100,-5.2,5.2);
-      h_perf_hf_totE_eta_lev_m   = new TH1D((add + string("_h_perf_hf_totE_eta_lev_m")).c_str(),"",neta_lev,eta_lev_m);
-      h_perf_hf_totE_eta_lev_p   = new TH1D((add + string("_h_perf_hf_totE_eta_lev_p")).c_str(),"",neta_lev,eta_lev_p);
+      h_perf_hf_totE_eta_lev_m     = new TH1D((add + string("_h_perf_hf_totE_eta_lev_m")).c_str(),"",neta_lev,eta_lev_m);
+      h_perf_hf_totE_eta_lev_p     = new TH1D((add + string("_h_perf_hf_totE_eta_lev_p")).c_str(),"",neta_lev,eta_lev_p);
       h_perf_hf_totE_eta_lev_n_m   = new TH1I((add + string("_h_perf_hf_totE_eta_lev_n_m")).c_str(),"",neta_lev,eta_lev_m);
       h_perf_hf_totE_eta_lev_n_p   = new TH1I((add + string("_h_perf_hf_totE_eta_lev_n_p")).c_str(),"",neta_lev,eta_lev_p);
       if(sample_type[sample] == MC)
@@ -489,31 +539,72 @@ int main()
           h_mc_diffraction_CD     = new TH1D((add + string("_h_mc_diffraction_CD")).c_str(),"",100,-9,2);
           h_mc_diffraction_ND     = new TH1D((add + string("_h_mc_diffraction_ND")).c_str(),"",100,-9,2);
           h_mc_diffraction_all    = new TH1D((add + string("_h_mc_diffraction_all")).c_str(),"",100,-9,2);
-          h_mc_lrg_single         = new TH1D((add + string("_h_mc_lrg_single")).c_str(),"",500,-1,20);
-          h_mc_lrg_double         = new TH1D((add + string("_h_mc_lrg_double")).c_str(),"",500,-1,20);
-          h_mc_lrg_SD1            = new TH1D((add + string("_h_mc_lrg_SD1")).c_str(),"",500,-1,20);
-          h_mc_lrg_SD2            = new TH1D((add + string("_h_mc_lrg_SD2")).c_str(),"",500,-1,20);
-          h_mc_lrg_CD             = new TH1D((add + string("_h_mc_lrg_CD")).c_str(),"",500,-1,20);
-          h_mc_lrg_DD             = new TH1D((add + string("_h_mc_lrg_DD")).c_str(),"",500,-1,20);
-          h_mc_lrg_ND             = new TH1D((add + string("_h_mc_lrg_ND")).c_str(),"",500,-1,20);
-          h_mc_lrg_all            = new TH1D((add + string("_h_mc_lrg_all")).c_str(),"",500,-1,20);
-          h_mc_diff_e_single_SD1    = new TH1D((add + string("_h_mc_diff_e_single_SD1")).c_str(),"",50,log10(0.5),log10(700));
-          h_mc_diff_e_single_SD2    = new TH1D((add + string("_h_mc_diff_e_single_SD2")).c_str(),"",50,log10(0.5),log10(700));
-          h_mc_diff_e_single_CD     = new TH1D((add + string("_h_mc_diff_e_single_CD")).c_str(),"",50,log10(0.5),log10(700));
-          h_mc_diff_e_single_DD     = new TH1D((add + string("_h_mc_diff_e_single_DD")).c_str(),"",50,log10(0.5),log10(700));
-          h_mc_diff_e_single_ND     = new TH1D((add + string("_h_mc_diff_e_single_ND")).c_str(),"",50,log10(0.5),log10(700));
-          h_mc_diff_e_single_all    = new TH1D((add + string("_h_mc_diff_e_single_all")).c_str(),"",50,log10(0.5),log10(700));
-          h_mc_diff_e_double_SD1    = new TH1D((add + string("_h_mc_diff_e_double_SD1")).c_str(),"",50,log10(0.5),log10(700));
-          h_mc_diff_e_double_SD2    = new TH1D((add + string("_h_mc_diff_e_double_SD2")).c_str(),"",50,log10(0.5),log10(700));
-          h_mc_diff_e_double_CD     = new TH1D((add + string("_h_mc_diff_e_double_CD")).c_str(),"",50,log10(0.5),log10(700));
-          h_mc_diff_e_double_DD     = new TH1D((add + string("_h_mc_diff_e_double_DD")).c_str(),"",50,log10(0.5),log10(700));
-          h_mc_diff_e_double_ND     = new TH1D((add + string("_h_mc_diff_e_double_ND")).c_str(),"",50,log10(0.5),log10(700));
-          h_mc_diff_e_double_all    = new TH1D((add + string("_h_mc_diff_e_double_all")).c_str(),"",50,log10(0.5),log10(700));
+
+          h_mc_lrg_single         = new TH1D((add + string("_h_mc_lrg_single")).c_str(),"",50,-1,10.5);
+          h_mc_lrg_double         = new TH1D((add + string("_h_mc_lrg_double")).c_str(),"",50,-1,10.5);
+          h_mc_lrg_SD1            = new TH1D((add + string("_h_mc_lrg_SD1")).c_str(),"",50,-1,10.5);
+          h_mc_lrg_SD2            = new TH1D((add + string("_h_mc_lrg_SD2")).c_str(),"",50,-1,10.5);
+          h_mc_lrg_CD             = new TH1D((add + string("_h_mc_lrg_CD")).c_str(),"",50,-1,10.5);
+          h_mc_lrg_DD             = new TH1D((add + string("_h_mc_lrg_DD")).c_str(),"",50,-1,10.5);
+          h_mc_lrg_ND             = new TH1D((add + string("_h_mc_lrg_ND")).c_str(),"",50,-1,10.5);
+          h_mc_lrg_all            = new TH1D((add + string("_h_mc_lrg_all")).c_str(),"",50,-1,10.5);
+
+          h_mc_lrg_plus_single    = new TH1D((add + string("_h_mc_lrg_plus_single")).c_str(),"",50,-1,10.5);
+          h_mc_lrg_plus_double    = new TH1D((add + string("_h_mc_lrg_plus_double")).c_str(),"",50,-1,10.5);
+          h_mc_lrg_plus_SD1       = new TH1D((add + string("_h_mc_lrg_plus_SD1")).c_str(),"",50,-1,10.5);
+          h_mc_lrg_plus_SD2       = new TH1D((add + string("_h_mc_lrg_plus_SD2")).c_str(),"",50,-1,10.5);
+          h_mc_lrg_plus_CD        = new TH1D((add + string("_h_mc_lrg_plus_CD")).c_str(),"",50,-1,10.5);
+          h_mc_lrg_plus_DD        = new TH1D((add + string("_h_mc_lrg_plus_DD")).c_str(),"",50,-1,10.5);
+          h_mc_lrg_plus_ND        = new TH1D((add + string("_h_mc_lrg_plus_ND")).c_str(),"",50,-1,10.5);
+          h_mc_lrg_plus_all       = new TH1D((add + string("_h_mc_lrg_plus_all")).c_str(),"",50,-1,10.5);
+
+          h_mc_lrg_minus_single   = new TH1D((add + string("_h_mc_lrg_minus_single")).c_str(),"",50,-1,10.5);
+          h_mc_lrg_minus_double   = new TH1D((add + string("_h_mc_lrg_minus_double")).c_str(),"",50,-1,10.5);
+          h_mc_lrg_minus_SD1      = new TH1D((add + string("_h_mc_lrg_minus_SD1")).c_str(),"",50,-1,10.5);
+          h_mc_lrg_minus_SD2      = new TH1D((add + string("_h_mc_lrg_minus_SD2")).c_str(),"",50,-1,10.5);
+          h_mc_lrg_minus_CD       = new TH1D((add + string("_h_mc_lrg_minus_CD")).c_str(),"",50,-1,10.5);
+          h_mc_lrg_minus_DD       = new TH1D((add + string("_h_mc_lrg_minus_DD")).c_str(),"",50,-1,10.5);
+          h_mc_lrg_minus_ND       = new TH1D((add + string("_h_mc_lrg_minus_ND")).c_str(),"",50,-1,10.5);
+          h_mc_lrg_minus_all      = new TH1D((add + string("_h_mc_lrg_minus_all")).c_str(),"",50,-1,10.5);
+
+          h_mc_lrg_1GeV_single   = new TH1D((add + string("_h_mc_lrg_1GeV_single")).c_str(),"",50,-1,10.5);
+          h_mc_lrg_1GeV_double   = new TH1D((add + string("_h_mc_lrg_1GeV_double")).c_str(),"",50,-1,10.5);
+          h_mc_lrg_1GeV_all      = new TH1D((add + string("_h_mc_lrg_1GeV_all")).c_str(),"",50,-1,10.5);
+
+          h_mc_lrg_5GeV_single   = new TH1D((add + string("_h_mc_lrg_5GeV_single")).c_str(),"",50,-1,10.5);
+          h_mc_lrg_5GeV_double   = new TH1D((add + string("_h_mc_lrg_5GeV_double")).c_str(),"",50,-1,10.5);
+          h_mc_lrg_5GeV_all      = new TH1D((add + string("_h_mc_lrg_5GeV_all")).c_str(),"",50,-1,10.5);
+
+          h_mc_diff_pt_single_SD1  = new TH1D((add + string("_h_mc_diff_pt_single_SD1")).c_str(),"",81,-0.25,4.25);
+          h_mc_diff_pt_single_SD2  = new TH1D((add + string("_h_mc_diff_pt_single_SD2")).c_str(),"",81,-0.25,4.25);
+          h_mc_diff_pt_single_CD   = new TH1D((add + string("_h_mc_diff_pt_single_CD")).c_str(),"",81,-0.25,4.25);
+          h_mc_diff_pt_single_DD   = new TH1D((add + string("_h_mc_diff_pt_single_DD")).c_str(),"",81,-0.25,4.25);
+          h_mc_diff_pt_single_ND   = new TH1D((add + string("_h_mc_diff_pt_single_ND")).c_str(),"",81,-0.25,4.25);
+          h_mc_diff_pt_single_all  = new TH1D((add + string("_h_mc_diff_pt_single_all")).c_str(),"",81,-0.25,4.25);
+          h_mc_diff_pt_double_SD1  = new TH1D((add + string("_h_mc_diff_pt_double_SD1")).c_str(),"",81,-0.25,4.25);
+          h_mc_diff_pt_double_SD2  = new TH1D((add + string("_h_mc_diff_pt_double_SD2")).c_str(),"",81,-0.25,4.25);
+          h_mc_diff_pt_double_CD   = new TH1D((add + string("_h_mc_diff_pt_double_CD")).c_str(),"",81,-0.25,4.25);
+          h_mc_diff_pt_double_DD   = new TH1D((add + string("_h_mc_diff_pt_double_DD")).c_str(),"",81,-0.25,4.25);
+          h_mc_diff_pt_double_ND   = new TH1D((add + string("_h_mc_diff_pt_double_ND")).c_str(),"",81,-0.25,4.25);
+          h_mc_diff_pt_double_all  = new TH1D((add + string("_h_mc_diff_pt_double_all")).c_str(),"",81,-0.25,4.25);
+
           h_mc_lrg_xi             = new TH2D((add + string("_h_mc_lrg_xi")).c_str(),"",200,-9.5,2,500,-1,20);
           h_mc_lrg_xiy            = new TH2D((add + string("_h_mc_lrg_xiy")).c_str(),"",200,-9.5,2,500,-1,20);
           h_mc_xix_xiy            = new TH2D((add + string("_h_mc_xix_xiy")).c_str(),"",200,-9.5,2,200,-9.5,2);
-          h_mc_unfold            = new TH2D((add + string("_h_mc_unfold")).c_str(),"",15,0,200,15,0,200);
+          h_mc_unfold             = new TH2D((add + string("_h_mc_unfold")).c_str(),"",15,0,200,15,0,200);
 
+          h_mc_diff_e_single_SD1  = new TH1D((add + string("_h_mc_diff_e_single_SD1")).c_str(),"",50,log10(0.5),log10(700));
+          h_mc_diff_e_single_SD2  = new TH1D((add + string("_h_mc_diff_e_single_SD2")).c_str(),"",50,log10(0.5),log10(700));
+          h_mc_diff_e_single_CD   = new TH1D((add + string("_h_mc_diff_e_single_CD")).c_str(),"",50,log10(0.5),log10(700));
+          h_mc_diff_e_single_DD   = new TH1D((add + string("_h_mc_diff_e_single_DD")).c_str(),"",50,log10(0.5),log10(700));
+          h_mc_diff_e_single_ND   = new TH1D((add + string("_h_mc_diff_e_single_ND")).c_str(),"",50,log10(0.5),log10(700));
+          h_mc_diff_e_single_all  = new TH1D((add + string("_h_mc_diff_e_single_all")).c_str(),"",50,log10(0.5),log10(700));
+          h_mc_diff_e_double_SD1  = new TH1D((add + string("_h_mc_diff_e_double_SD1")).c_str(),"",50,log10(0.5),log10(700));
+          h_mc_diff_e_double_SD2  = new TH1D((add + string("_h_mc_diff_e_double_SD2")).c_str(),"",50,log10(0.5),log10(700));
+          h_mc_diff_e_double_CD   = new TH1D((add + string("_h_mc_diff_e_double_CD")).c_str(),"",50,log10(0.5),log10(700));
+          h_mc_diff_e_double_DD   = new TH1D((add + string("_h_mc_diff_e_double_DD")).c_str(),"",50,log10(0.5),log10(700));
+          h_mc_diff_e_double_ND   = new TH1D((add + string("_h_mc_diff_e_double_ND")).c_str(),"",50,log10(0.5),log10(700));
+          h_mc_diff_e_double_all  = new TH1D((add + string("_h_mc_diff_e_double_all")).c_str(),"",50,log10(0.5),log10(700));
           BinLogX(h_mc_diff_e_single_SD1);
           BinLogX(h_mc_diff_e_single_SD2);
           BinLogX(h_mc_diff_e_single_CD);
@@ -527,6 +618,19 @@ int main()
           BinLogX(h_mc_diff_e_double_ND);
           BinLogX(h_mc_diff_e_double_all);
 
+	  h_mc_pt_single        = new TH1D((add + string("_h_mc_pt_single")).c_str(),"",50,log10(1e-3),log10(1e2));
+	  h_mc_pt_double        = new TH1D((add + string("_h_mc_pt_double")).c_str(),"",50,log10(1e-3),log10(1e2));
+	  h_mc_pt_single_sel    = new TH1D((add + string("_h_mc_pt_single_sel")).c_str(),"",50,log10(1e-3),log10(1e2));
+	  h_mc_pt_double_sel    = new TH1D((add + string("_h_mc_pt_double_sel")).c_str(),"",50,log10(1e-3),log10(1e2));
+	  h_mc_pt_single_cut = new TH1D((add + string("_h_mc_pt_single_cut")).c_str(),"",81,-0.025,4.025);
+	  h_mc_pt_double_cut = new TH1D((add + string("_h_mc_pt_double_cut")).c_str(),"",81,-0.025,4.025);
+	  h_mc_pt_single_bg = new TH1D((add + string("_h_mc_pt_single_bg")).c_str(),"",81,-0.025,4.025);
+	  h_mc_pt_double_bg = new TH1D((add + string("_h_mc_pt_double_bg")).c_str(),"",81,-0.025,4.025);
+          BinLogX(h_mc_pt_single);
+          BinLogX(h_mc_pt_double);
+          BinLogX(h_mc_pt_single_sel);
+          BinLogX(h_mc_pt_double_sel);
+
           h_mc_rapidity           = new TH1D((add + string("_h_mc_rapidity")).c_str(),"",100,-12,12);
           h_mc_eta_e              = new TH1D((add + string("_h_mc_eta_e")).c_str(),"",100,-12,12);
           h_mc_eta_e_SD1          = new TH1D((add + string("_h_mc_eta_e_SD1")).c_str(),"",100,-12,12);
@@ -534,6 +638,7 @@ int main()
           h_mc_eta_e_CD           = new TH1D((add + string("_h_mc_eta_e_CD")).c_str(),"",100,-12,12);
           h_mc_eta_e_DD           = new TH1D((add + string("_h_mc_eta_e_DD")).c_str(),"",100,-12,12);
           h_mc_eta_e_ND           = new TH1D((add + string("_h_mc_eta_e_ND")).c_str(),"",100,-12,12);
+
           h_mc_eff                = new TH1D((add + string("_h_mc_eff")).c_str(),"",9,-0.5,8.5);
           h_mc_eff->GetXaxis()->SetBinLabel(1,"All");
           h_mc_eff->GetXaxis()->SetBinLabel(2,"HF single > 6 GeV");
@@ -562,7 +667,6 @@ int main()
           h_mc_effgain_double->GetXaxis()->SetBinLabel(7,"CASTOR E_{tot} > 12.5 GeV");
         }
 
-      double n_total = double(tree->GetEntries());
       if(_MAXEVT<n_total && _MAXEVT>0)
         n_total = double(_MAXEVT);
 
@@ -692,8 +796,16 @@ int main()
           const double s = 5020*5020;
           double m_m=0, m_x=0, xi_x=0;
           double m_p=0, m_y=0, xi_y=0;
+          double rapGapPlus=-1;
+          double rapGapMinus=-1;
           double rapGap=-1;
+          double rapGap1GeV=-1;
+          double rapGap5GeV=-1;
+          double ymin = -5.2;
+          double ymax = 5.2;
           double gen_HF_E=0;
+          double gen_HF_pt_double=0;
+          double gen_HF_pt_single=0;
           bool SD1 = event->genProcessID == 103; //lead dissociates
           bool SD2 = event->genProcessID == 104;
           bool DD = event->genProcessID == 105;
@@ -707,7 +819,11 @@ int main()
 
           if(sample_type[sample] == MC)
             {
-              multimap<double,GenParticle*> rapidityMassMap;
+	      double gen_HF_pt_minus = 0;
+	      double gen_HF_pt_plus = 0;
+              multimap<double,GenParticle*> rapidityMassMap_1GeV;
+              multimap<double,GenParticle*> rapidityMassMap_5GeV;
+              multimap<double,GenParticle*> rapidityMassMap_10GeV;
               if(event->GEN.size() == 0)
                 {
                   cerr << endl << " Empty event... skipping. (" << iEvent<< ")" << endl;
@@ -727,12 +843,20 @@ int main()
 
                   double eta=it->GetEta();
                   double energy=it->GetEnergy();
+                  double pt=it->GetTransverseMomentum();
 
                   if(3 < fabs(eta) && fabs(eta) < 5 && energy > gen_HF_E)
                     gen_HF_E = energy;
 
-                  double Rapidity= it->GetRapidity();
-                  h_mc_rapidity->Fill(Rapidity);
+                  if(-5 < eta && eta < -3 && pt > gen_HF_pt_minus)
+                    gen_HF_pt_minus = pt;
+                  if(+3 < eta && eta < +5 && pt > gen_HF_pt_plus)
+                    gen_HF_pt_plus = pt;
+
+                  double Rapidity= eta;//it->GetRapidity();
+                  if (pt > 0.2 && Rapidity > ymin && Rapidity < ymax)
+		    h_mc_rapidity->Fill(Rapidity);
+
                   h_mc_eta_e->Fill(eta,evtWeight);
                   if(SD1)
                     h_mc_eta_e_SD1->Fill(eta,evtWeight);
@@ -744,62 +868,120 @@ int main()
                     h_mc_eta_e_DD->Fill(eta,evtWeight);
                   if(ND)
                     h_mc_eta_e_ND->Fill(eta,evtWeight);
-                  rapidityMassMap.insert(pair<double,GenParticle*>(Rapidity,&(*it)));
-                }
-              assert(rapidityMassMap.size() >= 2); //Assume 2 or more final usable particles
 
-              multimap<double,GenParticle*>::const_iterator thisIsIt; //start of m_x
-              int n=0;
-              for (multimap<double,GenParticle*>::const_iterator it = rapidityMassMap.begin(); it != rapidityMassMap.end(); ++it)
+		  if (eta > ymin && eta < ymax)
+		    {
+		      if (pt > 0.005)  rapidityMassMap_1GeV. insert(pair<double,GenParticle*>(eta,&(*it)));
+		      if (pt > 0.05)  rapidityMassMap_5GeV. insert(pair<double,GenParticle*>(eta,&(*it)));
+		      if (pt > 0.5) rapidityMassMap_10GeV.insert(pair<double,GenParticle*>(eta,&(*it)));
+		    }
+		}
+	      gen_HF_pt_single = TMath::Max(gen_HF_pt_minus,gen_HF_pt_plus);
+	      gen_HF_pt_double = TMath::Min(gen_HF_pt_minus,gen_HF_pt_plus);
+
+	      multimap<double,GenParticle*>& rapidityMassMap = rapidityMassMap_1GeV;		  
+              if(rapidityMassMap.size() >= 1) //Assume 1 or more final usable particles
+                {		  
+		  multimap<double,GenParticle*>::const_iterator thisIsIt; //start of m_x
+		  int n=0;
+
+		  rapGapMinus = fabs(rapidityMassMap.begin()->second->GetEta() - ymin);
+		  multimap<double,GenParticle*>::const_iterator it = rapidityMassMap.end();
+		  --it;
+		  rapGapPlus = fabs(it->second->GetEta() - ymax);
+		  rapGap = TMath::Min(rapGapPlus,rapGapMinus);
+		}
+	      rapidityMassMap = rapidityMassMap_5GeV;
+	      rapGap1GeV = rapGap;
+	      rapGap = rapGapMinus = rapGapPlus = -1;
+              if(rapidityMassMap.size() >= 1) //Assume 1 or more final usable particles
                 {
-                  //if(SD2) cout << n++ << " " << it->second->Id << ": E=" << it->second->GetEnergy() << "  --  eta=" << it->second->GetEta() << "  --  y=" << it->second->GetRapidity() << endl;
-                  if (it == rapidityMassMap.begin())
-                    continue;
-                  multimap<double,GenParticle*>::const_iterator it1=--it;
-                  ++it;
-                  double thisRapGap = fabs(it->second->GetRapidity() - it1->second->GetRapidity());
-                  //if(SD2) cout << it->second->GetRapidity() << " " << it1->second->GetRapidity();
-                  if(!TMath::Finite(thisRapGap) || TMath::IsNaN(thisRapGap))
-                    continue;
-                  //cerr << "   !!! ! PARTICLES WITH INFINITE RAP DETECTED " << distance(event->GEN.begin(),it) << " " << it->GetRapidity() << " " << it->Id << endl;
+		  multimap<double,GenParticle*>::const_iterator thisIsIt; //start of m_x
+		  int n=0;
 
-                  if (thisRapGap > rapGap)
-                    {
-                      //if(SD2) cout << " blib";
-                      rapGap = thisRapGap;
-                      thisIsIt = it;
-                    }
-                  //if(SD2) cout << endl;
-                }
-              TLorentzVector vecM(0,0,0,0);
-              multimap<double,GenParticle*>::const_iterator it = rapidityMassMap.begin();
-              for (; it != thisIsIt; ++it)
+		  rapGapMinus = fabs(rapidityMassMap.begin()->second->GetEta() - ymin);
+		  multimap<double,GenParticle*>::const_iterator it = rapidityMassMap.end();
+		  --it;
+		  rapGapPlus = fabs(it->second->GetEta() - ymax);
+		  rapGap = TMath::Min(rapGapPlus,rapGapMinus);
+		}
+	      rapidityMassMap = rapidityMassMap_10GeV;
+	      rapGap5GeV = rapGap;
+	      rapGap = rapGapMinus = rapGapPlus = -1;
+              if(rapidityMassMap.size() >= 1) //Assume 1 or more final usable particles
                 {
-                  if(it->second->GetEta() > 1e9) //skip fragments only for mass calculation
-                    continue;
-                  TLorentzVector vec(it->second->Px,it->second->Py,it->second->Pz,it->second->GetEnergy());
-                  vecM += vec;
-                }
-              m_m = vecM.M();
+		  multimap<double,GenParticle*>::const_iterator thisIsIt; //start of m_x
+		  int n=0;
 
-              TLorentzVector vecP(0,0,0,0);
-              multimap<double,GenParticle*>::const_iterator it2 = thisIsIt;
-              for (; it2 != rapidityMassMap.end(); ++it2)
-                {
-                  if(it->second->GetEta() > 1e9) //skip fragments only for mass calculation
-                    continue;
-                  TLorentzVector vec(it2->second->Px,it2->second->Py,it2->second->Pz,it2->second->GetEnergy());
-                  vecP += vec;
-                }
-              m_p = vecP.M();
-              //if (SD2 && rapGap< 2) cout << "HERE HERE HERE " << m_x << " " << m_y << endl; //WARNING
+		  rapGapMinus = fabs(rapidityMassMap.begin()->second->GetEta() - ymin);
+		  multimap<double,GenParticle*>::const_iterator it = rapidityMassMap.end();
+		  --it;
+		  rapGapPlus = fabs(it->second->GetEta() - ymax);
+		  rapGap = TMath::Min(rapGapPlus,rapGapMinus);
+		}
 
-              m_x = TMath::Max(m_m,m_p);
-              m_y = TMath::Min(m_m,m_p);
+		  //               for (multimap<double,GenParticle*>::const_iterator it = rapidityMassMap.begin(); it != rapidityMassMap.end(); ++it)
+		  //                 {
+		  //                   //if(SD2) cout << n++ << " " << it->second->Id << ": E=" << it->second->GetEnergy() << "  --  eta=" << it->second->GetEta() << "  --  y=" << it->second->GetRapidity() << endl;
+		  //                   double thisRapGap = -1;
+		  //                   if (it == rapidityMassMap.begin())
+		  //                     {
+		  //                       thisRapGap = it->second->GetRapidity() - ymin;
+		  //                     }
+		  //                   else
+		  //                     {
+		  //                       multimap<double,GenParticle*>::const_iterator it1=--it;
+		  //                       ++it;
+		  //                       thisRapGap = fabs(it->second->GetRapidity() - it1->second->GetRapidity());
 
-              xi_x = m_x*m_x / s;
-              xi_y = m_y*m_y / s;
-              //cout << "----------- !! M_X=" << m_x << "    M_Y=" << m_y << endl;
+		  //                       if (it == rapidityMassMap.end())
+		  //                         {
+		  //                           if (fabs(it->second->GetRapidity() - ymax) > thisRapGap)
+		  //                             thisRapGap = fabs(it->second->GetRapidity() - ymax);
+		  //                         }
+		  //                     }
+		  //                   //if(SD2) cout << it->second->GetRapidity() << " " << it1->second->GetRapidity();
+		  //                   if(!TMath::Finite(thisRapGap) || TMath::IsNaN(thisRapGap))
+		  //                     continue;
+		  //                   //cerr << "   !!! ! PARTICLES WITH INFINITE RAP DETECTED " << distance(event->GEN.begin(),it) << " " << it->GetRapidity() << " " << it->Id << endl;
+
+		  //                   if (thisRapGap > rapGap)
+		  //                     {
+		  //                       //if(SD2) cout << " blib";
+		  //                       rapGap = thisRapGap;
+		  //                       thisIsIt = it;
+		  //                     }
+		  //                   //if(SD2) cout << endl;
+		  //                 }
+		  //               TLorentzVector vecM(0,0,0,0);
+		  //               multimap<double,GenParticle*>::const_iterator it = rapidityMassMap.begin();
+		  //               for (; it != thisIsIt; ++it)
+		  //                 {
+		  //                   if(it->second->GetEta() > 1e9) //skip fragments only for mass calculation
+		  //                     continue;
+		  //                   TLorentzVector vec(it->second->Px,it->second->Py,it->second->Pz,it->second->GetEnergy());
+		  //                   vecM += vec;
+		  //                 }
+		  //               m_m = vecM.M();
+
+		  //               TLorentzVector vecP(0,0,0,0);
+		  //               multimap<double,GenParticle*>::const_iterator it2 = thisIsIt;
+		  //               for (; it2 != rapidityMassMap.end(); ++it2)
+		  //                 {
+		  //                   if(it->second->GetEta() > 1e9) //skip fragments only for mass calculation
+		  //                     continue;
+		  //                   TLorentzVector vec(it2->second->Px,it2->second->Py,it2->second->Pz,it2->second->GetEnergy());
+		  //                   vecP += vec;
+		  //                 }
+		  //               m_p = vecP.M();
+		  //               //if (SD2 && rapGap< 2) cout << "HERE HERE HERE " << m_x << " " << m_y << endl; //WARNING
+
+		  //               m_x = TMath::Max(m_m,m_p);
+		  //               m_y = TMath::Min(m_m,m_p);
+
+		  //               xi_x = m_x*m_x / s;
+		  //               xi_y = m_y*m_y / s;
+		  //               //cout << "----------- !! M_X=" << m_x << "    M_Y=" << m_y << endl;
             }
           if(sample_type[sample]==DATA)
             evtWeight = double(prescale);
@@ -890,7 +1072,7 @@ int main()
                   const int Ieta = eta>0?it->IetaAbs:-it->IetaAbs;
                   const double c_lev = eta<0?c_lev_m[-Ieta-29]:c_lev_p[Ieta-29];
                   double tower_e = it->Energy;
-#if _HFEnergyCalibration == 1 
+#if _HFEnergyCalibration == 1
                   if(sample_type[sample]==MC)
                     {
                       //cout << "Ieta: " << Ieta << "tower e: " << tower_e << " -> " << tower_e/c_lev << endl;
@@ -898,7 +1080,7 @@ int main()
                       //cout << Ieta << " " << eta << " " << c_lev << endl;
                     }
 #endif
-#if _HFEnergyCalibration == 2 
+#if _HFEnergyCalibration == 2
                   if(sample_type[sample]==DATA)
                     {
                       //cout << "Ieta: " << Ieta << "tower e: " << tower_e << " -> " << tower_e/c_lev << endl;
@@ -982,7 +1164,6 @@ int main()
               if(!(hf_double_energy_max > 4) && event->Tracks.size()>=1)           h_mc_effgain_double->Fill(5.,evtWeight);
               if(!(hf_double_energy_max > 4) && castor_tag)                        h_mc_effgain_double->Fill(6.,evtWeight);
 
-
               if(coll && hf_single_tag)                                 h_mc_diffraction_single->Fill(log10(xi_x),evtWeight);
               if(coll && hf_double_tag)                                 h_mc_diffraction_double->Fill(log10(xi_x),evtWeight);
               if(coll && SD1)                                           h_mc_diffraction_SD1->Fill(log10(xi_x),evtWeight);
@@ -991,6 +1172,19 @@ int main()
               if(coll && CD)                                            h_mc_diffraction_CD->Fill(log10(xi_x),evtWeight);
               if(coll && ND)                                            h_mc_diffraction_ND->Fill(log10(xi_x),evtWeight);
               if(coll)                                                  h_mc_diffraction_all->Fill(log10(xi_x),evtWeight);
+
+              if(coll && SD1)                                           h_mc_diff_pt_single_SD1->Fill(gen_HF_pt_single,evtWeight);
+              if(coll && SD2)                                           h_mc_diff_pt_single_SD2->Fill(gen_HF_pt_single,evtWeight);
+              if(coll && DD)                                            h_mc_diff_pt_single_DD->Fill(gen_HF_pt_single,evtWeight);
+              if(coll && CD)                                            h_mc_diff_pt_single_CD->Fill(gen_HF_pt_single,evtWeight);
+              if(coll && ND)                                            h_mc_diff_pt_single_ND->Fill(gen_HF_pt_single,evtWeight);
+              if(coll)                                                  h_mc_diff_pt_single_all->Fill(gen_HF_pt_single,evtWeight);
+              if(coll && SD1)                                           h_mc_diff_pt_double_SD1->Fill(gen_HF_pt_double,evtWeight);
+              if(coll && SD2)                                           h_mc_diff_pt_double_SD2->Fill(gen_HF_pt_double,evtWeight);
+              if(coll && DD)                                            h_mc_diff_pt_double_DD->Fill(gen_HF_pt_double,evtWeight);
+              if(coll && CD)                                            h_mc_diff_pt_double_CD->Fill(gen_HF_pt_double,evtWeight);
+              if(coll && ND)                                            h_mc_diff_pt_double_ND->Fill(gen_HF_pt_double,evtWeight);
+              if(coll)                                                  h_mc_diff_pt_double_all->Fill(gen_HF_pt_double,evtWeight);
 
               if(coll && SD1)                                           h_mc_diff_e_single_SD1->Fill(hf_single_energy_max,evtWeight);
               if(coll && SD2)                                           h_mc_diff_e_single_SD2->Fill(hf_single_energy_max,evtWeight);
@@ -1013,9 +1207,49 @@ int main()
               if(coll && CD)                                            h_mc_lrg_CD->Fill(rapGap,evtWeight);
               if(coll && ND)                                            h_mc_lrg_ND->Fill(rapGap,evtWeight);
               if(coll)                                                  h_mc_lrg_all->Fill(rapGap,evtWeight);
+
+              if(coll && hf_single_tag)                                 h_mc_lrg_minus_single->Fill(rapGapMinus,evtWeight);
+              if(coll && hf_double_tag)                                 h_mc_lrg_minus_double->Fill(rapGapMinus,evtWeight);
+              if(coll && SD1)                                           h_mc_lrg_minus_SD1->Fill(rapGapMinus,evtWeight);
+              if(coll && SD2)                                           h_mc_lrg_minus_SD2->Fill(rapGapMinus,evtWeight);
+              if(coll && DD)                                            h_mc_lrg_minus_DD->Fill(rapGapMinus,evtWeight);
+              if(coll && CD)                                            h_mc_lrg_minus_CD->Fill(rapGapMinus,evtWeight);
+              if(coll && ND)                                            h_mc_lrg_minus_ND->Fill(rapGapMinus,evtWeight);
+              if(coll)                                                  h_mc_lrg_minus_all->Fill(rapGapMinus,evtWeight);
+
+              if(coll && hf_single_tag)                                 h_mc_lrg_plus_single->Fill(rapGapPlus,evtWeight);
+              if(coll && hf_double_tag)                                 h_mc_lrg_plus_double->Fill(rapGapPlus,evtWeight);
+              if(coll && SD1)                                           h_mc_lrg_plus_SD1->Fill(rapGapPlus,evtWeight);
+              if(coll && SD2)                                           h_mc_lrg_plus_SD2->Fill(rapGapPlus,evtWeight);
+              if(coll && DD)                                            h_mc_lrg_plus_DD->Fill(rapGapPlus,evtWeight);
+              if(coll && CD)                                            h_mc_lrg_plus_CD->Fill(rapGapPlus,evtWeight);
+              if(coll && ND)                                            h_mc_lrg_plus_ND->Fill(rapGapPlus,evtWeight);
+              if(coll)                                                  h_mc_lrg_plus_all->Fill(rapGapPlus,evtWeight);
+
+              if(coll && hf_single_tag)                                 h_mc_lrg_1GeV_single->Fill(rapGap1GeV,evtWeight);
+              if(coll && hf_double_tag)                                 h_mc_lrg_1GeV_double->Fill(rapGap1GeV,evtWeight);
+              if(coll)                                                  h_mc_lrg_1GeV_all->Fill(rapGap1GeV,evtWeight);
+
+              if(coll && hf_single_tag)                                 h_mc_lrg_5GeV_single->Fill(rapGap5GeV,evtWeight);
+              if(coll && hf_double_tag)                                 h_mc_lrg_5GeV_double->Fill(rapGap5GeV,evtWeight);
+              if(coll)                                                  h_mc_lrg_5GeV_all->Fill(rapGap5GeV,evtWeight);
+
               if(coll)                                                  h_mc_lrg_xi->Fill(log10(xi_x),rapGap);
               if(coll)                                                  h_mc_lrg_xiy->Fill(log10(xi_y),rapGap);
               if(coll)                                                  h_mc_xix_xiy->Fill(log10(xi_x),log10(xi_y));
+
+              if(coll)                                                  h_mc_pt_single->Fill(gen_HF_pt_single,evtWeight);
+              if(coll)                                                  h_mc_pt_double->Fill(gen_HF_pt_double,evtWeight);
+              if(coll && hf_single_tag)                                 h_mc_pt_single_sel->Fill(gen_HF_pt_single,evtWeight);
+              if(coll && hf_double_tag)                                 h_mc_pt_double_sel->Fill(gen_HF_pt_double,evtWeight);
+
+              for (double cut=0; cut < 4; cut+=0.05)
+                { // bin 1 contains all events
+                  if(coll && hf_single_tag && gen_HF_pt_single >= cut)  h_mc_pt_single_cut->Fill(cut,evtWeight);
+                  if(coll && hf_double_tag && gen_HF_pt_double >= cut)  h_mc_pt_double_cut->Fill(cut,evtWeight);
+                  if(coll && !hf_single_tag && gen_HF_pt_single >= cut) h_mc_pt_single_bg->Fill(cut,evtWeight);
+                  if(coll && !hf_double_tag && gen_HF_pt_double >= cut) h_mc_pt_double_bg->Fill(cut,evtWeight);
+                }
 
               if(coll)                                                  h_mc_unfold->Fill(hf_single_energy_max,gen_HF_E);
             }
@@ -1104,18 +1338,18 @@ int RingToIeta(int ring)
 void BinLogX(TH1* h)
 {
 
-   TAxis *axis = h->GetXaxis();
-   int bins = axis->GetNbins();
+  TAxis *axis = h->GetXaxis();
+  int bins = axis->GetNbins();
 
-   Axis_t from = axis->GetXmin();
-   Axis_t to = axis->GetXmax();
-   Axis_t width = (to - from) / bins;
-   Axis_t *new_bins = new Axis_t[bins + 1];
+  Axis_t from = axis->GetXmin();
+  Axis_t to = axis->GetXmax();
+  Axis_t width = (to - from) / bins;
+  Axis_t *new_bins = new Axis_t[bins + 1];
 
-   for (int i = 0; i <= bins; i++) {
-     new_bins[i] = TMath::Power(10, from + i * width);
+  for (int i = 0; i <= bins; i++) {
+    new_bins[i] = TMath::Power(10, from + i * width);
 
-   }
-   axis->Set(bins, new_bins);
-   delete new_bins;
+  }
+  axis->Set(bins, new_bins);
+  delete new_bins;
 }

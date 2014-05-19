@@ -14,7 +14,10 @@
 
 using namespace std;
 
-void SetAttributes(TH1D* theGraph, int colour, int marker)
+#define WITH_ALICE 1
+
+template<typename T>
+void SetAttributes(T* theGraph, int colour, int marker)
 {
   theGraph->SetMarkerSize(1.5);
   theGraph->SetLineWidth(1.8);
@@ -30,6 +33,14 @@ void makePlots_concl3()
   style();
   gStyle->SetPadTopMargin(0.07);
 
+  //Get Hadron Level uncertainty
+  TFile f0("plots/corr_factors_hadron.root");
+  TVectorD* cor_fac_had    = NULL;
+  TVectorD* cor_fac_had_pt = NULL;
+  cor_fac_had    = (TVectorD*)f0.Get("corr_fac_had");
+  cor_fac_had_e  = (TVectorD*)f0.Get("corr_fac_had_e");
+  f0.Close();
+
   //Uncertainty values
   double s_lumi = 3.5, d_lumi = 3.5;
   double s_pu = 0.1, d_pu = 0.1;
@@ -39,27 +50,17 @@ void makePlots_concl3()
   double s_mod = 1.7, d_mod = 0.8;
   double s_sel = 0.6, d_sel = 0.2;
   double s_noi = 1.2, d_noi = 0.2;
+  double s_hadlvl = (*cor_fac_had_e)[0]*100., d_hadlvl = (*cor_fac_had_e)[1]*100.;
 
   double s_withoutl = sqrt(pow(s_pu,2)+pow(s_acc,2)+pow(s_diff,2)+pow(s_em,2)+pow(s_mod,2)+pow(s_sel,2)+pow(s_noi,2));
   double d_withoutl = sqrt(pow(d_pu,2)+pow(d_acc,2)+pow(d_diff,2)+pow(d_em,2)+pow(d_mod,2)+pow(d_sel,2)+pow(d_noi,2));
-  double s_vis = sqrt(pow(s_lumi,2)+pow(s_pu,2)+pow(s_sel,2)+pow(s_noi,2));
-  double d_vis = sqrt(pow(d_lumi,2)+pow(d_pu,2)+pow(d_sel,2)+pow(d_noi,2));
-  double s_had = sqrt(pow(s_lumi,2)+pow(s_pu,2)+pow(s_em,2)+pow(s_sel,2)+pow(s_noi,2));
-  double d_had = sqrt(pow(d_lumi,2)+pow(d_pu,2)+pow(d_em,2)+pow(d_sel,2)+pow(d_noi,2));
-  double s_inel = sqrt(pow(s_lumi,2)+pow(s_pu,2)+pow(s_acc,2)+pow(s_diff,2)+pow(s_em,2)+pow(s_mod,2)+pow(s_sel,2)+pow(s_noi,2));
-  double d_inel = sqrt(pow(d_lumi,2)+pow(d_pu,2)+pow(d_acc,2)+pow(d_diff,2)+pow(d_em,2)+pow(d_mod,2)+pow(d_sel,2)+pow(d_noi,2));
 
-  cout << "s_vis=" << s_vis << endl;
-  cout << "d_vis=" << d_vis << endl;
-  cout << "s_had=" << s_had << endl;
-  cout << "d_had=" << d_had << endl;
-  cout << "s_inel=" << s_inel << endl;
-  cout << "d_inel=" << d_inel << endl;
-  cout << endl;
-
-  cout << "single (without lumi)=" << s_withoutl << endl;
-  cout << "double (without lumi)=" << d_withoutl << endl;
-  cout << endl;
+  double s_vis  = sqrt(pow(s_lumi,2)+pow(s_pu,2)+pow(s_sel,2)+pow(s_noi,2));
+  double d_vis  = sqrt(pow(d_lumi,2)+pow(d_pu,2)+pow(d_sel,2)+pow(d_noi,2));
+  double s_had  = sqrt(pow(s_lumi,2)+pow(s_pu,2)+pow(s_sel,2)+pow(s_noi,2) + pow(s_em,2) + pow(s_mod,2)+pow(s_hadlvl,2));
+  double d_had  = sqrt(pow(d_lumi,2)+pow(d_pu,2)+pow(d_sel,2)+pow(d_noi,2) + pow(d_em,2) + pow(d_mod,2)+pow(d_hadlvl,2));
+  double s_inel = sqrt(pow(s_lumi,2)+pow(s_pu,2)+pow(s_sel,2)+pow(s_noi,2) + pow(s_em,2) + pow(s_mod,2)+pow(s_acc,2)+pow(s_diff,2));
+  double d_inel = sqrt(pow(d_lumi,2)+pow(d_pu,2)+pow(d_sel,2)+pow(d_noi,2) + pow(d_em,2) + pow(d_mod,2)+pow(d_acc,2)+pow(d_diff,2));;
 
 
   ///READ IN VALUES
@@ -81,6 +82,17 @@ void makePlots_concl3()
   vec_sigma_had->Print();
   vec_sigma_vis->Print();
   f.Close();
+  cout << "Uncertainty vis single  = " << s_vis << endl;
+  cout << "Uncertainty vis double  = " << d_vis << endl;
+  cout << "Uncertainty had single  = " << s_had << endl;
+  cout << "Uncertainty had double  = " << d_had << endl;
+  cout << "Uncertainty inel single = " << s_inel << endl;
+  cout << "Uncertainty inel double = " << d_inel << endl;
+  cout << endl;
+
+  cout << "single (without lumi)=" << s_withoutl << endl;
+  cout << "double (without lumi)=" << d_withoutl << endl;
+  cout << endl << endl;
 
 
   TFile f2("plots/corr_factors.root");
@@ -97,62 +109,87 @@ void makePlots_concl3()
   ///!READ IN VALUES
 
   TH1D* h_data = new TH1D("h_data","CMS;;#sigma [b]",6,-0.5,5.5);
-  h_data->GetXaxis()->SetBinLabel(1,"#splitline{hadronic}{inelastic}");
-  h_data->GetXaxis()->SetBinLabel(2,"#splitline{visible}{(EM subtr.)}");
-  h_data->GetXaxis()->SetBinLabel(3,"visible");
-  h_data->GetXaxis()->SetBinLabel(4,"#splitline{hadronic}{inelastic}");
-  h_data->GetXaxis()->SetBinLabel(5,"#splitline{visible}{(EM subtr.)}");
-  h_data->GetXaxis()->SetBinLabel(6,"visible");
+  h_data->GetXaxis()->SetBinLabel(3,"#splitline{hadronic}{inelastic}");
+  h_data->GetXaxis()->SetBinLabel(2,"#splitline{#splitline{}{}}{#splitline{hadron level}{p_{T,S}>0.61 GeV}}");
+  h_data->GetXaxis()->SetBinLabel(1,"visible");
+  h_data->GetXaxis()->SetBinLabel(6,"#splitline{hadronic}{inelastic}");
+  h_data->GetXaxis()->SetBinLabel(5,"#splitline{#splitline{}{}}{#splitline{hadron level}{p_{T,D}>0.41 GeV}}");
+  h_data->GetXaxis()->SetBinLabel(4,"visible");
   TH1D * h_epos = new TH1D("h_epos","EPOS-LHC;;#sigma [b]",6,-0.5,5.5);
-  h_epos->GetXaxis()->SetBinLabel(1,"#splitline{hadronic}{inelastic}");
-  h_epos->GetXaxis()->SetBinLabel(2,"#splitline{visible}{(EM subtr.)}");
-  h_epos->GetXaxis()->SetBinLabel(3,"visible");
-  h_epos->GetXaxis()->SetBinLabel(4,"#splitline{hadronic}{inelastic}");
-  h_epos->GetXaxis()->SetBinLabel(5,"#splitline{visible}{(EM subtr.)}");
-  h_epos->GetXaxis()->SetBinLabel(6,"visible");
+  h_epos->GetXaxis()->SetBinLabel(3,"#splitline{hadronic}{inelastic}");
+  h_epos->GetXaxis()->SetBinLabel(2,"#splitline{hadron}{level}");
+  h_epos->GetXaxis()->SetBinLabel(1,"visible");
+  h_epos->GetXaxis()->SetBinLabel(6,"#splitline{hadronic}{inelastic}");
+  h_epos->GetXaxis()->SetBinLabel(5,"#splitline{hadron}{level}");
+  h_epos->GetXaxis()->SetBinLabel(4,"visible");
   TH1D * h_qgsjet = new TH1D("h_qgsjet","QGSJETII-04;;#sigma [b]",6,-0.5,5.5);
-  h_qgsjet->GetXaxis()->SetBinLabel(1,"#splitline{hadronic}{inelastic}");
-  h_qgsjet->GetXaxis()->SetBinLabel(2,"#splitline{visible}{(EM subtr.)}");
-  h_qgsjet->GetXaxis()->SetBinLabel(3,"visible");
-  h_qgsjet->GetXaxis()->SetBinLabel(4,"#splitline{hadronic}{inelastic}");
-  h_qgsjet->GetXaxis()->SetBinLabel(5,"#splitline{visible}{(EM subtr.)}");
-  h_qgsjet->GetXaxis()->SetBinLabel(6,"visible");
+  h_qgsjet->GetXaxis()->SetBinLabel(3,"#splitline{hadronic}{inelastic}");
+  h_qgsjet->GetXaxis()->SetBinLabel(2,"#splitline{hadron}{level}");
+  h_qgsjet->GetXaxis()->SetBinLabel(1,"visible");
+  h_qgsjet->GetXaxis()->SetBinLabel(6,"#splitline{hadronic}{inelastic}");
+  h_qgsjet->GetXaxis()->SetBinLabel(5,"#splitline{hadron}{level}");
+  h_qgsjet->GetXaxis()->SetBinLabel(4,"visible");
 
-  h_data->SetBinContent(1,(*vec_sigma_inel)[1]);
+#ifdef WITH_ALICE
+  TGraphErrors* h_alice_ppb = new TGraphErrors(1);
+  TGraphErrors* h_alice_pbp = new TGraphErrors(1);
+  TGraphErrors* h_lhcb = new TGraphErrors(1);
+
+  h_alice_ppb->SetPoint(0,3.1,2.09);
+  h_alice_ppb->SetPointError(0,0,0.06);
+
+  h_alice_pbp->SetPoint(0,3.2,2.12);
+  h_alice_pbp->SetPointError(0,0,0.06);
+
+  h_lhcb->SetPoint(0,0.1,2.09);
+  h_lhcb->SetPointError(0,0,0.12);
+
+  SetAttributes<TGraph>(h_lhcb,kMagenta,22);
+  SetAttributes<TGraph>(h_alice_ppb,kMagenta,29);
+  SetAttributes<TGraph>(h_alice_pbp,kMagenta,30);
+    
+#endif
+
+  h_data->SetBinContent(3,(*vec_sigma_inel)[1]);
   h_data->SetBinContent(2,(*vec_sigma_had)[0]);
-  h_data->SetBinContent(3,(*vec_sigma_vis)[0]);
-  h_data->SetBinContent(4,(*vec_sigma_inel)[2]);
+  h_data->SetBinContent(1,(*vec_sigma_vis)[0]);
+  h_data->SetBinContent(6,(*vec_sigma_inel)[2]);
   h_data->SetBinContent(5,(*vec_sigma_had)[1]);
-  h_data->SetBinContent(6,(*vec_sigma_vis)[1]);
-  h_data->SetBinError(1,s_inel/100.*(*vec_sigma_inel)[1]);
+  h_data->SetBinContent(4,(*vec_sigma_vis)[1]);
+  h_data->SetBinError(3,s_inel/100.*(*vec_sigma_inel)[1]);
   h_data->SetBinError(2,s_had/100.*(*vec_sigma_had)[0]);
-  h_data->SetBinError(3,s_vis/100.*(*vec_sigma_vis)[0]);
-  h_data->SetBinError(4,d_inel/100.*(*vec_sigma_inel)[2]);
+  h_data->SetBinError(1,s_vis/100.*(*vec_sigma_vis)[0]);
+  h_data->SetBinError(6,d_inel/100.*(*vec_sigma_inel)[2]);
   h_data->SetBinError(5,d_had/100.*(*vec_sigma_had)[1]);
-  h_data->SetBinError(6,d_vis/100.*(*vec_sigma_vis)[1]);
+  h_data->SetBinError(4,d_vis/100.*(*vec_sigma_vis)[1]);
 
   double eff_epos_single = (*corr_fac_epos)[0];
   double eff_epos_double = (*corr_fac_epos)[1];
   double eff_qgsjet_single = (*corr_fac_qgsjet)[0];
   double eff_qgsjet_double = (*corr_fac_qgsjet)[1];
 
-  h_epos->SetBinContent(1,2.085703); //this is cross section from model
+  h_epos->SetBinContent(3,2.085703); //this is cross section from model
   h_epos->SetBinContent(2,2.085703*eff_epos_single);
-  h_epos->SetBinContent(4,2.085703);
+  h_epos->SetBinContent(6,2.085703);
   h_epos->SetBinContent(5,2.085703*eff_epos_double);
-  h_qgsjet->SetBinContent(1,2.176422);
+  h_qgsjet->SetBinContent(3,2.176422);
   h_qgsjet->SetBinContent(2,2.176422*eff_qgsjet_single);
-  h_qgsjet->SetBinContent(4,2.176422);
+  h_qgsjet->SetBinContent(6,2.176422);
   h_qgsjet->SetBinContent(5,2.176422*eff_qgsjet_double);
 
-  SetAttributes(h_data,kRed,20);
-  SetAttributes(h_epos,kGreen-1,22);
-  SetAttributes(h_qgsjet,kBlue,34);
+  SetAttributes<TH1D>(h_data,kRed,20);
+  SetAttributes<TH1D>(h_epos,kGreen-1,22);
+  SetAttributes<TH1D>(h_qgsjet,kBlue,34);
 
   TCanvas* can1 = new TCanvas;
   h_data->Draw("P");
   h_epos->Draw("SAME P");
   h_qgsjet->Draw("SAME P");
+#ifdef WITH_ALICE
+  h_alice_ppb->Draw("P");
+  h_alice_pbp->Draw("P");
+  h_lhcb->Draw("P");
+#endif
 
   double min = 1.7;
   double max = 2.7;
@@ -169,11 +206,16 @@ void makePlots_concl3()
   line->SetLineStyle(2);
   line->Draw("SAME");
 
-  TLegend* leg1 = new TLegend(0.26,0.7,0.53,0.9);
+  TLegend* leg1 = new TLegend(0.24,0.7,0.55,0.9);
   SetLegAtt(leg1);
   leg1->AddEntry(h_data,"CMS","p");
   leg1->AddEntry(h_epos,"EPOS-LHC","p");
   leg1->AddEntry(h_qgsjet,"QGSJetII-04","p");
+#ifdef WITH_ALICE
+  leg1->AddEntry(h_alice_ppb,"ALICE V0 (pPb)","p");
+  leg1->AddEntry(h_alice_pbp,"ALICE V0 (Pbp","p");
+  leg1->AddEntry(h_lhcb,"LHCb","p");
+#endif
   leg1->SetBorderSize(1);
   leg1->Draw();
 

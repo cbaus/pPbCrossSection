@@ -5,6 +5,7 @@
 #include "TFitResultPtr.h"
 #include "TFitResult.h"
 #include "TLegend.h"
+#include "TEfficiency.h"
 #include "TGraph.h"
 #include "TCanvas.h"
 #include "TF1.h"
