@@ -106,31 +106,46 @@ void makePlots_concl2()
   g_eposlhc->SetName("g_eposlhc");
   g_eposlhc->SetTitle("EPOS-LHC");
   SetAttributes(g_eposlhc,kGreen-1,7);
-  g_eposlhc->SetPoint(0,GetSqrtS(20),1.646732);
-  g_eposlhc->SetPoint(1,GetSqrtS(60),1.663151);
-  g_eposlhc->SetPoint(2,100,1.784655);
-  g_eposlhc->SetPoint(3,200,1.831986);
-  g_eposlhc->SetPoint(4,1000,1.927643);
-  g_eposlhc->SetPoint(5,2000,1.991543);
-  g_eposlhc->SetPoint(6,5020,2.085703);
+  g_eposlhc->SetPoint(0,10.0,1.659928);
+  g_eposlhc->SetPoint(1,50.0,1.7424);
+  g_eposlhc->SetPoint(2,100.0,1.785437);
+  g_eposlhc->SetPoint(3,500.0,1.8689);
+  g_eposlhc->SetPoint(4,1000.0,1.926894);
+  g_eposlhc->SetPoint(5,5020,2.081702);
+  g_eposlhc->SetPoint(6,9000,2.139162);
 
   TGraphErrors* g_q4  = new TGraphErrors(7);
   g_q4->SetName("g_q4");
   g_q4->SetTitle("QGSJetII-04");
   SetAttributes(g_q4,kBlue,2);
-  g_q4->SetPoint(0,GetSqrtS(20),1.651290);
-  g_q4->SetPoint(1,GetSqrtS(60),1.704261);
-  g_q4->SetPoint(2,100,1.877070);
-  g_q4->SetPoint(3,200,1.925534);
-  g_q4->SetPoint(4,1000,2.044743);
-  g_q4->SetPoint(5,2000,2.100428);
-  g_q4->SetPoint(6,5020,2.176422);
+  g_q4->SetPoint(0,10.0,1.70402);
+  g_q4->SetPoint(1,50.0,1.832611);
+  g_q4->SetPoint(2,100.0,1.881603);
+  g_q4->SetPoint(3,500.0,1.996568);
+  g_q4->SetPoint(4,1000.0,2.049337);
+  g_q4->SetPoint(5,5020,2.180836);
+  g_q4->SetPoint(6,9000,2.229295);
+
+  //from crmc production cross section v1.5c
+  TGraphErrors* g_dpm  = new TGraphErrors(7);
+  g_dpm->SetName("g_dpm");
+  g_dpm->SetTitle("DPMJet 3.06");
+  SetAttributes(g_dpm,kMagenta,9);
+  g_dpm->SetPoint(0,10.0,1.744822);
+  g_dpm->SetPoint(1,50.0,1.806756);
+  g_dpm->SetPoint(2,100.0,1.847448);
+  g_dpm->SetPoint(3,500.0,1.970865);
+  g_dpm->SetPoint(4,1000.0,2.032654);
+  g_dpm->SetPoint(5,5020,2.165823);
+  g_dpm->SetPoint(6,9000,2.207657);
+
+
 
   //from Andras Ster email 2014-05-15
   TGraphErrors* g_dipsy  = new TGraphErrors(8);
   g_dipsy->SetName("g_dipsy");
   g_dipsy->SetTitle("DIPSY");
-  SetAttributes(g_dipsy,kMagenta,3);
+  SetAttributes(g_dipsy,kCyan+3,3);
   g_dipsy->SetPoint(0,200,1.783);  g_dipsy->SetPointError(0,0,0.003);
   g_dipsy->SetPoint(1,400,1.847);  g_dipsy->SetPointError(1,0,0.003);
   g_dipsy->SetPoint(2,600,1.882);  g_dipsy->SetPointError(2,0,0.002);
@@ -147,7 +162,7 @@ void makePlots_concl2()
   g_cms->SetPoint(0,5020,CS);  g_cms->SetPointError(0,0,CS*CSe);
 
 
-  TLegend* leg1 = new TLegend(0.25,0.65,0.45,0.90);
+  TLegend* leg1 = new TLegend(0.25,0.60,0.55,0.90);
   SetLegAtt(leg1);
   leg1->AddEntry(g_cms,"CMS","p");
   leg1->AddEntry(g_ihep,"IHEP","p");
@@ -156,6 +171,7 @@ void makePlots_concl2()
   leg1->AddEntry(g_glauber,"(COMPETE+TOTEM)+Glauber","l");
   leg1->AddEntry(g_eposlhc,"EPOS-LHC","l");
   leg1->AddEntry(g_q4,"QGSJetII-04","l");
+  leg1->AddEntry(g_dpm,"DPMJet 3.06","l");
   leg1->AddEntry(g_dipsy,"DIPSY","l");
 
   TCanvas* can1 = new TCanvas;
@@ -169,6 +185,7 @@ void makePlots_concl2()
   g_glauber->Draw("C");
   g_eposlhc->Draw("C");
   g_q4->Draw("C");
+  g_dpm->Draw("C");
   g_dipsy->Draw("xl");
   g_cms->Draw("P");
   can1->SetLogx();

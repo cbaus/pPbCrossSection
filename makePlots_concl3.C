@@ -15,6 +15,8 @@
 using namespace std;
 
 #define WITH_ALICE 1
+#define EPOS_CS 2.081702 //rerun with more statistics. slight changes
+#define QGS_CS 2.180836
 
 template<typename T>
 void SetAttributes(T* theGraph, int colour, int marker)
@@ -36,7 +38,7 @@ void makePlots_concl3()
   //Get Hadron Level uncertainty
   TFile f0("plots/corr_factors_hadron.root");
   TVectorD* cor_fac_had    = NULL;
-  TVectorD* cor_fac_had_pt = NULL;
+  TVectorD* cor_fac_had_e = NULL;
   cor_fac_had    = (TVectorD*)f0.Get("corr_fac_had");
   cor_fac_had_e  = (TVectorD*)f0.Get("corr_fac_had_e");
   f0.Close();
@@ -82,12 +84,16 @@ void makePlots_concl3()
   vec_sigma_had->Print();
   vec_sigma_vis->Print();
   f.Close();
-  cout << "Uncertainty vis single  = " << s_vis << endl;
-  cout << "Uncertainty vis double  = " << d_vis << endl;
-  cout << "Uncertainty had single  = " << s_had << endl;
-  cout << "Uncertainty had double  = " << d_had << endl;
-  cout << "Uncertainty inel single = " << s_inel << endl;
-  cout << "Uncertainty inel double = " << d_inel << endl;
+
+  cout << "had single = " << fixed << setprecision(3) << (*vec_sigma_had)[0]*(*cor_fac_had)[0] << endl; 
+  cout << "had double = " << fixed << setprecision(3) << (*vec_sigma_had)[1]*(*cor_fac_had)[1] << endl; 
+
+  cout << "Uncertainty vis single  = " << fixed << setprecision(3) << s_vis << " = " << s_vis/100.*(*vec_sigma_inel)[0] << endl;
+  cout << "Uncertainty vis double  = " << fixed << setprecision(3) << d_vis << " = " << d_vis/100.*(*vec_sigma_inel)[1] << endl;
+  cout << "Uncertainty had single  = " << fixed << setprecision(3) << s_had << " = " << s_had/100.*(*vec_sigma_inel)[0]*(*cor_fac_had)[0] << endl;
+  cout << "Uncertainty had double  = " << fixed << setprecision(3) << d_had << " = " << d_had/100.*(*vec_sigma_inel)[1]*(*cor_fac_had)[1] << endl;
+  cout << "Uncertainty inel single = " << fixed << setprecision(3) << s_inel << " = " << s_inel/100.*(*vec_sigma_inel)[1] << endl;
+  cout << "Uncertainty inel double = " << fixed << setprecision(3) << d_inel << " = " << d_inel/100.*(*vec_sigma_inel)[2] << endl;
   cout << endl;
 
   cout << "single (without lumi)=" << s_withoutl << endl;
@@ -168,14 +174,14 @@ void makePlots_concl3()
   double eff_qgsjet_single = (*corr_fac_qgsjet)[0];
   double eff_qgsjet_double = (*corr_fac_qgsjet)[1];
 
-  h_epos->SetBinContent(3,2.085703); //this is cross section from model
-  h_epos->SetBinContent(2,2.085703*eff_epos_single);
-  h_epos->SetBinContent(6,2.085703);
-  h_epos->SetBinContent(5,2.085703*eff_epos_double);
-  h_qgsjet->SetBinContent(3,2.176422);
-  h_qgsjet->SetBinContent(2,2.176422*eff_qgsjet_single);
-  h_qgsjet->SetBinContent(6,2.176422);
-  h_qgsjet->SetBinContent(5,2.176422*eff_qgsjet_double);
+  h_epos->SetBinContent(3,EPOS_CS); //this is cross section from model
+  h_epos->SetBinContent(2,EPOS_CS*eff_epos_single);
+  h_epos->SetBinContent(6,EPOS_CS);
+  h_epos->SetBinContent(5,EPOS_CS*eff_epos_double);
+  h_qgsjet->SetBinContent(3,QGS_CS);
+  h_qgsjet->SetBinContent(2,QGS_CS*eff_qgsjet_single);
+  h_qgsjet->SetBinContent(6,QGS_CS);
+  h_qgsjet->SetBinContent(5,QGS_CS*eff_qgsjet_double);
 
   SetAttributes<TH1D>(h_data,kRed,20);
   SetAttributes<TH1D>(h_epos,kGreen-1,22);
@@ -237,6 +243,10 @@ void makePlots_concl3()
   CMSText(1,0,1);
 
   can1->SaveAs((string("plots/concl_3")+string(".pdf")).c_str());
+
+  cout << endl;
+  cout << "epos  inel=" << EPOS_CS << " hadsingle=" << EPOS_CS*eff_epos_single  << " haddouble=" << EPOS_CS*eff_epos_double << endl;;
+  cout << "qgsjet  inel=" << QGS_CS << " hadsingle=" << QGS_CS*eff_qgsjet_single  << " haddouble=" << QGS_CS*eff_qgsjet_double << endl;
 
   cout << endl << "Differences for cross sections:" << endl;
   cout << endl << "Single:" << endl
