@@ -74,8 +74,11 @@ void makePlots_diff2()
        << "Ratio_{Data} $\\frac{\\text{double-arm}}{\\text{single-arm}}$"
        << "\\\\\\hline" << endl;
 
-  TGraph graphFindDiffWeightEpos(10);
-  TGraph graphFindDiffWeightQgsjet(10);
+  const int nDiffWeight = 300;
+  TGraph graphFindDiffWeightEpos(nDiffWeight);
+  TGraph graphEffDiffWeightEpos(nDiffWeight);
+  TGraph graphFindDiffWeightQgsjet(nDiffWeight);
+  TGraph graphEffDiffWeightQgsjet(nDiffWeight);
 
   for(int i=0; i<int(list.size()); i++)
     {
@@ -185,25 +188,33 @@ void makePlots_diff2()
            << "\\\\\\hline" << endl;
 
       ///////////////Find optimal diffractive cs weight//////////////////////////
-      double diff_frac = (n_sd1_single + n_sd2_single + n_dd_single + n_cd_single);
+      double diff_frac = (n_sd1_single + n_sd2_single + n_dd_single + n_cd_single); //same for double
       double diff_frac_sel_single = (n_sel_sd1_single + n_sel_sd2_single + n_sel_dd_single + n_sel_cd_single);
       double diff_frac_sel_double = (n_sel_sd1_double + n_sel_sd2_double + n_sel_dd_double + n_sel_cd_double);
       double maxDiffWeight = 3;
       TGraph* graphFindDiffWeight = 0;
+      TGraph* graphEffDiffWeight = 0;
       if(list[i]=="Epos")
-        graphFindDiffWeight = &graphFindDiffWeightEpos;
+        {
+          graphFindDiffWeight = &graphFindDiffWeightEpos;
+          graphEffDiffWeight = &graphEffDiffWeightEpos;
+        }
       else if(list[i]=="QGSJetII")
-        graphFindDiffWeight = &graphFindDiffWeightQgsjet;
+        {
+          graphFindDiffWeight = &graphFindDiffWeightQgsjet;
+          graphEffDiffWeight = &graphEffDiffWeightQgsjet;
+        }
 
       if(graphFindDiffWeight)
-        for (int j = 0; j < 10; ++j)
+        for (int j = 0; j < nDiffWeight; ++j)
           {
-            double diffWeight = maxDiffWeight/10.*double(j);
+            double diffWeight = maxDiffWeight/double(nDiffWeight)*double(j);
             double single_double_weight =
-              (diffWeight * diff_frac_sel_double + n_sel_nd_double) / (1.+diff_frac*(diffWeight-1)) /
-              (diffWeight * diff_frac_sel_single + n_sel_nd_single) / (1.+diff_frac*(diffWeight-1)) *
+              (diffWeight * diff_frac_sel_double + n_sel_nd_double) / (1.+diff_frac*(diffWeight-1.)) /
+              (diffWeight * diff_frac_sel_single + n_sel_nd_single) / (1.+diff_frac*(diffWeight-1.)) *
               100.;
             graphFindDiffWeight->SetPoint(j,diffWeight,single_double_weight);
+            graphEffDiffWeight->SetPoint(j,diffWeight,(diffWeight * diff_frac_sel_double + n_sel_nd_double) / (1.+diff_frac*(diffWeight-1.)));
           }
 
       ///////////////SCALING DIFF TO 25%///////////////diff*x/(1+diff(x-1)=0.25 -> x=(0.25/diff+0.25)/0.75
@@ -337,22 +348,27 @@ void makePlots_diff2()
           can1->SaveAs((string("plots/diff_energy_")+type[cur]+string("_")+list[i]+string(".pdf")).c_str());
         } //type loop
     } //list loop
+
+  //////////Draw opt diff plot///////////
   TCanvas* can1 = new TCanvas;
   graphFindDiffWeightQgsjet.SetMarkerStyle(25);
-  graphFindDiffWeightQgsjet.SetMarkerSize(1.5);
-  graphFindDiffWeightQgsjet.SetTitle(";#sigma_{diff} scale factor;#frac{#sigma_{vis-EM}(double-arm)}{#sigma_{vis-EM}(single-arm)}");
-  graphFindDiffWeightQgsjet.Draw("AP");
-  graphFindDiffWeightEpos.SetMarkerSize(1.5);
-  graphFindDiffWeightEpos.Draw("P");
-  TLine* line = new TLine(1,single_double_weight_data,4.52,single_double_weight_data);
+  graphFindDiffWeightQgsjet.SetMarkerSize(1.3);
+  graphFindDiffWeightQgsjet.SetLineWidth(1.3);
+  graphFindDiffWeightQgsjet.SetLineStyle(9);
+  graphFindDiffWeightQgsjet.SetTitle(";#sigma_{diff} scale factor;#frac{#sigma_{had}(double-arm)}{#sigma_{had}(single-arm)} [%]");
+  graphFindDiffWeightQgsjet.Draw("AC");
+  graphFindDiffWeightEpos.SetMarkerSize(1.3);
+  graphFindDiffWeightEpos.SetLineWidth(1.3);
+  graphFindDiffWeightEpos.Draw("C");
+  TLine* line = new TLine(0,single_double_weight_data,3,single_double_weight_data);
   line->SetLineStyle(2);
   line->Draw("SAME");
-  TLegend* leg = new TLegend(0.75,0.5,0.95,0.6);
+  TLegend* leg = new TLegend(0.65,0.7,0.95,0.8);
 #ifdef __CINT__
   SetLegAtt(leg);
 #endif
-  leg->AddEntry(&graphFindDiffWeightEpos,"EPOS","p");
-  leg->AddEntry(&graphFindDiffWeightQgsjet,"QGSJetII","p");
+  leg->AddEntry(&graphFindDiffWeightEpos,"EPOS","l");
+  leg->AddEntry(&graphFindDiffWeightQgsjet,"QGSJetII","l");
   leg->Draw("SAME");
   can1->SaveAs((string("plots/diff_optimal_weight.pdf")).c_str());
   
@@ -365,5 +381,29 @@ void makePlots_diff2()
   while(graphFindDiffWeightEpos.Eval(x_opt)>single_double_weight_data)
     x_opt += 0.001;
   cout << "EPOS-LHC" << " " << x_opt*100. << "%" << endl;
+
+  //////////Draw diff scaling - eff plot///////////
+  TCanvas* can2 = new TCanvas;
+  graphEffDiffWeightQgsjet.SetMarkerStyle(25);
+  graphEffDiffWeightQgsjet.SetMarkerSize(1.3);
+  graphEffDiffWeightQgsjet.SetLineWidth(1.3);
+  graphEffDiffWeightQgsjet.SetLineStyle(9);
+  graphEffDiffWeightQgsjet.SetTitle(";#sigma_{diff} scale factor;#epsilon_{acc}");
+  graphEffDiffWeightQgsjet.Draw("AC");
+  graphEffDiffWeightEpos.SetMarkerSize(1.3);
+  graphEffDiffWeightEpos.SetLineWidth(1.3);
+  graphEffDiffWeightEpos.Draw("C");
+  TLine* line = new TLine(0,single_double_weight_data,3,single_double_weight_data);
+  line->SetLineStyle(2);
+  line->Draw("SAME");
+  TLegend* leg3 = new TLegend(0.65,0.7,0.95,0.8);
+#ifdef __CINT__
+  SetLegAtt(leg3);
+#endif
+  leg3->AddEntry(&graphEffDiffWeightEpos,"EPOS","l");
+  leg3->AddEntry(&graphEffDiffWeightQgsjet,"QGSJetII","l");
+  leg3->Draw("SAME");
+  can2->SaveAs((string("plots/diff_eff_diffweight.pdf")).c_str());
+
   
 }
