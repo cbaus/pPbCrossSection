@@ -1,4 +1,4 @@
-#define _MAXEVT -10000
+#define _MAXEVT 100000
 #define _SkipHFRings 1 //skip 41 and 29 as suggested by HCAL DPG
 #define _HFEnergyScale 1.0 //1.0 //0.8
 #define _HFEnergyCalibration 1 //0 or 1 (rescale MC) or 2 this does not scale MC but data according to raddam from lev
@@ -72,22 +72,16 @@ int main()
   //    sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211538/*.root"); sample_name.push_back("data211538"); sample_type.push_back(DATA);
   //    sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Data211607/*_*.root"); sample_name.push_back("data211607"); sample_type.push_back(DATA);
 
-  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Epos/*.root"); sample_name.push_back("Epos"); sample_type.push_back(MC);
-  //    sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Epos/*.root"); sample_name.push_back("EposDiffWeight150"); sample_type.push_back(MC);
-  //    sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Epos/*.root"); sample_name.push_back("EposDiffWeight200"); sample_type.push_back(MC);
-  //    sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Epos/*.root"); sample_name.push_back("EposDiffWeight299"); sample_type.push_back(MC);
-  //    sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Epos/*.root"); sample_name.push_back("EposDiffWeightOpt"); sample_type.push_back(MC);
-  //    sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Epos_SL/*.root"); sample_name.push_back("Epos_SL"); sample_type.push_back(MC);
-  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Hijing/*.root"); sample_name.push_back("Hijing"); sample_type.push_back(MC);
-  sample_fname.push_back("/afs/cern.ch/work/c/cbaus/public/castortree/pPb_QGSJetII/treeMC.root"); sample_name.push_back("QGSJetII"); sample_type.push_back(MC);
-  //    sample_fname.push_back("/afs/cern.ch/work/c/cbaus/public/castortree/pPb_QGSJetII/treeMC.root"); sample_name.push_back("QGSJetIIDiffWeight150"); sample_type.push_back(MC);
-  //    sample_fname.push_back("/afs/cern.ch/work/c/cbaus/public/castortree/pPb_QGSJetII/treeMC.root"); sample_name.push_back("QGSJetIIDiffWeight200"); sample_type.push_back(MC);
-  //    sample_fname.push_back("/afs/cern.ch/work/c/cbaus/public/castortree/pPb_QGSJetII/treeMC.root"); sample_name.push_back("QGSJetIIDiffWeight452"); sample_type.push_back(MC);
-  //    sample_fname.push_back("/afs/cern.ch/work/c/cbaus/public/castortree/pPb_QGSJetII/treeMC.root"); sample_name.push_back("QGSJetIIDiffWeightOpt"); sample_type.push_back(MC);
-  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/DPMJet/treeMC.root"); sample_name.push_back("DPMJet"); sample_type.push_back(MC);
-  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/StarlightDPMjet_v2/treeMC.root"); sample_name.push_back("Starlight_DPMJet");  sample_type.push_back(MC);
-  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/StarlightPythia/treeMC.root"); sample_name.push_back("Starlight_Pythia");  sample_type.push_back(MC);
-  //    sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/DPMJet_pp/treeMC.root"); sample_name.push_back("DPMJet_pp"); sample_type.push_back(MC);
+
+   sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Epos/*.root"); sample_name.push_back("Epos"); sample_type.push_back(MC);
+   sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Hijing/*.root"); sample_name.push_back("Hijing"); sample_type.push_back(MC);
+   sample_fname.push_back("/afs/cern.ch/work/c/cbaus/public/castortree/pPb_QGSJetII/treeMC.root"); sample_name.push_back("QGSJetII"); sample_type.push_back(MC);
+   sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/DPMJet/treeMC.root"); sample_name.push_back("DPMJet"); sample_type.push_back(MC);
+   //sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/StarlightDPMjet_v2/treeMC.root"); sample_name.push_back("Starlight_DPMJet");  sample_type.push_back(MC);
+   //sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/StarlightPythia/treeMC.root"); sample_name.push_back("Starlight_Pythia");  sample_type.push_back(MC);
+
+   //sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/DPMJet_pp/treeMC.root"); sample_name.push_back("DPMJet_pp"); sample_type.push_back(MC);
+   //sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Epos_SL/*.root"); sample_name.push_back("Epos_SL"); sample_type.push_back(MC);
 
 #if _HFEnergyCalibration == 1
   TFile calibfile("plots/hf_calibration_data.root");
@@ -208,6 +202,18 @@ int main()
   TH1D* h_hf_cut_single_noise;
   TH1D* h_hf_cut_double;
   TH1D* h_hf_cut_double_noise;
+
+  TH1D* h_hf_cut_ND_single;
+  TH1D* h_hf_cut_SD1_single;
+  TH1D* h_hf_cut_SD2_single;
+  TH1D* h_hf_cut_DD_single;
+  TH1D* h_hf_cut_CD_single;
+
+  TH1D* h_hf_cut_ND_double;
+  TH1D* h_hf_cut_SD1_double;
+  TH1D* h_hf_cut_SD2_double;
+  TH1D* h_hf_cut_DD_double;
+  TH1D* h_hf_cut_CD_double;
 
   TH1D* h_hf_noise_all_lumi;
   TH1D* h_hf_noise_selected_single_lumi;
@@ -505,6 +511,18 @@ int main()
       h_hf_cut_single_noise       = new TH1D((add + string("_h_hf_cut_single_noise")).c_str(),"",201,-0.05,20.05);
       h_hf_cut_double             = new TH1D((add + string("_h_hf_cut_double")).c_str(),"",201,-0.05,20.05);
       h_hf_cut_double_noise       = new TH1D((add + string("_h_hf_cut_double_noise")).c_str(),"",201,-0.05,20.05);
+
+      h_hf_cut_ND_single             = new TH1D((add + string("_h_hf_cut_ND_single")).c_str(),"",201,-0.05,20.05);
+      h_hf_cut_SD1_single             = new TH1D((add + string("_h_hf_cut_SD1_single")).c_str(),"",201,-0.05,20.05);
+      h_hf_cut_SD2_single             = new TH1D((add + string("_h_hf_cut_SD2_single")).c_str(),"",201,-0.05,20.05);
+      h_hf_cut_CD_single             = new TH1D((add + string("_h_hf_cut_CD_single")).c_str(),"",201,-0.05,20.05);
+      h_hf_cut_DD_single             = new TH1D((add + string("_h_hf_cut_DD_single")).c_str(),"",201,-0.05,20.05);
+
+      h_hf_cut_ND_double             = new TH1D((add + string("_h_hf_cut_ND_double")).c_str(),"",201,-0.05,20.05);
+      h_hf_cut_SD1_double             = new TH1D((add + string("_h_hf_cut_SD1_double")).c_str(),"",201,-0.05,20.05);
+      h_hf_cut_SD2_double             = new TH1D((add + string("_h_hf_cut_SD2_double")).c_str(),"",201,-0.05,20.05);
+      h_hf_cut_CD_double             = new TH1D((add + string("_h_hf_cut_CD_double")).c_str(),"",201,-0.05,20.05);
+      h_hf_cut_DD_double             = new TH1D((add + string("_h_hf_cut_DD_double")).c_str(),"",201,-0.05,20.05);
 
       h_hf_hits_coll_lumi         = new TProfile((add + string("_h_hf_hits_coll_lumi")).c_str(),"",2000,0,2000);
       h_hf_hits_minus_lumi        = new TProfile((add + string("_h_hfp_hits_lumi")).c_str(),"",2000,0,2000);
@@ -985,22 +1003,6 @@ int main()
             }
           if(sample_type[sample]==DATA)
             evtWeight = double(prescale);
-          else if(sample_name[sample]=="EposDiffWeight150" && (SD1 || SD2 || DD || CD))
-            evtWeight *= 1.50;
-          else if(sample_name[sample]=="EposDiffWeight200" && (SD1 || SD2 || DD || CD))
-            evtWeight *= 2.00;
-          else if(sample_name[sample]=="EposDiffWeight299" && (SD1 || SD2 || DD || CD))
-            evtWeight *= 2.99;
-          else if(sample_name[sample]=="EposDiffWeightOpt" && (SD1 || SD2 || DD || CD))
-            evtWeight *= 1.12;
-          else if(sample_name[sample]=="QGSJetIIDiffWeight150" && (SD1 || SD2 || DD || CD))
-            evtWeight *= 1.50;
-          else if(sample_name[sample]=="QGSJetIIDiffWeight200" && (SD1 || SD2 || DD || CD))
-            evtWeight *= 2.00;
-          else if(sample_name[sample]=="QGSJetIIDiffWeight452" && (SD1 || SD2 || DD || CD))
-            evtWeight *= 4.52;
-          else if(sample_name[sample]=="QGSJetIIDiffWeightOpt" && (SD1 || SD2 || DD || CD))
-            evtWeight *= 1.50;
           const double noiseWeight = random_prescale_HLT;
 
 
@@ -1110,7 +1112,7 @@ int main()
                   if(coll && hf_single_energy_max >= cut)               h_hf_cut_single->Fill(cut,evtWeight);
                   if(noise && hf_single_energy_max >= cut)              h_hf_cut_single_noise->Fill(cut,noiseWeight);
                 }
-
+              
 
               for (int i = 0; i<int(cut_energies_single.size()); i++)
                 {
@@ -1136,6 +1138,19 @@ int main()
                 {
                   if(coll && hf_double_energy_max >= cut)               h_hf_cut_double->Fill(cut,evtWeight);
                   if(coll && hf_single_energy_max >= cut)               h_hf_cut_single->Fill(cut,evtWeight);
+
+                  if(coll && ND && hf_single_energy_max >= cut)         h_hf_cut_ND_single->Fill(cut,evtWeight);
+                  if(coll && SD1&& hf_single_energy_max >= cut)         h_hf_cut_SD1_single->Fill(cut,evtWeight);
+                  if(coll && SD2&& hf_single_energy_max >= cut)         h_hf_cut_SD2_single->Fill(cut,evtWeight);
+                  if(coll && CD && hf_single_energy_max >= cut)         h_hf_cut_CD_single->Fill(cut,evtWeight);
+                  if(coll && DD && hf_single_energy_max >= cut)         h_hf_cut_DD_single->Fill(cut,evtWeight);
+
+                  if(coll && ND && hf_double_energy_max >= cut)         h_hf_cut_ND_double->Fill(cut,evtWeight);
+                  if(coll && SD1&& hf_double_energy_max >= cut)         h_hf_cut_SD1_double->Fill(cut,evtWeight);
+                  if(coll && SD2&& hf_double_energy_max >= cut)         h_hf_cut_SD2_double->Fill(cut,evtWeight);
+                  if(coll && CD && hf_double_energy_max >= cut)         h_hf_cut_CD_double->Fill(cut,evtWeight);
+                  if(coll && DD && hf_double_energy_max >= cut)         h_hf_cut_DD_double->Fill(cut,evtWeight);
+
                 }
 
               if(coll)                                                  h_mc_eff->Fill(0.,evtWeight);

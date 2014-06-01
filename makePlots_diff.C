@@ -38,9 +38,9 @@ void makePlots_diff()
 
   vector<string> list;
   list.push_back(string("Epos"));
-  //list.push_back(string("QGSJetII"));
-  //  list.push_back(string("Hijing"));
-  //list.push_back(string("DPMJet"));
+  list.push_back(string("QGSJetII"));
+  list.push_back(string("Hijing"));
+  list.push_back(string("DPMJet"));
   //  list.push_back(string("DPMJet_pp"));
 //   list.push_back(string("EposDiffWeight150"));
 //   list.push_back(string("EposDiffWeight200"));
@@ -50,9 +50,9 @@ void makePlots_diff()
 //   list.push_back(string("QGSJetIIDiffWeight452"));
   vector<string> name;
   name.push_back(string("EPOS-LHC"));
-  //name.push_back(string("QGSJetII-04"));
-  //  name.push_back(string("HIJING 1.383"));
-  // name.push_back(string("DPMJet 3.06"));
+  name.push_back(string("QGSJetII-04"));
+  name.push_back(string("HIJING 1.383"));
+  name.push_back(string("DPMJet 3.06"));
   //  name.push_back(string("DPMJet 3.04 (pp@5.02TeV)"));
 //   name.push_back(string("Epos #sigma_{diff}x2"));
 //   name.push_back(string("Epos #sigma_{diff}x2.4"));

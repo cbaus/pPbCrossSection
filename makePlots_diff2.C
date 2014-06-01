@@ -59,40 +59,28 @@ void makePlots_diff2()
   type.push_back(string("double"));
 
   vector<string> list;
+  list.push_back(string("DPMJet"));
   list.push_back(string("Epos"));
   list.push_back(string("Hijing"));
   list.push_back(string("QGSJetII"));
-  list.push_back(string("DPMJet"));
-  list.push_back(string("EposDiffWeight150"));
-  list.push_back(string("EposDiffWeight200"));
-  list.push_back(string("EposDiffWeight299"));
-  list.push_back(string("QGSJetIIDiffWeight150"));
-  list.push_back(string("QGSJetIIDiffWeight200"));
-  list.push_back(string("QGSJetIIDiffWeight452"));
   vector<string> name;
   name.push_back(string("EPOS-LHC"));
   name.push_back(string("HIJING 1.383"));
   name.push_back(string("QGSJetII-04"));
   name.push_back(string("DPMJet 3.06"));
-  name.push_back(string("Epos #sigma_{diff}x2"));
-  name.push_back(string("Epos #sigma_{diff}x2.4"));
-  name.push_back(string("Epos #sigma_{diff}x2.4"));
-  name.push_back(string("Epos #sigma_{diff}x2.4"));
-  name.push_back(string("Epos #sigma_{diff}x2.4"));
-  name.push_back(string("Epos #sigma_{diff}x2.4"));
 
   cout << " & SD [$\\%$] & DD [$\\%$] & CD [$\\%$] & ND [$\\%$] & Sum [$\\%$] & "
        << "Ratio_{MC} $\\frac{\\text{double-arm}}{\\text{single-arm}}$"
        << "Ratio_{Data} $\\frac{\\text{double-arm}}{\\text{single-arm}}$"
        << "\\\\\\hline" << endl;
 
-  TGraph graphFindDiffWeightEpos(4);
-  TGraph graphFindDiffWeightQgsjet(4);
+  TGraph graphFindDiffWeightEpos(10);
+  TGraph graphFindDiffWeightQgsjet(10);
 
   for(int i=0; i<int(list.size()); i++)
     {
       cout << i+1 << "/" << int(list.size()) << endl;
-      TFile* file = TFile::Open("histos.root");
+      TFile* file = TFile::Open("histos_deleteme.root");
       file->cd();
 
       TH1D* sd1_single=(TH1D*)file->Get(string(list[i]+string("/")+list[i]+string("_h_mc_diff_e_single_SD1")).c_str());
@@ -109,115 +97,119 @@ void makePlots_diff2()
       TH1D* nd_double=(TH1D*)file->Get(string(list[i]+string("/")+list[i]+string("_h_mc_diff_e_double_ND")).c_str());
       TH1D* all_double=(TH1D*)file->Get(string(list[i]+string("/")+list[i]+string("_h_mc_diff_e_double_all")).c_str());
 
-      int nbins = all_single->GetNbinsX();
+      TH1D* eff_sd1_single=(TH1D*)file->Get(string(list[i]+string("/")+list[i]+string("_h_hf_cut_SD1_single")).c_str());
+      TH1D* eff_sd2_single=(TH1D*)file->Get(string(list[i]+string("/")+list[i]+string("_h_hf_cut_SD2_single")).c_str());
+      TH1D* eff_dd_single=(TH1D*)file->Get(string(list[i]+string("/")+list[i]+string("_h_hf_cut_DD_single")).c_str());
+      TH1D* eff_cd_single=(TH1D*)file->Get(string(list[i]+string("/")+list[i]+string("_h_hf_cut_CD_single")).c_str());
+      TH1D* eff_nd_single=(TH1D*)file->Get(string(list[i]+string("/")+list[i]+string("_h_hf_cut_ND_single")).c_str());
+      TH1D* eff_all_single=(TH1D*)file->Get(string(list[i]+string("/")+list[i]+string("_h_hf_cut_single")).c_str());
+      eff_nd_single->Scale(1./double(eff_all_single->GetBinContent(1)));
+      eff_sd1_single->Scale(1./double(eff_all_single->GetBinContent(1)));
+      eff_sd2_single->Scale(1./double(eff_all_single->GetBinContent(1)));
+      eff_cd_single->Scale(1./double(eff_all_single->GetBinContent(1)));
+      eff_dd_single->Scale(1./double(eff_all_single->GetBinContent(1)));
+      eff_all_single->Scale(1./double(eff_all_single->GetBinContent(1)));
 
-      int nbinsel_single = all_single->FindBin(8.);
-      double n_sd1_single = sd1_single->Integral(0,nbins+1); //includes overflow with nbins+1
-      double n_sd2_single = sd2_single->Integral(0,nbins+1);
-      double n_dd_single = dd_single->Integral(0,nbins+1);
-      double n_cd_single = cd_single->Integral(0,nbins+1);
-      double n_nd_single = nd_single->Integral(0,nbins+1);
-      double n_all_single = all_single->Integral(0,nbins+1);
+      TH1D* eff_sd1_double=(TH1D*)file->Get(string(list[i]+string("/")+list[i]+string("_h_hf_cut_SD1_double")).c_str());
+      TH1D* eff_sd2_double=(TH1D*)file->Get(string(list[i]+string("/")+list[i]+string("_h_hf_cut_SD2_double")).c_str());
+      TH1D* eff_dd_double=(TH1D*)file->Get(string(list[i]+string("/")+list[i]+string("_h_hf_cut_DD_double")).c_str());
+      TH1D* eff_cd_double=(TH1D*)file->Get(string(list[i]+string("/")+list[i]+string("_h_hf_cut_CD_double")).c_str());
+      TH1D* eff_nd_double=(TH1D*)file->Get(string(list[i]+string("/")+list[i]+string("_h_hf_cut_ND_double")).c_str());
+      TH1D* eff_all_double=(TH1D*)file->Get(string(list[i]+string("/")+list[i]+string("_h_hf_cut_double")).c_str());
+      eff_nd_double->Scale(1./double(eff_all_double->GetBinContent(1)));
+      eff_sd1_double->Scale(1./double(eff_all_double->GetBinContent(1)));
+      eff_sd2_double->Scale(1./double(eff_all_double->GetBinContent(1)));
+      eff_cd_double->Scale(1./double(eff_all_double->GetBinContent(1)));
+      eff_dd_double->Scale(1./double(eff_all_double->GetBinContent(1)));
+      eff_all_double->Scale(1./double(eff_all_double->GetBinContent(1)));
 
-      double n_sel_sd1_single = sd1_single->Integral(nbinsel_single,nbins+1);
-      double n_sel_sd2_single = sd2_single->Integral(nbinsel_single,nbins+1);
-      double n_sel_dd_single = dd_single->Integral(nbinsel_single,nbins+1);
-      double n_sel_cd_single = cd_single->Integral(nbinsel_single,nbins+1);
-      double n_sel_nd_single = nd_single->Integral(nbinsel_single,nbins+1);
-      double n_sel_all_single = all_single->Integral(nbinsel_single,nbins+1);
+      int cut_single = 8.;
+      int cut_double = 4.;
 
+      double n_sd1_single = eff_sd1_single->GetBinContent(1);
+      double n_sd2_single = eff_sd2_single->GetBinContent(1);
+      double n_dd_single = eff_dd_single->GetBinContent(1);
+      double n_cd_single = eff_cd_single->GetBinContent(1);
+      double n_nd_single = eff_nd_single->GetBinContent(1);
+      double n_all_single = eff_all_single->GetBinContent(1);
 
-      int nbinsel_double = all_double->FindBin(4.);
-      double n_sd1_double = sd1_double->Integral(0,nbins+1);
-      double n_sd2_double = sd2_double->Integral(0,nbins+1);
-      double n_dd_double = dd_double->Integral(0,nbins+1);
-      double n_cd_double = cd_double->Integral(0,nbins+1);
-      double n_nd_double = nd_double->Integral(0,nbins+1);
-      double n_all_double = all_double->Integral(0,nbins+1);
+      double n_sel_sd1_single = eff_sd1_single->Interpolate(cut_single);
+      double n_sel_sd2_single = eff_sd2_single->Interpolate(cut_single);
+      double n_sel_dd_single = eff_dd_single->Interpolate(cut_single);
+      double n_sel_cd_single = eff_cd_single->Interpolate(cut_single);
+      double n_sel_nd_single = eff_nd_single->Interpolate(cut_single);
+      double n_sel_all_single = eff_all_single->Interpolate(cut_single);
 
-      double n_sel_sd1_double = sd1_double->Integral(nbinsel_double,nbins+1);
-      double n_sel_sd2_double = sd2_double->Integral(nbinsel_double,nbins+1);
-      double n_sel_dd_double = dd_double->Integral(nbinsel_double,nbins+1);
-      double n_sel_cd_double = cd_double->Integral(nbinsel_double,nbins+1);
-      double n_sel_nd_double = nd_double->Integral(nbinsel_double,nbins+1);
-      double n_sel_all_double = all_double->Integral(nbinsel_double,nbins+1);
+      double n_sd1_double = eff_sd1_double->GetBinContent(1);
+      double n_sd2_double = eff_sd2_double->GetBinContent(1);
+      double n_dd_double = eff_dd_double->GetBinContent(1);
+      double n_cd_double = eff_cd_double->GetBinContent(1);
+      double n_nd_double = eff_nd_double->GetBinContent(1);
+      double n_all_double = eff_all_double->GetBinContent(1);
+
+      double n_sel_sd1_double = eff_sd1_double->Interpolate(cut_double);
+      double n_sel_sd2_double = eff_sd2_double->Interpolate(cut_double);
+      double n_sel_dd_double = eff_dd_double->Interpolate(cut_double);
+      double n_sel_cd_double = eff_cd_double->Interpolate(cut_double);
+      double n_sel_nd_double = eff_nd_double->Interpolate(cut_double);
+      double n_sel_all_double = eff_all_double->Interpolate(cut_double);
+
+      double single_double_weight_mc = n_sel_all_double / n_sel_all_single * 100.;
 
       cout << fixed << setprecision(1) //SAME FOR BOTH: EXISTS ONCE
            << "No Selection & "
-           << (n_sd1_single +n_sd2_single)/n_all_single*100. << " & "
-           << n_dd_single/n_all_single*100. << " & "
-           << n_cd_single/n_all_single*100. << " & "
-           << n_nd_single/n_all_single*100. << " & "
+           << (n_sd1_single +n_sd2_single)*100. << " & "
+           << n_dd_single*100. << " & "
+           << n_cd_single*100. << " & "
+           << n_nd_single*100. << " & "
            << "100" << "\\\\" << endl;
       
-      double single_double_weight_mc = (n_sel_all_double/n_all_double)/(n_sel_all_single/n_all_single)*100;
-
       cout << fixed << setprecision(1)
            << "Single-arm & "
-           << (n_sel_sd1_single + n_sel_sd2_single)/n_all_single*100. << " & "
-           << n_sel_dd_single/n_all_single*100. << " & "
-           << n_sel_cd_single/n_all_single*100. << " & "
-           << n_sel_nd_single/n_all_single*100. << " & "
-           << n_sel_all_single/n_all_single*100.<< " & "
+           << (n_sel_sd1_single + n_sel_sd2_single)*100. << " & "
+           << n_sel_dd_single*100. << " & "
+           << n_sel_cd_single*100. << " & "
+           << n_sel_nd_single*100. << " & "
+           << n_sel_all_single*100.<< " & "
            << "\\multirow{2}{*}{" << single_double_weight_mc << "}"
            << "\\multirow{2}{*}{" << single_double_weight_data << "}" //from data. sigma_had
            << "\\\\" << endl;
       cout << fixed << setprecision(1)
            << "Double-arm & "
-           << (n_sel_sd1_double + n_sel_sd2_double)/n_all_double*100. << " & "
-           << n_sel_dd_double/n_all_double*100. << " & "
-           << n_sel_cd_double/n_all_double*100. << " & "
-           << n_sel_nd_double/n_all_double*100. << " & "
-           << n_sel_all_double/n_all_double*100. << " & "
+           << (n_sel_sd1_double + n_sel_sd2_double)*100. << " & "
+           << n_sel_dd_double*100. << " & "
+           << n_sel_cd_double*100. << " & "
+           << n_sel_nd_double*100. << " & "
+           << n_sel_all_double*100. << " & "
            << " " //multicolumn
            << "\\\\\\hline" << endl;
 
-      //Find optimal diffractive cs weight
-      double diffWeight = 1;
+      ///////////////Find optimal diffractive cs weight//////////////////////////
+      double diff_frac = (n_sd1_single + n_sd2_single + n_dd_single + n_cd_single);
+      double diff_frac_sel_single = (n_sel_sd1_single + n_sel_sd2_single + n_sel_dd_single + n_sel_cd_single);
+      double diff_frac_sel_double = (n_sel_sd1_double + n_sel_sd2_double + n_sel_dd_double + n_sel_cd_double);
+      double maxDiffWeight = 3;
+      TGraph* graphFindDiffWeight = 0;
       if(list[i]=="Epos")
-        {
-          diffWeight = 1.00;
-          graphFindDiffWeightEpos.SetPoint(0,diffWeight,single_double_weight_mc);
-        }
-      if(list[i]=="EposDiffWeight150")
-        {
-          diffWeight = 1.50;
-          graphFindDiffWeightEpos.SetPoint(1,diffWeight,single_double_weight_mc);
-        }
-      else if(list[i]=="EposDiffWeight200")
-        {
-          diffWeight = 2.00;
-          graphFindDiffWeightEpos.SetPoint(2,diffWeight,single_double_weight_mc);
-        }
-      else if(list[i]=="EposDiffWeight299")
-        {
-          diffWeight = 2.99;
-          graphFindDiffWeightEpos.SetPoint(3,diffWeight,single_double_weight_mc);
-        }
+        graphFindDiffWeight = &graphFindDiffWeightEpos;
       else if(list[i]=="QGSJetII")
-        {
-          diffWeight = 1.00;
-          graphFindDiffWeightQgsjet.SetPoint(0,diffWeight,single_double_weight_mc);
-        }
-      else if(list[i]=="QGSJetIIDiffWeight150")
-        {
-          diffWeight = 1.50;
-          graphFindDiffWeightQgsjet.SetPoint(1,diffWeight,single_double_weight_mc);
-        }
-      else if(list[i]=="QGSJetIIDiffWeight200")
-        {
-          diffWeight = 2.00;
-          graphFindDiffWeightQgsjet.SetPoint(2,diffWeight,single_double_weight_mc);
-        }
-      else if(list[i]=="QGSJetIIDiffWeight452")
-        {
-          diffWeight = 4.52;
-          graphFindDiffWeightQgsjet.SetPoint(3,diffWeight,single_double_weight_mc);
-        }
+        graphFindDiffWeight = &graphFindDiffWeightQgsjet;
+
+      if(graphFindDiffWeight)
+        for (int j = 0; j < 10; ++j)
+          {
+            double diffWeight = maxDiffWeight/10.*double(j);
+            double single_double_weight =
+              (diffWeight * diff_frac_sel_double + n_sel_nd_double) / (1.+diff_frac*(diffWeight-1)) /
+              (diffWeight * diff_frac_sel_single + n_sel_nd_single) / (1.+diff_frac*(diffWeight-1)) *
+              100.;
+            graphFindDiffWeight->SetPoint(j,diffWeight,single_double_weight);
+          }
+
       ///////////////SCALING DIFF TO 25%///////////////diff*x/(1+diff(x-1)=0.25 -> x=(0.25/diff+0.25)/0.75
-      double diff_frac = (n_sd1_single + n_sd2_single + n_dd_single + n_cd_single)/n_all_single;
       double to25 = diff_frac!=0?(0.25/diff_frac-0.25)/0.75:0;
       cout << endl << "fraction of diffraction: " << diff_frac*100. << " weight to 25%: " << setprecision(3) << to25*100. << endl << endl;
+
       ///////////////DRAWING/////////
       for(int cur=0; cur<int(type.size()); cur++)
         {

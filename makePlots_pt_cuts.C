@@ -69,7 +69,7 @@ void makePlots_pt_cuts()
   for(int i=0; i<int(list.size()); i++)
     {
       cout << i+1 << "/" << int(list.size()) << endl;
-      TFile* file = TFile::Open("histos_deleteme.root");
+      TFile* file = TFile::Open("histos.root");
       file->cd();
 
       TH1D* hsingle_all=(TH1D*)file->Get(string(list[i]+string("/")+list[i]+string("h_mc_pt_single")).c_str());

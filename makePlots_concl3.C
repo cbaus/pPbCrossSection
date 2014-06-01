@@ -17,6 +17,7 @@ using namespace std;
 #define WITH_ALICE 1
 #define EPOS_CS 2.081702 //rerun with more statistics. slight changes
 #define QGS_CS 2.180836
+#define DPM_CS 2.165823
 
 template<typename T>
 void SetAttributes(T* theGraph, int colour, int marker)
@@ -56,6 +57,8 @@ void makePlots_concl3()
 
   double s_withoutl = sqrt(pow(s_pu,2)+pow(s_acc,2)+pow(s_diff,2)+pow(s_em,2)+pow(s_mod,2)+pow(s_sel,2)+pow(s_noi,2));
   double d_withoutl = sqrt(pow(d_pu,2)+pow(d_acc,2)+pow(d_diff,2)+pow(d_em,2)+pow(d_mod,2)+pow(d_sel,2)+pow(d_noi,2));
+
+  double combined = sqrt( pow(sqrt(pow(s_withoutl,2)+pow(d_withoutl,2))/2.,2) + pow(3.5,2) );
 
   double s_vis  = sqrt(pow(s_lumi,2)+pow(s_pu,2)+pow(s_sel,2)+pow(s_noi,2));
   double d_vis  = sqrt(pow(d_lumi,2)+pow(d_pu,2)+pow(d_sel,2)+pow(d_noi,2));
@@ -98,19 +101,24 @@ void makePlots_concl3()
 
   cout << "single (without lumi)=" << s_withoutl << endl;
   cout << "double (without lumi)=" << d_withoutl << endl;
+  cout << "combined             =" << combined << endl;
   cout << endl << endl;
 
 
   TFile f2("plots/corr_factors.root");
   TVectorD* corr_fac_epos = NULL;
   TVectorD* corr_fac_qgsjet = NULL;
+  TVectorD* corr_fac_dpmjet = NULL;
   corr_fac_epos  = (TVectorD*)f2.Get("corr_fac_epos");
   corr_fac_qgsjet  = (TVectorD*)f2.Get("corr_fac_qgsjet");
-  if(!corr_fac_epos || !corr_fac_qgsjet) {cerr << "error" << endl; return;}
+  corr_fac_dpmjet  = (TVectorD*)f2.Get("corr_fac_dpmjet");
+  if(!corr_fac_epos || !corr_fac_qgsjet || !corr_fac_dpmjet) {cerr << "error" << endl; return;}
   cout << "EPOS Eff. Correction:" << endl;
   corr_fac_epos->Print();
   cout << "QGSJETII-04 Eff. Correction:" << endl;
   corr_fac_qgsjet->Print();
+  cout << "DPMJet Eff. Correction:" << endl;
+  corr_fac_dpmjet->Print();
   f2.Close();
   ///!READ IN VALUES
 
@@ -122,19 +130,8 @@ void makePlots_concl3()
   h_data->GetXaxis()->SetBinLabel(5,"#splitline{#splitline{}{}}{#splitline{hadron level}{p_{T,D}>0.41 GeV}}");
   h_data->GetXaxis()->SetBinLabel(4,"visible");
   TH1D * h_epos = new TH1D("h_epos","EPOS-LHC;;#sigma [b]",6,-0.5,5.5);
-  h_epos->GetXaxis()->SetBinLabel(3,"#splitline{hadronic}{inelastic}");
-  h_epos->GetXaxis()->SetBinLabel(2,"#splitline{hadron}{level}");
-  h_epos->GetXaxis()->SetBinLabel(1,"visible");
-  h_epos->GetXaxis()->SetBinLabel(6,"#splitline{hadronic}{inelastic}");
-  h_epos->GetXaxis()->SetBinLabel(5,"#splitline{hadron}{level}");
-  h_epos->GetXaxis()->SetBinLabel(4,"visible");
   TH1D * h_qgsjet = new TH1D("h_qgsjet","QGSJETII-04;;#sigma [b]",6,-0.5,5.5);
-  h_qgsjet->GetXaxis()->SetBinLabel(3,"#splitline{hadronic}{inelastic}");
-  h_qgsjet->GetXaxis()->SetBinLabel(2,"#splitline{hadron}{level}");
-  h_qgsjet->GetXaxis()->SetBinLabel(1,"visible");
-  h_qgsjet->GetXaxis()->SetBinLabel(6,"#splitline{hadronic}{inelastic}");
-  h_qgsjet->GetXaxis()->SetBinLabel(5,"#splitline{hadron}{level}");
-  h_qgsjet->GetXaxis()->SetBinLabel(4,"visible");
+  TH1D * h_dpmjet = new TH1D("h_dpmjet","DPMJETII-04;;#sigma [b]",6,-0.5,5.5);
 
 #ifdef WITH_ALICE
   TGraphErrors* h_alice_ppb = new TGraphErrors(1);
@@ -150,9 +147,9 @@ void makePlots_concl3()
   h_lhcb->SetPoint(0,0.1,2.09);
   h_lhcb->SetPointError(0,0,0.12);
 
-  SetAttributes<TGraph>(h_lhcb,kMagenta,22);
-  SetAttributes<TGraph>(h_alice_ppb,kMagenta,29);
-  SetAttributes<TGraph>(h_alice_pbp,kMagenta,30);
+  SetAttributes<TGraph>(h_lhcb,kCyan+3,22);
+  SetAttributes<TGraph>(h_alice_ppb,kCyan+3,29);
+  SetAttributes<TGraph>(h_alice_pbp,kCyan+3,30);
     
 #endif
 
@@ -173,6 +170,8 @@ void makePlots_concl3()
   double eff_epos_double = (*corr_fac_epos)[1];
   double eff_qgsjet_single = (*corr_fac_qgsjet)[0];
   double eff_qgsjet_double = (*corr_fac_qgsjet)[1];
+  double eff_dpmjet_single = (*corr_fac_dpmjet)[0];
+  double eff_dpmjet_double = (*corr_fac_dpmjet)[1];
 
   h_epos->SetBinContent(3,EPOS_CS); //this is cross section from model
   h_epos->SetBinContent(2,EPOS_CS*eff_epos_single);
@@ -182,15 +181,21 @@ void makePlots_concl3()
   h_qgsjet->SetBinContent(2,QGS_CS*eff_qgsjet_single);
   h_qgsjet->SetBinContent(6,QGS_CS);
   h_qgsjet->SetBinContent(5,QGS_CS*eff_qgsjet_double);
+  h_dpmjet->SetBinContent(3,DPM_CS);
+  h_dpmjet->SetBinContent(2,DPM_CS*eff_dpmjet_single);
+  h_dpmjet->SetBinContent(6,DPM_CS);
+  h_dpmjet->SetBinContent(5,DPM_CS*eff_dpmjet_double);
 
   SetAttributes<TH1D>(h_data,kRed,20);
   SetAttributes<TH1D>(h_epos,kGreen-1,22);
   SetAttributes<TH1D>(h_qgsjet,kBlue,34);
+  SetAttributes<TH1D>(h_dpmjet,kMagenta,23);
 
   TCanvas* can1 = new TCanvas;
   h_data->Draw("P");
   h_epos->Draw("SAME P");
   h_qgsjet->Draw("SAME P");
+  h_dpmjet->Draw("SAME P");
 #ifdef WITH_ALICE
   h_alice_ppb->Draw("P");
   h_alice_pbp->Draw("P");
@@ -217,6 +222,7 @@ void makePlots_concl3()
   leg1->AddEntry(h_data,"CMS","p");
   leg1->AddEntry(h_epos,"EPOS-LHC","p");
   leg1->AddEntry(h_qgsjet,"QGSJetII-04","p");
+  leg1->AddEntry(h_dpmjet,"DPMJet 3.06","p");
 #ifdef WITH_ALICE
   leg1->AddEntry(h_alice_ppb,"ALICE V0 (pPb)","p");
   leg1->AddEntry(h_alice_pbp,"ALICE V0 (Pbp","p");
@@ -247,6 +253,7 @@ void makePlots_concl3()
   cout << endl;
   cout << "epos  inel=" << EPOS_CS << " hadsingle=" << EPOS_CS*eff_epos_single  << " haddouble=" << EPOS_CS*eff_epos_double << endl;;
   cout << "qgsjet  inel=" << QGS_CS << " hadsingle=" << QGS_CS*eff_qgsjet_single  << " haddouble=" << QGS_CS*eff_qgsjet_double << endl;
+  cout << "dpmjet  inel=" << DPM_CS << " hadsingle=" << DPM_CS*eff_dpmjet_single  << " haddouble=" << DPM_CS*eff_dpmjet_double << endl;
 
   cout << endl << "Differences for cross sections:" << endl;
   cout << endl << "Single:" << endl

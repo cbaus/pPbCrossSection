@@ -59,10 +59,10 @@ void makePlots_pt_cuts_diff()
   type.push_back(string("double"));
 
   vector<string> list;
+  //list.push_back(string("DPMJet"));
   list.push_back(string("Epos"));
   //list.push_back(string("Hijing"));
   list.push_back(string("QGSJetII"));
-  //list.push_back(string("DPMJet"));
   vector<string> name;
   name.push_back(string("EPOS-LHC"));
   name.push_back(string("HIJING 1.383"));
@@ -103,12 +103,13 @@ void makePlots_pt_cuts_diff()
       double n_nd_single = nd_single->Integral(0,nbins+1);
       double n_all_single = all_single->Integral(0,nbins+1);
 
-      double n_sel_sd1_single = sd1_single->Integral(nbinsel_single,nbins+1);
-      double n_sel_sd2_single = sd2_single->Integral(nbinsel_single,nbins+1);
-      double n_sel_dd_single = dd_single->Integral(nbinsel_single,nbins+1);
-      double n_sel_cd_single = cd_single->Integral(nbinsel_single,nbins+1);
-      double n_sel_nd_single = nd_single->Integral(nbinsel_single,nbins+1);
-      double n_sel_all_single = all_single->Integral(nbinsel_single,nbins+1);
+      double deltalowedge = (0.61 - all_single->GetBinLowEdge(nbinsel_single))/all_single->GetBinWidth(nbinsel_single);
+      double n_sel_sd1_single = sd1_single->Integral(nbinsel_single,nbins+1) - deltalowedge*sd1_single->GetBinContent(nbinsel_single);
+      double n_sel_sd2_single = sd2_single->Integral(nbinsel_single,nbins+1) - deltalowedge*sd2_single->GetBinContent(nbinsel_single);;
+      double n_sel_dd_single = dd_single->Integral(nbinsel_single,nbins+1) - deltalowedge*dd_single->GetBinContent(nbinsel_single);;
+      double n_sel_cd_single = cd_single->Integral(nbinsel_single,nbins+1) - deltalowedge*cd_single->GetBinContent(nbinsel_single);;
+      double n_sel_nd_single = nd_single->Integral(nbinsel_single,nbins+1) - deltalowedge*nd_single->GetBinContent(nbinsel_single);;
+      double n_sel_all_single = all_single->Integral(nbinsel_single,nbins+1) - deltalowedge*all_single->GetBinContent(nbinsel_single);;
 
 
       int nbinsel_double = all_double->FindBin(0.41);
@@ -119,12 +120,13 @@ void makePlots_pt_cuts_diff()
       double n_nd_double = nd_double->Integral(0,nbins+1);
       double n_all_double = all_double->Integral(0,nbins+1);
 
-      double n_sel_sd1_double = sd1_double->Integral(nbinsel_double,nbins+1);
-      double n_sel_sd2_double = sd2_double->Integral(nbinsel_double,nbins+1);
-      double n_sel_dd_double = dd_double->Integral(nbinsel_double,nbins+1);
-      double n_sel_cd_double = cd_double->Integral(nbinsel_double,nbins+1);
-      double n_sel_nd_double = nd_double->Integral(nbinsel_double,nbins+1);
-      double n_sel_all_double = all_double->Integral(nbinsel_double,nbins+1);
+      double deltalowedge = (0.41 - all_double->GetBinLowEdge(nbinsel_double))/all_double->GetBinWidth(nbinsel_double);
+      double n_sel_sd1_double = sd1_double->Integral(nbinsel_double,nbins+1) - deltalowedge*sd1_double->GetBinContent(nbinsel_double);
+      double n_sel_sd2_double = sd2_double->Integral(nbinsel_double,nbins+1) - deltalowedge*sd2_double->GetBinContent(nbinsel_double);;
+      double n_sel_dd_double = dd_double->Integral(nbinsel_double,nbins+1) - deltalowedge*dd_double->GetBinContent(nbinsel_double);;
+      double n_sel_cd_double = cd_double->Integral(nbinsel_double,nbins+1) - deltalowedge*cd_double->GetBinContent(nbinsel_double);;
+      double n_sel_nd_double = nd_double->Integral(nbinsel_double,nbins+1) - deltalowedge*nd_double->GetBinContent(nbinsel_double);;
+      double n_sel_all_double = all_double->Integral(nbinsel_double,nbins+1) - deltalowedge*all_double->GetBinContent(nbinsel_double);;
 
       cout << fixed << setprecision(1) //SAME FOR BOTH: EXISTS ONCE
            << "No Selection & "
@@ -159,7 +161,6 @@ void makePlots_pt_cuts_diff()
       /////////////////DO FRACTIONS IN HISTOGRAMS////////////
       for (int ibin=1; ibin<=nbins; ++ibin)
         {
-          cout << ibin << endl;
           sd1_single->SetBinContent(ibin,sd1_single->Integral(ibin,nbins+1)/all_single->Integral(ibin,nbins+1)); //includes overflow with nbins+1
           sd2_single->SetBinContent(ibin,sd2_single->Integral(ibin,nbins+1)/all_single->Integral(ibin,nbins+1));
           dd_single->SetBinContent(ibin,dd_single->Integral(ibin,nbins+1)/all_single->Integral(ibin,nbins+1));
@@ -256,14 +257,14 @@ void makePlots_pt_cuts_diff()
           hs->Add(sd2);
           hs->Add(dd);
           hs->Add(cd);
-          hs->Add(nd);
+          //hs->Add(nd);
           hs->Draw("HIST");
 
           hs->SetTitle(";p_{T,HF}^{GEN} [GeV];fraction");
           hs->GetXaxis()->SetTitleOffset(hs->GetXaxis()->GetTitleOffset()*1.15);
           hs->GetXaxis()->SetRangeUser(0,3);
           hs->SetMinimum(0);
-          hs->SetMaximum(1.8); //off by factor 1.3???
+          hs->SetMaximum(0.2); //off by factor 1.3???
           //can1->SetLogy();
           //can1->SetLogx();
 
@@ -275,7 +276,7 @@ void makePlots_pt_cuts_diff()
               leg1->AddEntry(sd2,"","F");
               leg1->AddEntry(dd,"","F");
               leg1->AddEntry(cd,"","F");
-              leg1->AddEntry(nd,"","F");
+              //leg1->AddEntry(nd,"","F");
             }
           else
             {

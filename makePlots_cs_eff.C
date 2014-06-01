@@ -35,6 +35,8 @@ TVectorD corr_fac_mc(4);
 TVectorD corr_fac_mce(4);
 TVectorD corr_fac_epos(2);
 TVectorD corr_fac_qgsjet(2);
+TVectorD corr_fac_hijing(2);
+TVectorD corr_fac_dpmjet(2);
 
 void makePlots_cs_eff(bool draw=1, double cut_value_single = 8., double cut_value_double = 4.,string filename = "histos.root");
 
@@ -53,20 +55,20 @@ void makePlots_cs_eff(bool draw, double cut_value_single, double cut_value_doubl
   for(int n=0; n<int(type.size()); n++)
     {
       TFile* file = TFile::Open(filename.c_str());
-      TFile* file2 = TFile::Open("histos.root");
+      TFile* file2 = TFile::Open("histos_deleteme.root");
 
-      TH1D* a=(TH1D*)file->Get((string("data210885/data210885_h_hf_cut_") + type[n]).c_str());
-      TH1D* a2=(TH1D*)file->Get((string("data210885/data210885_h_hf_cut_") + type[n] + string("_noise")).c_str());
+      TH1D* zb=(TH1D*)file->Get((string("data210885/data210885_h_hf_cut_") + type[n]).c_str());
+      TH1D* noise=(TH1D*)file->Get((string("data210885/data210885_h_hf_cut_") + type[n] + string("_noise")).c_str());
       TH1D* h_events=(TH1D*)file->Get(string("data210885/data210885_h_lumi").c_str()); //zb
       TH1D* h_lumi=(TH1D*)file->Get(string("data210885/data210885_h_run_events_lumi").c_str());
-      TH1D* eposrew=(TH1D*)file2->Get((string("EposDiffWeightOpt/EposDiffWeightOpt_h_hf_cut_") + type[n]).c_str());
-      TH1D* qgsrew=(TH1D*)file2->Get((string("QGSJetIIDiffWeightOpt/QGSJetIIDiffWeightOpt_h_hf_cut_") + type[n]).c_str());
+      TH1D* eposrew=(TH1D*)file->Get((string("EposDiffWeightOpt/EposDiffWeightOpt_h_hf_cut_") + type[n]).c_str());
+      TH1D* qgsrew=(TH1D*)file->Get((string("QGSJetIIDiffWeightOpt/QGSJetIIDiffWeightOpt_h_hf_cut_") + type[n]).c_str());
       TH1D* dpm=(TH1D*)file->Get((string("DPMJet/DPMJet_h_hf_cut_") + type[n]).c_str());
-      TH1D* b=(TH1D*)file->Get((string("Hijing/Hijing_h_hf_cut_") + type[n]).c_str());
-      TH1D* c=(TH1D*)file->Get((string("Epos/Epos_h_hf_cut_")+ type[n]).c_str());
-      TH1D* d=(TH1D*)file->Get((string("QGSJetII/QGSJetII_h_hf_cut_") + type[n]).c_str());
-      TH1D* e=(TH1D*)file->Get((string("Starlight_DPMJet/Starlight_DPMJet_h_hf_cut_") + type[n]).c_str());
-      TH1D* f=(TH1D*)file->Get((string("Starlight_Pythia/Starlight_Pythia_h_hf_cut_") + type[n]).c_str());
+      TH1D* hijing=(TH1D*)file->Get((string("Hijing/Hijing_h_hf_cut_") + type[n]).c_str());
+      TH1D* epos=(TH1D*)file->Get((string("Epos/Epos_h_hf_cut_")+ type[n]).c_str());
+      TH1D* qgs=(TH1D*)file->Get((string("QGSJetII/QGSJetII_h_hf_cut_") + type[n]).c_str());
+      TH1D* sl1=(TH1D*)file->Get((string("Starlight_DPMJet/Starlight_DPMJet_h_hf_cut_") + type[n]).c_str());
+      TH1D* sl2=(TH1D*)file->Get((string("Starlight_Pythia/Starlight_Pythia_h_hf_cut_") + type[n]).c_str());
 
 
       /////
@@ -84,85 +86,85 @@ void makePlots_cs_eff(bool draw, double cut_value_single, double cut_value_doubl
           events_integral += h_events->GetBinContent(i);
         }
 
-      //a->Scale(1./double(a->GetBinContent(1)));
-      //a2->Scale(1./double(a2->GetBinContent(1)));
-      b->Scale(1./double(b->GetBinContent(1)));
-      c->Scale(1./double(c->GetBinContent(1)));
-      d->Scale(1./double(d->GetBinContent(1)));
+      //zb->Scale(1./double(zb->GetBinContent(1)));
+      //noise->Scale(1./double(noise->GetBinContent(1)));
+      hijing->Scale(1./double(hijing->GetBinContent(1)));
+      epos->Scale(1./double(epos->GetBinContent(1)));
+      qgs->Scale(1./double(qgs->GetBinContent(1)));
       dpm->Scale(1./double(dpm->GetBinContent(1)));
-      e->Scale(1./double(e->GetBinContent(1)));
-      f->Scale(1./double(f->GetBinContent(1))/ 195. * 122.); //cross section starlight samples
+      sl1->Scale(1./double(sl1->GetBinContent(1)));
+      sl2->Scale(1./double(sl2->GetBinContent(1))/ 195. * 122.); //cross section starlight samples
       if(eposrew) eposrew->Scale(1./double(eposrew->GetBinContent(1)));
       if(qgsrew) qgsrew->Scale(1./double(qgsrew->GetBinContent(1)));
 
-      a->SetLineWidth(3);
-      a2->SetLineWidth(3);
-      b->SetLineWidth(3);
-      c->SetLineWidth(3);
-      d->SetLineWidth(3);
+      zb->SetLineWidth(3);
+      noise->SetLineWidth(3);
+      hijing->SetLineWidth(3);
+      epos->SetLineWidth(3);
+      qgs->SetLineWidth(3);
       dpm->SetLineWidth(3);
-      e->SetLineWidth(3);
-      f->SetLineWidth(3);
+      sl1->SetLineWidth(3);
+      sl2->SetLineWidth(3);
       if(eposrew) eposrew->SetLineWidth(3);
       if(qgsrew) qgsrew->SetLineWidth(3);
-      a2->SetLineColor(kBlack);
-      b->SetLineColor(kGreen+2);
-      c->SetLineColor(kBlue);
-      d->SetLineColor(kRed);
+      noise->SetLineColor(kBlack);
+      hijing->SetLineColor(kGreen+2);
+      epos->SetLineColor(kBlue);
+      qgs->SetLineColor(kRed);
       dpm->SetLineColor(kOrange);
-      e->SetLineColor(kRed);
-      f->SetLineColor(kBlue);
+      sl1->SetLineColor(kRed);
+      sl2->SetLineColor(kBlue);
       if(eposrew) eposrew->SetLineColor(kMagenta);
       if(qgsrew) qgsrew->SetLineColor(kMagenta);
-      a2->SetMarkerColor(a2->GetLineColor());
-      b->SetMarkerColor(b->GetLineColor());
-      c->SetMarkerColor(c->GetLineColor());
-      d->SetMarkerColor(d->GetLineColor());
+      noise->SetMarkerColor(noise->GetLineColor());
+      hijing->SetMarkerColor(hijing->GetLineColor());
+      epos->SetMarkerColor(epos->GetLineColor());
+      qgs->SetMarkerColor(qgs->GetLineColor());
       dpm->SetMarkerColor(dpm->GetLineColor());
-      e->SetMarkerColor(e->GetLineColor());
-      f->SetMarkerColor(f->GetLineColor());
-      if(eposrew) eposrew->SetMarkerColor(f->GetLineColor());
-      if(qgsrew) qgsrew->SetMarkerColor(f->GetLineColor());
-      b->SetLineStyle(7);
-      d->SetLineStyle(9);
-      f->SetLineStyle(9);
+      sl1->SetMarkerColor(sl1->GetLineColor());
+      sl2->SetMarkerColor(sl2->GetLineColor());
+      if(eposrew) eposrew->SetMarkerColor(sl2->GetLineColor());
+      if(qgsrew) qgsrew->SetMarkerColor(sl2->GetLineColor());
+      hijing->SetLineStyle(7);
+      qgs->SetLineStyle(9);
+      sl2->SetLineStyle(9);
       if(eposrew) eposrew->SetLineStyle(10);
       if(qgsrew) qgsrew->SetLineStyle(10);
 
-      a->SetTitle("Data");
-      a2->SetTitle("Noise");
+      zb->SetTitle("Data");
+      noise->SetTitle("Noise");
       if(eposrew) eposrew->SetTitle("EPOS-LHC (#sigma_{diff}x1.12)");
       if(qgsrew) qgsrew->SetTitle("QGSJETII-04 (#sigma_{diff}x1.50)");
-      b->SetTitle("Hijing 1.383");
-      c->SetTitle("EPOS-LHC");
-      d->SetTitle("QGSJetII-04");
+      hijing->SetTitle("Hijing 1.383");
+      epos->SetTitle("EPOS-LHC");
+      qgs->SetTitle("QGSJetII-04");
       dpm->SetTitle("DPMJet 3.0-6");
-      e->SetTitle("#gamma-p (STARLIGHT+DPMJet)");
-      f->SetTitle("#gamma-p (STARLIGHT+Pythia)");
+      sl1->SetTitle("#gamma-p (STARLIGHT+DPMJet)");
+      sl2->SetTitle("#gamma-p (STARLIGHT+Pythia)");
 
 
-      // a->GetXaxis()->SetLimits(a->GetBinLowEdge(3),a->GetBinLowEdge(a->GetNbinsX())); //cut away first bin
-      // a2->GetXaxis()->SetLimits(2,a2->GetBinLowEdge(a2->GetNbinsX())); //cut away first bin
-      // b->GetXaxis()->SetLimits(b->GetBinLowEdge(3),b->GetBinLowEdge(b->GetNbinsX())); //cut away first bin
-      // c->GetXaxis()->SetLimits(c->GetBinLowEdge(3),c->GetBinLowEdge(c->GetNbinsX())); //cut away first bin
-      // d->GetXaxis()->SetLimits(d->GetBinLowEdge(3),d->GetBinLowEdge(d->GetNbinsX())); //cut away first bin
-      // e->GetXaxis()->SetLimits(3,e->GetBinLowEdge(e->GetNbinsX())); //cut away first bin
-      // f->GetXaxis()->SetLimits(4,f->GetBinLowEdge(f->GetNbinsX())); //cut away first bin
+      // zb->GetXaxis()->SetLimits(zb->GetBinLowEdge(3),zb->GetBinLowEdge(zb->GetNbinsX())); //cut away first bin
+      // noise->GetXaxis()->SetLimits(2,noise->GetBinLowEdge(noise->GetNbinsX())); //cut away first bin
+      // hijing->GetXaxis()->SetLimits(hijing->GetBinLowEdge(3),hijing->GetBinLowEdge(hijing->GetNbinsX())); //cut away first bin
+      // epos->GetXaxis()->SetLimits(epos->GetBinLowEdge(3),epos->GetBinLowEdge(epos->GetNbinsX())); //cut away first bin
+      // qgs->GetXaxis()->SetLimits(qgs->GetBinLowEdge(3),qgs->GetBinLowEdge(qgs->GetNbinsX())); //cut away first bin
+      // sl1->GetXaxis()->SetLimits(3,sl1->GetBinLowEdge(sl1->GetNbinsX())); //cut away first bin
+      // sl2->GetXaxis()->SetLimits(4,sl2->GetBinLowEdge(sl2->GetNbinsX())); //cut away first bin
 
-      b->GetXaxis()->SetRange(2,b->GetNbinsX()*(type[n]=="double"?0.5:0.75));
-      a2->GetXaxis()->SetRange(2,a2->GetNbinsX()*(type[n]=="double"?0.5:0.75));
+      hijing->GetXaxis()->SetRange(2,hijing->GetNbinsX()*(type[n]=="double"?0.5:0.75));
+      noise->GetXaxis()->SetRange(2,noise->GetNbinsX()*(type[n]=="double"?0.5:0.75));
 
-      b->GetYaxis()->SetRangeUser(0.8,1.001);
-      a2->GetYaxis()->SetRangeUser(2e-5,100);//type[n]=="double"?1e-5:1e-5,1.01);
+      hijing->GetYaxis()->SetRangeUser(0.8,1.001);
+      noise->GetYaxis()->SetRangeUser(2e-5,100);//type[n]=="double"?1e-5:1e-5,1.01);
 
-      b->GetXaxis()->SetTitle("E_{HF} [GeV]");
-      b->GetYaxis()->SetTitle("efficiency");
-      b->GetXaxis()->SetLabelSize(b->GetXaxis()->GetLabelSize()*1.2);
-      b->GetYaxis()->SetLabelSize(b->GetYaxis()->GetLabelSize()*1.2);
-      b->GetXaxis()->SetTitleSize(b->GetXaxis()->GetTitleSize()*1.1);
-      b->GetYaxis()->SetTitleSize(b->GetYaxis()->GetTitleSize()*1.1);
-      b->GetXaxis()->SetTitleOffset(b->GetXaxis()->GetTitleOffset()*1.1);
-      b->GetYaxis()->SetTitleOffset(b->GetYaxis()->GetTitleOffset()*1.1);
+      hijing->GetXaxis()->SetTitle("E_{HF} [GeV]");
+      hijing->GetYaxis()->SetTitle("efficiency");
+      hijing->GetXaxis()->SetLabelSize(hijing->GetXaxis()->GetLabelSize()*1.2);
+      hijing->GetYaxis()->SetLabelSize(hijing->GetYaxis()->GetLabelSize()*1.2);
+      hijing->GetXaxis()->SetTitleSize(hijing->GetXaxis()->GetTitleSize()*1.1);
+      hijing->GetYaxis()->SetTitleSize(hijing->GetYaxis()->GetTitleSize()*1.1);
+      hijing->GetXaxis()->SetTitleOffset(hijing->GetXaxis()->GetTitleOffset()*1.1);
+      hijing->GetYaxis()->SetTitleOffset(hijing->GetYaxis()->GetTitleOffset()*1.1);
 
 
       const double cut_value = type[n]=="single"?cut_value_single:cut_value_double;
@@ -170,9 +172,9 @@ void makePlots_cs_eff(bool draw, double cut_value_single, double cut_value_doubl
       if(draw)
         {
           TCanvas* can1 = new TCanvas;
-          b->Draw("HIST L");
-          c->Draw("HIST L SAME");
-          d->Draw("HIST L SAME");
+          hijing->Draw("HIST L");
+          epos->Draw("HIST L SAME");
+          qgs->Draw("HIST L SAME");
           dpm->Draw("HIST L SAME");
 
           TLine* line = new TLine(cut_value,type[n]=="single"?0.8:0.88,cut_value,1.001);
@@ -202,18 +204,18 @@ void makePlots_cs_eff(bool draw, double cut_value_single, double cut_value_doubl
 #endif
             }
 
-          leg->AddEntry(b,"","l");
-          leg->AddEntry(c,"","l");
-          leg->AddEntry(d,"","l");
+          leg->AddEntry(hijing,"","l");
+          leg->AddEntry(epos,"","l");
+          leg->AddEntry(qgs,"","l");
           leg->AddEntry(dpm,"","l");
 #ifdef __CINT__
           SetLegAtt(leg,1.3);
 #endif
           leg->Draw();
 
-          a->GetYaxis()->SetRangeUser(0,1.01);
-          a->GetXaxis()->SetTitle("E_{HF} [GeV]");
-          a->GetYaxis()->SetTitle("efficiency");
+          zb->GetYaxis()->SetRangeUser(0,1.01);
+          zb->GetXaxis()->SetTitle("E_{HF} [GeV]");
+          zb->GetYaxis()->SetTitle("efficiency");
 
           can1->SaveAs((string("plots/full_p_space_eff_PAS_")+type[n]+string(".pdf")).c_str());
         }
@@ -225,15 +227,15 @@ void makePlots_cs_eff(bool draw, double cut_value_single, double cut_value_doubl
       double f_mce = 0;
       double f_mcesys = 0;
       int count = 0;
-      for(int i=a->FindBin(2); i<=a->FindBin(10); i++)
+      for(int i=zb->FindBin(2); i<=zb->FindBin(10); i++)
         {
           std::set<double> mc_values;
-          mc_values.insert(c->GetBinContent(i));
-          mc_values.insert(d->GetBinContent(i));
+          mc_values.insert(epos->GetBinContent(i));
+          mc_values.insert(qgs->GetBinContent(i));
           //mc_values.insert(dpm->GetBinContent(i));
 
           ++count;
-          f_eme += fabs(e->GetBinContent(i) - f->GetBinContent(i));
+          f_eme += fabs(sl1->GetBinContent(i) - sl2->GetBinContent(i));
           f_mce += fabs(*mc_values.rbegin() - *mc_values.begin());
           if(eposrew && qgsrew) f_mcesys += fabs(eposrew->GetBinContent(i) - qgsrew->GetBinContent(i));
         }
@@ -242,18 +244,18 @@ void makePlots_cs_eff(bool draw, double cut_value_single, double cut_value_doubl
       f_mcesys /= double(count);
 
 
-      for(int i=1; i<=a->GetNbinsX(); i++)
+      for(int i=1; i<=zb->GetNbinsX(); i++)
         {
           std::set<double> mc_values;
-          mc_values.insert(c->GetBinContent(i));
-          mc_values.insert(d->GetBinContent(i));
+          mc_values.insert(epos->GetBinContent(i));
+          mc_values.insert(qgs->GetBinContent(i));
           //mc_values.insert(dpm->GetBinContent(i));
 
-          const double f_em     = 0.5 * (e->GetBinContent(i) + f->GetBinContent(i));
-          const double f_mc     = std::accumulate(mc_values.begin(),mc_values.end(),0.0) / double(mc_values.size()); //1./3. * (c->GetBinContent(i) + d->GetBinContent(i) +dpm->GetBinContent(i));
+          const double f_em     = 0.5 * (sl1->GetBinContent(i) + sl2->GetBinContent(i));
+          const double f_mc     = std::accumulate(mc_values.begin(),mc_values.end(),0.0) / double(mc_values.size()); //1./3. * (epos->GetBinContent(i) + qgs->GetBinContent(i) +dpm->GetBinContent(i));
           const double f_mcsys  = 0.5 * ((eposrew && qgsrew)?(eposrew->GetBinContent(i) + qgsrew->GetBinContent(i)):0);
-          const double f_noise  = a2->GetBinContent(i)/a2->GetBinContent(1);
-          const double n_sel_zb = a->GetBinContent(i);
+          const double f_noise  = noise->GetBinContent(i)/noise->GetBinContent(1);
+          const double n_sel_zb = zb->GetBinContent(i);
           //const double n_zb     = 1;
 
           ///////////////////////////////////////////////////////////////////////
@@ -263,16 +265,16 @@ void makePlots_cs_eff(bool draw, double cut_value_single, double cut_value_doubl
           const double n_em = f_em * 0.195; //these are not n but already n/lumi
           if(i!=1)
             {
-              a2->SetBinContent(i,n_noise);
-              e->SetBinContent(i,e->GetBinContent(i)*0.195);
-              f->SetBinContent(i,f->GetBinContent(i)*0.195);
+              noise->SetBinContent(i,n_noise);
+              sl1->SetBinContent(i,sl1->GetBinContent(i)*0.195);
+              sl2->SetBinContent(i,sl2->GetBinContent(i)*0.195);
             }
-          if(i==a->FindBin(cut_value_single) && type[n]==string("single"))
+          if(i==zb->FindBin(cut_value_single) && type[n]==string("single"))
             {
               // if((i-1)%10 == 0)
               cout
                 << setprecision(3)
-                << endl << i << "(" << a->GetBinCenter(i) << ")"
+                << endl << i << "(" << zb->GetBinCenter(i) << ")"
                 << endl << "f_mc= " << f_mc << " ± " << f_mce << " ( " << f_mce/f_mc*100. << "%)"
                 << endl << "f_mc_scaled= " << f_mcsys << " ± " << f_mcesys << " ( " << f_mcesys/f_mcsys*100. << "%)"
                 << endl << "f_em= " << f_em << " ± " << f_eme << " ( " << f_eme/f_em*100. << "%)"
@@ -286,14 +288,16 @@ void makePlots_cs_eff(bool draw, double cut_value_single, double cut_value_doubl
               corr_fac_mce[0] = f_mce;
               corr_fac_mce[2] = f_mcesys;
 
-              corr_fac_epos[0] = c->GetBinContent(i);
-              corr_fac_qgsjet[0] = d->GetBinContent(i);
+              corr_fac_epos[0] = epos->GetBinContent(i);
+              corr_fac_qgsjet[0] = qgs->GetBinContent(i);
+              corr_fac_hijing[0] = hijing->GetBinContent(i);
+              corr_fac_dpmjet[0] = dpm->GetBinContent(i);
             }
-          if(i==a->FindBin(cut_value_double) && type[n]==string("double"))
+          if(i==zb->FindBin(cut_value_double) && type[n]==string("double"))
             {
               cout
                 << setprecision(3)
-                << endl << i << "(" << a->GetBinCenter(i) << ")"
+                << endl << i << "(" << zb->GetBinCenter(i) << ")"
                 << endl << "f_mc= " << f_mc << " ± " << f_mce << " ( " << f_mce/f_mc*100. << "%)"
                 << endl << "f_mc_scaled= " << f_mcsys << " ± " << f_mcesys << " ( " << f_mcesys/f_mcsys*100. << "%)"
                 << endl << "f_em= " << f_em << " ± " << f_eme << " ( " << f_eme/f_em*100. << "%)"
@@ -307,8 +311,10 @@ void makePlots_cs_eff(bool draw, double cut_value_single, double cut_value_doubl
               corr_fac_mc[3] = f_mcsys;
               corr_fac_mce[3] = f_mcesys;
 
-              corr_fac_epos[1] = c->GetBinContent(i);
-              corr_fac_qgsjet[1] = d->GetBinContent(i);
+              corr_fac_epos[1] = epos->GetBinContent(i);
+              corr_fac_qgsjet[1] = qgs->GetBinContent(i);
+              corr_fac_hijing[1] = hijing->GetBinContent(i);
+              corr_fac_dpmjet[1] = dpm->GetBinContent(i);
             }
         }
 
@@ -317,17 +323,17 @@ void makePlots_cs_eff(bool draw, double cut_value_single, double cut_value_doubl
       if(draw)
         {
           TCanvas* can2 = new TCanvas;
-          a2->GetXaxis()->SetTitle("E_{HF} [GeV]");
-          a2->GetYaxis()->SetTitle("N/#it{L} [b]");
-          a2->GetXaxis()->SetLabelSize(a2->GetXaxis()->GetLabelSize()*1.2);
-          a2->GetYaxis()->SetLabelSize(a2->GetYaxis()->GetLabelSize()*1.2);
-          a2->GetXaxis()->SetTitleSize(a2->GetXaxis()->GetTitleSize()*1.1);
-          a2->GetYaxis()->SetTitleSize(a2->GetYaxis()->GetTitleSize()*1.1);
-          a2->GetXaxis()->SetTitleOffset(a2->GetXaxis()->GetTitleOffset()*1.1);
-          a2->GetYaxis()->SetTitleOffset(a2->GetYaxis()->GetTitleOffset()*1.0);
-          a2->Draw("HIST l");
-          e->Draw("HIST l SAME");
-          f->Draw("HIST l SAME");
+          noise->GetXaxis()->SetTitle("E_{HF} [GeV]");
+          noise->GetYaxis()->SetTitle("N/#it{L} [b]");
+          noise->GetXaxis()->SetLabelSize(noise->GetXaxis()->GetLabelSize()*1.2);
+          noise->GetYaxis()->SetLabelSize(noise->GetYaxis()->GetLabelSize()*1.2);
+          noise->GetXaxis()->SetTitleSize(noise->GetXaxis()->GetTitleSize()*1.1);
+          noise->GetYaxis()->SetTitleSize(noise->GetYaxis()->GetTitleSize()*1.1);
+          noise->GetXaxis()->SetTitleOffset(noise->GetXaxis()->GetTitleOffset()*1.1);
+          noise->GetYaxis()->SetTitleOffset(noise->GetYaxis()->GetTitleOffset()*1.0);
+          noise->Draw("HIST l");
+          sl1->Draw("HIST l SAME");
+          sl2->Draw("HIST l SAME");
           TLegend* leg2 = new TLegend(0.1,0.1,0.2,0.2);
 
           if(type[n]=="single")
@@ -352,9 +358,9 @@ void makePlots_cs_eff(bool draw, double cut_value_single, double cut_value_doubl
             }
           leg2->Draw();
 
-          leg2->AddEntry(a2,"","l");
-          leg2->AddEntry(e,"","l");
-          leg2->AddEntry(f,"","l");
+          leg2->AddEntry(noise,"","l");
+          leg2->AddEntry(sl1,"","l");
+          leg2->AddEntry(sl2,"","l");
 #ifdef __CINT__
           SetLegAtt(leg2,1.1);
 #endif
@@ -379,5 +385,7 @@ void makePlots_cs_eff(bool draw, double cut_value_single, double cut_value_doubl
   corr_fac_mce.Write("corr_fac_mce");
   corr_fac_epos.Write("corr_fac_epos");
   corr_fac_qgsjet.Write("corr_fac_qgsjet");
+  corr_fac_hijing.Write("corr_fac_hijing");
+  corr_fac_dpmjet.Write("corr_fac_dpmjet");
   outfile.Close();
 }
