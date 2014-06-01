@@ -24,10 +24,16 @@
 #include <numeric>      // std::accumulate
 #include <sstream>
 #include <set>
+#include <map>
+#include <string>
 #include <utility>
 
 #define _LumiCorrpPb 1.142 //only use if trees don't contain vdm calibration factor
 #define _LumiCorrPbp 1.138
+
+#define _diff_reweight 1.2
+
+using namespace std;
 
 TVectorD corr_fac_em(2);
 TVectorD corr_fac_eme(2);
@@ -38,7 +44,10 @@ TVectorD corr_fac_qgsjet(2);
 TVectorD corr_fac_hijing(2);
 TVectorD corr_fac_dpmjet(2);
 
+map< string,map<string,TH1D*> > histoman;
+
 void makePlots_cs_eff(bool draw=1, double cut_value_single = 8., double cut_value_double = 4.,string filename = "histos.root");
+double getEffDiffWeight(string model, double cut, double diffWeight);
 
 //available cuts single 5, 6.4, 7.2, 8, 8.8, 9.6, 10, 15, 20
 //available cuts double 1.5, 2, 2.25, 2.5, 2.75, 3, 3.5, 4, 5
@@ -51,7 +60,12 @@ void makePlots_cs_eff(bool draw, double cut_value_single, double cut_value_doubl
 #endif
 
   vector<string> type; type.push_back("single"); type.push_back("double");
-
+  vector<string> models;
+  models.push_back("DPMJet");
+  models.push_back("Hijing");
+  models.push_back("Epos");
+  models.push_back("QGSJetII");
+  
   for(int n=0; n<int(type.size()); n++)
     {
       TFile* file = TFile::Open(filename.c_str());
@@ -61,15 +75,28 @@ void makePlots_cs_eff(bool draw, double cut_value_single, double cut_value_doubl
       TH1D* noise=(TH1D*)file->Get((string("data210885/data210885_h_hf_cut_") + type[n] + string("_noise")).c_str());
       TH1D* h_events=(TH1D*)file->Get(string("data210885/data210885_h_lumi").c_str()); //zb
       TH1D* h_lumi=(TH1D*)file->Get(string("data210885/data210885_h_run_events_lumi").c_str());
-      TH1D* eposrew=(TH1D*)file->Get((string("EposDiffWeightOpt/EposDiffWeightOpt_h_hf_cut_") + type[n]).c_str());
-      TH1D* qgsrew=(TH1D*)file->Get((string("QGSJetIIDiffWeightOpt/QGSJetIIDiffWeightOpt_h_hf_cut_") + type[n]).c_str());
-      TH1D* dpm=(TH1D*)file->Get((string("DPMJet/DPMJet_h_hf_cut_") + type[n]).c_str());
-      TH1D* hijing=(TH1D*)file->Get((string("Hijing/Hijing_h_hf_cut_") + type[n]).c_str());
-      TH1D* epos=(TH1D*)file->Get((string("Epos/Epos_h_hf_cut_")+ type[n]).c_str());
-      TH1D* qgs=(TH1D*)file->Get((string("QGSJetII/QGSJetII_h_hf_cut_") + type[n]).c_str());
       TH1D* sl1=(TH1D*)file->Get((string("Starlight_DPMJet/Starlight_DPMJet_h_hf_cut_") + type[n]).c_str());
       TH1D* sl2=(TH1D*)file->Get((string("Starlight_Pythia/Starlight_Pythia_h_hf_cut_") + type[n]).c_str());
 
+      TH1D* eposrew=(TH1D*)file->Get((string("EposDiffWeightOpt/EposDiffWeightOpt_h_hf_cut_") + type[n]).c_str());
+      TH1D* qgsrew=(TH1D*)file->Get((string("QGSJetIIDiffWeightOpt/QGSJetIIDiffWeightOpt_h_hf_cut_") + type[n]).c_str());
+
+      histoman.clear();
+      for (int i=0; i<int(models.size()); ++i)
+        {
+          string model=models[i];
+          histoman[model]["ALL"]=(TH1D*)file->Get((model+string("/")+model+string("_h_hf_cut_") + type[n]).c_str());
+          histoman[model]["SD1"]=(TH1D*)file->Get((model+string("/")+model+string("_h_hf_cut_SD1_") + type[n]).c_str());
+          histoman[model]["SD2"]=(TH1D*)file->Get((model+string("/")+model+string("_h_hf_cut_SD2_") + type[n]).c_str());
+          histoman[model]["CD" ]=(TH1D*)file->Get((model+string("/")+model+string("_h_hf_cut_CD_") + type[n]).c_str());
+          histoman[model]["DD" ]=(TH1D*)file->Get((model+string("/")+model+string("_h_hf_cut_DD_") + type[n]).c_str());
+          histoman[model]["ND" ]=(TH1D*)file->Get((model+string("/")+model+string("_h_hf_cut_ND_") + type[n]).c_str());
+        }
+      
+      TH1D* dpm=histoman["DPMJet"]["ALL"];
+      TH1D* hijing=histoman["Hijing"]["ALL"];
+      TH1D* epos=histoman["Epos"]["ALL"];
+      TH1D* qgs=histoman["QGSJetII"]["ALL"];
 
       /////
       //LUMI
@@ -166,7 +193,6 @@ void makePlots_cs_eff(bool draw, double cut_value_single, double cut_value_doubl
       hijing->GetXaxis()->SetTitleOffset(hijing->GetXaxis()->GetTitleOffset()*1.1);
       hijing->GetYaxis()->SetTitleOffset(hijing->GetYaxis()->GetTitleOffset()*1.1);
 
-
       const double cut_value = type[n]=="single"?cut_value_single:cut_value_double;
 
       if(draw)
@@ -237,7 +263,7 @@ void makePlots_cs_eff(bool draw, double cut_value_single, double cut_value_doubl
           ++count;
           f_eme += fabs(sl1->GetBinContent(i) - sl2->GetBinContent(i));
           f_mce += fabs(*mc_values.rbegin() - *mc_values.begin());
-          if(eposrew && qgsrew) f_mcesys += fabs(eposrew->GetBinContent(i) - qgsrew->GetBinContent(i));
+          f_mcesys += fabs(getEffDiffWeight("Epos", cut_value, _diff_reweight) - getEffDiffWeight("QGSJetII", cut_value, _diff_reweight));
         }
       f_eme /= double(count);
       f_mce /= double(count);
@@ -253,7 +279,7 @@ void makePlots_cs_eff(bool draw, double cut_value_single, double cut_value_doubl
 
           const double f_em     = 0.5 * (sl1->GetBinContent(i) + sl2->GetBinContent(i));
           const double f_mc     = std::accumulate(mc_values.begin(),mc_values.end(),0.0) / double(mc_values.size()); //1./3. * (epos->GetBinContent(i) + qgs->GetBinContent(i) +dpm->GetBinContent(i));
-          const double f_mcsys  = 0.5 * ((eposrew && qgsrew)?(eposrew->GetBinContent(i) + qgsrew->GetBinContent(i)):0);
+          const double f_mcsys  = 0.5 * (getEffDiffWeight("Epos", cut_value, _diff_reweight) + getEffDiffWeight("QGSJetII", cut_value, _diff_reweight));
           const double f_noise  = noise->GetBinContent(i)/noise->GetBinContent(1);
           const double n_sel_zb = zb->GetBinContent(i);
           //const double n_zb     = 1;
@@ -388,4 +414,37 @@ void makePlots_cs_eff(bool draw, double cut_value_single, double cut_value_doubl
   corr_fac_hijing.Write("corr_fac_hijing");
   corr_fac_dpmjet.Write("corr_fac_dpmjet");
   outfile.Close();
+}
+
+double getEffDiffWeight(string model, double cut, double diffWeight)
+{
+  double all =
+    histoman[model]["SD1"]->GetBinContent(1) +
+    histoman[model]["SD2"]->GetBinContent(1) +
+    histoman[model]["DD"]->GetBinContent(1) +
+    histoman[model]["CD"]->GetBinContent(1) +
+    histoman[model]["ND"]->GetBinContent(1);
+
+  double diff_frac = (
+    histoman[model]["SD1"]->GetBinContent(1) +
+    histoman[model]["SD2"]->GetBinContent(1) +
+    histoman[model]["DD"]->GetBinContent(1) +
+    histoman[model]["CD"]->GetBinContent(1) ) /
+    all;
+
+  double eff_diff = (
+    histoman[model]["SD1"]->Interpolate(cut) +
+    histoman[model]["SD2"]->Interpolate(cut) +
+    histoman[model]["DD"]->Interpolate(cut) +
+    histoman[model]["CD"]->Interpolate(cut) ) /
+    all;
+
+  double eff_nd =
+    histoman[model]["ND"]->Interpolate(cut) /
+    all;
+
+  double mod_eff =
+    (diffWeight * eff_diff + eff_nd) / (1.+diff_frac*(diffWeight-1.));
+
+  return mod_eff;
 }
