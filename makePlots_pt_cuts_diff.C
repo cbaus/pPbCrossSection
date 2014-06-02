@@ -59,15 +59,11 @@ void makePlots_pt_cuts_diff()
   type.push_back(string("double"));
 
   vector<string> list;
-  //list.push_back(string("DPMJet"));
-  list.push_back(string("Epos"));
-  //list.push_back(string("Hijing"));
-  list.push_back(string("QGSJetII"));
   vector<string> name;
-  name.push_back(string("EPOS-LHC"));
-  name.push_back(string("HIJING 1.383"));
-  name.push_back(string("QGSJetII-04"));
-  name.push_back(string("DPMJet 3.06"));
+  //list.push_back(string("DPMJet"));   name.push_back(string("DPMJet 3.06"));
+  list.push_back(string("Epos"));  name.push_back(string("EPOS-LHC"));
+  //list.push_back(string("Hijing"));  name.push_back(string("HIJING 1.383"));
+  list.push_back(string("QGSJetII"));  name.push_back(string("QGSJetII-04"));
 
   cout << " & SD [$\\%$] & DD [$\\%$] & CD [$\\%$] & ND [$\\%$] & Sum [$\\%$] & "
        << "Ratio_{MC} $\\frac{\\text{double-arm}}{\\text{single-arm}}$"
@@ -296,7 +292,7 @@ void makePlots_pt_cuts_diff()
           line->SetLineStyle(2);
           line->Draw("SAME");
 
-          //can1->SaveAs((string("plots/diff_energy_")+type[cur]+string("_")+list[i]+string(".pdf")).c_str());
+          can1->SaveAs((string("plots/diff_pt_frac_diff")+type[cur]+string("_")+list[i]+string(".pdf")).c_str());
         } //type loop
     } //list loop
 }

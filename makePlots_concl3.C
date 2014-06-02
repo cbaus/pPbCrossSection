@@ -1,5 +1,6 @@
 //macro for vis - had - inel plot
 //important please always update uncertainties by hand!
+//makePlots_pt_cuts_eff_pur & makePlots_cs
 
 #include <TH1D.h>
 #include <TROOT.h>
@@ -38,17 +39,19 @@ void makePlots_concl3()
 
   //Get Hadron Level uncertainty
   TFile f0("plots/corr_factors_hadron.root");
-  TVectorD* cor_fac_had    = NULL;
-  TVectorD* cor_fac_had_e = NULL;
-  cor_fac_had    = (TVectorD*)f0.Get("corr_fac_had");
-  cor_fac_had_e  = (TVectorD*)f0.Get("corr_fac_had_e");
-  f0.Close();
+  TVectorD* cor_fac_had           = NULL;
+  TVectorD* cor_fac_had_e         = NULL;
+  cor_fac_had           = (TVectorD*)f0.Get("corr_fac_had");
+  cor_fac_had_e         = (TVectorD*)f0.Get("corr_fac_had_e");
+  cout << "Data had level correction:" << endl;
+  cor_fac_had->Print();
+  cor_fac_had_e->Print();
 
   //Uncertainty values
   double s_lumi = 3.5, d_lumi = 3.5;
   double s_pu = 0.1, d_pu = 0.1;
   double s_acc = 0.5, d_acc = 1.6;
-  double s_diff = 1.5, d_diff = 2.0;
+  double s_diff = 0.4, d_diff = 0.6;
   double s_em = 0.2, d_em = 0.1;
   double s_mod = 1.7, d_mod = 0.8;
   double s_sel = 0.6, d_sel = 0.2;
@@ -57,15 +60,17 @@ void makePlots_concl3()
 
   double s_withoutl = sqrt(pow(s_pu,2)+pow(s_acc,2)+pow(s_diff,2)+pow(s_em,2)+pow(s_mod,2)+pow(s_sel,2)+pow(s_noi,2));
   double d_withoutl = sqrt(pow(d_pu,2)+pow(d_acc,2)+pow(d_diff,2)+pow(d_em,2)+pow(d_mod,2)+pow(d_sel,2)+pow(d_noi,2));
+  double unc_syst = sqrt(pow(s_withoutl,2)+pow(d_withoutl,2))/2.;
 
-  double combined = sqrt( pow(sqrt(pow(s_withoutl,2)+pow(d_withoutl,2))/2.,2) + pow(3.5,2) );
+  double combined = sqrt( pow(sqrt( pow(s_withoutl,2)+pow(d_withoutl,2) )/2.,2) + pow(3.5,2) );
 
   double s_vis  = sqrt(pow(s_lumi,2)+pow(s_pu,2)+pow(s_sel,2)+pow(s_noi,2));
   double d_vis  = sqrt(pow(d_lumi,2)+pow(d_pu,2)+pow(d_sel,2)+pow(d_noi,2));
   double s_had  = sqrt(pow(s_lumi,2)+pow(s_pu,2)+pow(s_sel,2)+pow(s_noi,2) + pow(s_em,2) + pow(s_mod,2)+pow(s_hadlvl,2));
   double d_had  = sqrt(pow(d_lumi,2)+pow(d_pu,2)+pow(d_sel,2)+pow(d_noi,2) + pow(d_em,2) + pow(d_mod,2)+pow(d_hadlvl,2));
   double s_inel = sqrt(pow(s_lumi,2)+pow(s_pu,2)+pow(s_sel,2)+pow(s_noi,2) + pow(s_em,2) + pow(s_mod,2)+pow(s_acc,2)+pow(s_diff,2));
-  double d_inel = sqrt(pow(d_lumi,2)+pow(d_pu,2)+pow(d_sel,2)+pow(d_noi,2) + pow(d_em,2) + pow(d_mod,2)+pow(d_acc,2)+pow(d_diff,2));;
+  double d_inel = sqrt(pow(d_lumi,2)+pow(d_pu,2)+pow(d_sel,2)+pow(d_noi,2) + pow(d_em,2) + pow(d_mod,2)+pow(d_acc,2)+pow(d_diff,2));
+
 
 
   ///READ IN VALUES
@@ -88,20 +93,24 @@ void makePlots_concl3()
   vec_sigma_vis->Print();
   f.Close();
 
-  cout << "had single = " << fixed << setprecision(3) << (*vec_sigma_had)[0]*(*cor_fac_had)[0] << endl; 
-  cout << "had double = " << fixed << setprecision(3) << (*vec_sigma_had)[1]*(*cor_fac_had)[1] << endl; 
-
-  cout << "Uncertainty vis single  = " << fixed << setprecision(3) << s_vis << " = " << s_vis/100.*(*vec_sigma_inel)[0] << endl;
-  cout << "Uncertainty vis double  = " << fixed << setprecision(3) << d_vis << " = " << d_vis/100.*(*vec_sigma_inel)[1] << endl;
-  cout << "Uncertainty had single  = " << fixed << setprecision(3) << s_had << " = " << s_had/100.*(*vec_sigma_inel)[0]*(*cor_fac_had)[0] << endl;
-  cout << "Uncertainty had double  = " << fixed << setprecision(3) << d_had << " = " << d_had/100.*(*vec_sigma_inel)[1]*(*cor_fac_had)[1] << endl;
-  cout << "Uncertainty inel single = " << fixed << setprecision(3) << s_inel << " = " << s_inel/100.*(*vec_sigma_inel)[1] << endl;
-  cout << "Uncertainty inel double = " << fixed << setprecision(3) << d_inel << " = " << d_inel/100.*(*vec_sigma_inel)[2] << endl;
+  cout << "Data sigma had single = " << fixed << setprecision(3) << (*vec_sigma_had)[0]*(*cor_fac_had)[0] << endl; 
+  cout << "Data sigma had double = " << fixed << setprecision(3) << (*vec_sigma_had)[1]*(*cor_fac_had)[1] << endl; 
   cout << endl;
 
-  cout << "single (without lumi)=" << s_withoutl << endl;
-  cout << "double (without lumi)=" << d_withoutl << endl;
-  cout << "combined             =" << combined << endl;
+  cout << "Uncertainty vis single    = " << fixed << setprecision(1) << s_vis << " = " << setprecision(3) << s_vis/100.*(*vec_sigma_vis)[0] << "mb" << endl;
+  cout << "Uncertainty vis double    = " << fixed << setprecision(1) << d_vis << " = " << setprecision(3) << d_vis/100.*(*vec_sigma_vis)[1] << "mb" << endl;
+  cout << "Uncertainty had single    = " << fixed << setprecision(1) << s_had << " = " << setprecision(3) << s_had/100.*(*vec_sigma_had)[0]*(*cor_fac_had)[0] << "mb" << endl;
+  cout << "Uncertainty had double    = " << fixed << setprecision(1) << d_had << " = " << setprecision(3) << d_had/100.*(*vec_sigma_had)[1]*(*cor_fac_had)[1] << "mb" << endl;
+  cout << "Uncertainty inel single   = " << fixed << setprecision(1) << s_inel << " = " << setprecision(3) << s_inel/100.*(*vec_sigma_inel)[1] << "mb" << endl;
+  cout << "Uncertainty inel double   = " << fixed << setprecision(1) << d_inel << " = " << setprecision(3) << d_inel/100.*(*vec_sigma_inel)[2] << "mb" << endl;
+  cout << endl;
+
+  cout << fixed << setprecision(1) << "single (without lumi)=" << s_withoutl << endl;
+  cout << fixed << setprecision(1) << "double (without lumi)=" << d_withoutl << endl;
+  cout << fixed << setprecision(1) << unc_syst << " = " << setprecision(3) << unc_syst/100.*(*vec_sigma_inel)[0] << " mb (syst.)" << endl;
+
+  cout << setprecision(3) << s_lumi/100.*(*vec_sigma_inel)[0] << " mb (lumi.)" << endl;
+  cout << "Uncertainty inel combined = " << fixed << setprecision(1) << combined << " = " << setprecision(3) << combined/100.*(*vec_sigma_inel)[0] << "mb" << endl;
   cout << endl << endl;
 
 
@@ -109,9 +118,9 @@ void makePlots_concl3()
   TVectorD* corr_fac_epos = NULL;
   TVectorD* corr_fac_qgsjet = NULL;
   TVectorD* corr_fac_dpmjet = NULL;
-  corr_fac_epos  = (TVectorD*)f2.Get("corr_fac_epos");
-  corr_fac_qgsjet  = (TVectorD*)f2.Get("corr_fac_qgsjet");
-  corr_fac_dpmjet  = (TVectorD*)f2.Get("corr_fac_dpmjet");
+  corr_fac_epos  = (TVectorD*)f0.Get("corr_fac_had_pt_epos"); //changed to had pt eff
+  corr_fac_qgsjet  = (TVectorD*)f0.Get("corr_fac_had_pt_qgsjet");
+  corr_fac_dpmjet  = (TVectorD*)f0.Get("corr_fac_had_pt_dpmjet");
   if(!corr_fac_epos || !corr_fac_qgsjet || !corr_fac_dpmjet) {cerr << "error" << endl; return;}
   cout << "EPOS Eff. Correction:" << endl;
   corr_fac_epos->Print();

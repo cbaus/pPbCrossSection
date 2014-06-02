@@ -31,7 +31,8 @@
 #define _LumiCorrpPb 1.142 //only use if trees don't contain vdm calibration factor
 #define _LumiCorrPbp 1.138
 
-#define _diff_reweight 1.2
+#define _diff_qgs_reweight 1.11
+#define _diff_epos_reweight 1.07
 
 using namespace std;
 
@@ -263,7 +264,7 @@ void makePlots_cs_eff(bool draw, double cut_value_single, double cut_value_doubl
           ++count;
           f_eme += fabs(sl1->GetBinContent(i) - sl2->GetBinContent(i));
           f_mce += fabs(*mc_values.rbegin() - *mc_values.begin());
-          f_mcesys += fabs(getEffDiffWeight("Epos", cut_value, _diff_reweight) - getEffDiffWeight("QGSJetII", cut_value, _diff_reweight));
+          f_mcesys += fabs(getEffDiffWeight("Epos", cut_value, _diff_epos_reweight) - getEffDiffWeight("QGSJetII", cut_value, _diff_qgs_reweight));
         }
       f_eme /= double(count);
       f_mce /= double(count);
@@ -279,7 +280,7 @@ void makePlots_cs_eff(bool draw, double cut_value_single, double cut_value_doubl
 
           const double f_em     = 0.5 * (sl1->GetBinContent(i) + sl2->GetBinContent(i));
           const double f_mc     = std::accumulate(mc_values.begin(),mc_values.end(),0.0) / double(mc_values.size()); //1./3. * (epos->GetBinContent(i) + qgs->GetBinContent(i) +dpm->GetBinContent(i));
-          const double f_mcsys  = 0.5 * (getEffDiffWeight("Epos", cut_value, _diff_reweight) + getEffDiffWeight("QGSJetII", cut_value, _diff_reweight));
+          const double f_mcsys  = 0.5 * (getEffDiffWeight("Epos", cut_value, _diff_epos_reweight) + getEffDiffWeight("QGSJetII", cut_value, _diff_qgs_reweight));
           const double f_noise  = noise->GetBinContent(i)/noise->GetBinContent(1);
           const double n_sel_zb = zb->GetBinContent(i);
           //const double n_zb     = 1;

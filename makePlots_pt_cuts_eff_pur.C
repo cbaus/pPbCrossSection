@@ -48,7 +48,11 @@ void makePlots_pt_cuts_eff_pur(bool draw, string filename)
   canvases[0][0] = new TCanvas ; canvases[1][0] = new TCanvas; canvases[0][1] = new TCanvas ; canvases[1][1] = new TCanvas;
   TLegend* legends[2]; legends[0] = new TLegend(0.21,0.28,0.55,0.53) ; legends[1] = new TLegend(0.21,0.28,0.55,0.53);
   TVectorD corr_fac_had(2);
-  TVectorD corr_fac_had_pt(2);
+  TVectorD corr_fac_had_pt_epos(2);
+  TVectorD corr_fac_had_pt_dpmjet(2);
+  TVectorD corr_fac_had_pt_hijing(2);
+  TVectorD corr_fac_had_pt_qgsjet(2);
+  TVectorD had_pt_value(2);
   TVectorD corr_fac_had_e(2);  
   
   for(int n=0; n<int(type.size()); n++)
@@ -60,19 +64,23 @@ void makePlots_pt_cuts_eff_pur(bool draw, string filename)
       vector<double> styles;
       vector<string> titles;
 
-      models.push_back("Hijing"); colors.push_back(kGreen+2); styles.push_back(4); titles.push_back("Hijing 1.383");
       models.push_back("Epos");   colors.push_back(kBlue);    styles.push_back(25); titles.push_back("EPOS-LHC");
-      models.push_back("QGSJetII"); colors.push_back(kRed);   styles.push_back(28);titles.push_back("QGSJetII-04");
       models.push_back("DPMJet"); colors.push_back(kMagenta); styles.push_back(22);titles.push_back("DPMJet 3.06");
+      models.push_back("Hijing"); colors.push_back(kGreen+2); styles.push_back(4); titles.push_back("Hijing 1.383");
+      models.push_back("QGSJetII"); colors.push_back(kRed);   styles.push_back(28);titles.push_back("QGSJetII-04");
       //models.push_back("Starlight_DPMJet"); colors.push_back(kGray); styles.push_back(22);titles.push_back("Starlight dpm"); //not needed i think
 
       TH1D* interpolateEff = 0;
       TH1D* interpolatePur = 0;
       const int imax = int(models.size());
+      
+      //loop for calculating p and epsilon for each model
       for (int i = 0; i<imax; ++i)
         {
           TH1D* histeff = (TH1D*)file->Get(((models[i] + "/" + models[i] + "_h_mc_pt_") + type[n] + "_cut").c_str());
           TH1D* histpur = (TH1D*)file->Get(((models[i] + "/" + models[i] + "_h_mc_pt_") + type[n] + "_bg").c_str());
+          histeff = (TH1D*)histeff->Clone((string("hist_eff_")+models[i]).c_str()); //original histos needed for later
+          histpur = (TH1D*)histpur->Clone((string("hist_pur_")+models[i]).c_str());
 
           if(i == 0)
             {
@@ -85,6 +93,7 @@ void makePlots_pt_cuts_eff_pur(bool draw, string filename)
 
           for (int bin = 2; bin < histeff->GetNbinsX(); ++bin)
             {
+              //this looks a bit strange but is correct when you see what is in those histograms
               double effi = histeff->GetBinContent(bin) / (histeff->GetBinContent(bin) + histpur->GetBinContent(bin)); //N(VIS | HADLEVEL) / N(HADLEVEL)
               double puri = histeff->GetBinContent(bin) / double(histeff->GetBinContent(1)); // N(VIS | HADLEVEL) / N(VIS)
               histpur->SetBinContent(bin, puri);
@@ -102,10 +111,11 @@ void makePlots_pt_cuts_eff_pur(bool draw, string filename)
 
         }
 
+      //loop for combining all four models
       for (int i = 0; i<imax; ++i)
         {
-          TH1D* histeff = (TH1D*)file->Get(((models[i] + "/" + models[i] + "_h_mc_pt_") + type[n] + "_cut").c_str());
-          TH1D* histpur = (TH1D*)file->Get(((models[i] + "/" + models[i] + "_h_mc_pt_") + type[n] + "_bg").c_str());
+          TH1D* histeff = (TH1D*)file->Get((string("hist_eff_")+models[i]).c_str()); //see above the Clone(). but gets written to file
+          TH1D* histpur = (TH1D*)file->Get((string("hist_pur_")+models[i]).c_str());
 
           for (int bin = 1; bin < histeff->GetNbinsX(); ++bin)
             {
@@ -215,7 +225,7 @@ void makePlots_pt_cuts_eff_pur(bool draw, string filename)
       interpolateEff->Draw("E3");
       interpolatePur->Draw("E3 SAME");
       
-      leg = new TLegend(0.21,0.28,0.55,0.38);
+      TLegend* leg = new TLegend(0.21,0.28,0.55,0.38);
 #ifdef __CINT__
       CMSText(2,1,0);
 #endif
@@ -242,19 +252,39 @@ void makePlots_pt_cuts_eff_pur(bool draw, string filename)
             {
               if (fabs(corr_fac_had[n] - 1) > fabs(currfactor-1)) // if new factor closer to unity
                 {
-                  corr_fac_had_pt[n] = j;
+                  had_pt_value[n] = j;
                   corr_fac_had[n] = currfactor;
                   corr_fac_had_e[n] = currerror;
                 }
               break;
             }
-          corr_fac_had_pt[n] = j - step;
+          had_pt_value[n] = j - step;
           corr_fac_had[n] = currfactor;
           corr_fac_had_e[n] = currerror;
         }
-      cout << "Found pt_cut for type " << n << ": pt=" << corr_fac_had_pt[n] << " 1-Pur / eff = " << corr_fac_had[n] << " pm " << corr_fac_had_e[n] << endl;
+      cout << "Found pt_cut for type " << n << ": pt=" << had_pt_value[n] << " 1-Pur / eff = " << corr_fac_had[n] << " pm " << corr_fac_had_e[n] << endl;
 
-      TLine* line = new TLine(corr_fac_had_pt[n],0.85,corr_fac_had_pt[n],1);
+      //loop to save the efficiency according to had lvl cut for each model
+      for (int i = 0; i<imax; ++i)
+        {
+          TVectorD *model_fac = 0;
+          if(models[i]=="Epos")
+            model_fac = &corr_fac_had_pt_epos;
+          if(models[i]=="QGSJetII")
+            model_fac = &corr_fac_had_pt_qgsjet;
+          if(models[i]=="Hijing")
+            model_fac = &corr_fac_had_pt_hijing;
+          if(models[i]=="DPMJet")
+            model_fac = &corr_fac_had_pt_dpmjet;
+          if(model_fac==0)
+            exit(-1);
+          TH1D* h1=(TH1D*)file->Get(string(models[i]+string("/")+models[i]+string("_h_mc_pt_")+type[n]+string("_cut")).c_str());
+          TH1D* h2=(TH1D*)file->Get(string(models[i]+string("/")+models[i]+string("_h_mc_pt_")+type[n]+string("_bg")).c_str());
+          (*model_fac)[n] = (h1->Interpolate(had_pt_value[n])+h2->Interpolate(had_pt_value[n])) / (h1->GetBinContent(1)+h2->GetBinContent(1));
+          cout << models[i] << " " << " " << had_pt_value[n] << " " <<  (*model_fac)[n] << endl;
+        }
+
+      TLine* line = new TLine(had_pt_value[n],0.85,had_pt_value[n],1);
       line->SetLineWidth(2);
       line->SetLineStyle(2);
       line->Draw("SAME");
@@ -266,8 +296,12 @@ void makePlots_pt_cuts_eff_pur(bool draw, string filename)
 
   TFile outfile("plots/corr_factors_hadron.root","recreate");
   corr_fac_had.Write("corr_fac_had");
-  corr_fac_had_pt.Write("corr_fac_had_pt");
+  had_pt_value.Write("had_pt_value");
   corr_fac_had_e.Write("corr_fac_had_e");
+  corr_fac_had_pt_epos.Write("corr_fac_had_pt_epos");
+  corr_fac_had_pt_dpmjet.Write("corr_fac_had_pt_dpmjet");
+  corr_fac_had_pt_hijing.Write("corr_fac_had_pt_hijing");
+  corr_fac_had_pt_qgsjet.Write("corr_fac_had_pt_qgsjet");
   outfile.Close();
 
 }
