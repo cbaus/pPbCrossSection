@@ -119,10 +119,10 @@ void makePlots_pt_cuts_eff_pur(bool draw, string filename)
 
           for (int bin = 1; bin < histeff->GetNbinsX(); ++bin)
             {
-              double deltaeff = fabs(interpolateEff->GetBinContent(bin) - histeff->GetBinContent(bin));
+              double deltaeff = fabs(interpolateEff->GetBinContent(bin) - histeff->GetBinContent(bin)); //inter.. contains average. histeff is eff of curr model
               double deltapur = fabs(interpolatePur->GetBinContent(bin) - histpur->GetBinContent(bin));
-              if(deltaeff > interpolateEff->GetBinError(bin)) interpolateEff->SetBinError(bin,deltaeff);
-              if(deltapur > interpolatePur->GetBinError(bin)) interpolatePur->SetBinError(bin,deltapur);
+              interpolateEff->SetBinError(bin,interpolateEff->GetBinError(bin) + pow(deltaeff,2)/double(imax-1)); //calculate variance (sum (x-mu)**2)/(n-1)
+              interpolatePur->SetBinError(bin,interpolatePur->GetBinError(bin) + pow(deltapur,2)/double(imax-1)); //imax-1 = n-1 (unbiased)
             }
 
           histeff->SetLineWidth(3);
@@ -183,6 +183,13 @@ void makePlots_pt_cuts_eff_pur(bool draw, string filename)
             }
           
         } // model
+
+      //get std dev
+      for (int bin = 1; bin < histeff->GetNbinsX(); ++bin)
+        {
+          interpolateEff->SetBinError(bin,sqrt(interpolateEff->GetBinError(bin)));
+          interpolatePur->SetBinError(bin,sqrt(interpolatePur->GetBinError(bin)));
+        }
 
       canvases[n][0]->SaveAs((string("plots/hadron_ptcuts_eff_pur_allmodels_") + type[n] + string(".pdf")).c_str());
       canvases[n][0]->SaveAs((string("plots/hadron_ptcuts_eff_pur_allmodels_") + type[n] + string(".png")).c_str());

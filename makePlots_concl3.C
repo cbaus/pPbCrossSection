@@ -49,13 +49,13 @@ void makePlots_concl3()
 
   //Uncertainty values
   double s_lumi = 3.5, d_lumi = 3.5;
-  double s_pu = 0.1, d_pu = 0.1;
-  double s_acc = 0.5, d_acc = 1.6;
-  double s_diff = 0.4, d_diff = 0.6;
-  double s_em = 0.2, d_em = 0.1;
-  double s_mod = 1.7, d_mod = 0.8;
-  double s_sel = 0.6, d_sel = 0.2;
-  double s_noi = 1.2, d_noi = 0.2;
+  double s_pu = 0.1,   d_pu = 0.1;
+  double s_acc = 0.5,  d_acc = 1.6;
+  double s_diff = 0.8, d_diff = 1.1;
+  double s_em = 0.2,   d_em = 0.1;
+  double s_mod = 1.7,  d_mod = 0.8;
+  double s_sel = 0.6,  d_sel = 0.2;
+  double s_noi = 1.2,  d_noi = 0.2;
   double s_hadlvl = (*cor_fac_had_e)[0]*100., d_hadlvl = (*cor_fac_had_e)[1]*100.;
 
   double s_withoutl = sqrt(pow(s_pu,2)+pow(s_acc,2)+pow(s_diff,2)+pow(s_em,2)+pow(s_mod,2)+pow(s_sel,2)+pow(s_noi,2));

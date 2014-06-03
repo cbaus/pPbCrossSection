@@ -157,6 +157,7 @@ void makePlots_pt_cuts_diff()
       /////////////////DO FRACTIONS IN HISTOGRAMS////////////
       for (int ibin=1; ibin<=nbins; ++ibin)
         {
+          //luckily works since only bin smaller then loop bin gets overwritten
           sd1_single->SetBinContent(ibin,sd1_single->Integral(ibin,nbins+1)/all_single->Integral(ibin,nbins+1)); //includes overflow with nbins+1
           sd2_single->SetBinContent(ibin,sd2_single->Integral(ibin,nbins+1)/all_single->Integral(ibin,nbins+1));
           dd_single->SetBinContent(ibin,dd_single->Integral(ibin,nbins+1)/all_single->Integral(ibin,nbins+1));

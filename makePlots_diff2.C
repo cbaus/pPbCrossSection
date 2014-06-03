@@ -387,13 +387,17 @@ void makePlots_diff2()
   //  graphFindDiffWeightDpmjet.Draw("P");
   //  graphFindDiffWeightHijing.Draw("P");
 
+  //uncertainty on ratio from EM, EvenSel, Noise = sqrt(0.2**2+0.6**2+0.2**2+1.2**2+0.2**2) = 1.39%
+  double ratio_unc = 0.0139;
+  double ratio_unc2 = 0.0139*2.;
+
   TLine* line0 = new TLine(0.5,single_double_weight_data,1.5,single_double_weight_data);
   line0->SetLineStyle(1);
   line0->Draw("SAME");
-  TLine* line1 = new TLine(0.5,single_double_weight_data*1.0139,1.5,single_double_weight_data*1.0139);
+  TLine* line1 = new TLine(0.5,single_double_weight_data*(1.+ratio_unc),1.5,single_double_weight_data*(1.+ratio_unc));
   line1->SetLineStyle(2);
   line1->Draw("SAME");
-  TLine* line2 = new TLine(0.5,single_double_weight_data/1.0139,1.5,single_double_weight_data/1.0139);
+  TLine* line2 = new TLine(0.5,single_double_weight_data/(1.+ratio_unc),1.5,single_double_weight_data/(1.+ratio_unc));
   line2->SetLineStyle(2);
   line2->Draw("SAME");
   TLegend* leg = new TLegend(0.65,0.7,0.95,0.9);
@@ -407,12 +411,11 @@ void makePlots_diff2()
   leg->Draw("SAME");
   can1->SaveAs((string("plots/diff_optimal_weight.pdf")).c_str());
 
-  //uncertainty on ratio from EM, EvenSel, Noise = sqrt(0.2**2+0.6**2+0.2**2+1.2**2+0.2**2) = 1.39%
   double x_opt=1;
   cout << endl << "-------Optimal value for sigma_diff scale factor--------" << endl;
 
   x_opt=0.5;
-  while(graphFindDiffWeightQgsjet.Eval(x_opt)>single_double_weight_data * 1.0139)
+  while(graphFindDiffWeightQgsjet.Eval(x_opt)>single_double_weight_data * (1.+ratio_unc2))
     x_opt += 0.001;
   cout << "QGSJetII-04" << " " << x_opt;
   x_opt=0.5;
@@ -420,12 +423,12 @@ void makePlots_diff2()
     x_opt += 0.001;
   cout << " " << x_opt;
   x_opt=0.5;
-  while(graphFindDiffWeightQgsjet.Eval(x_opt)>single_double_weight_data / 1.0139)
+  while(graphFindDiffWeightQgsjet.Eval(x_opt)>single_double_weight_data / (1.+ratio_unc2))
     x_opt += 0.001;
   cout << " " << x_opt << endl;
 
   x_opt=0.5;
-  while(graphFindDiffWeightEpos.Eval(x_opt)>single_double_weight_data * 1.0139)
+  while(graphFindDiffWeightEpos.Eval(x_opt)>single_double_weight_data * (1.+ratio_unc2))
     x_opt += 0.001;
   cout << "EPOS-LHC" << " " << x_opt;
   x_opt=0.5;
@@ -433,7 +436,7 @@ void makePlots_diff2()
     x_opt += 0.001;
   cout << " " << x_opt;
   x_opt=0.5;
-  while(graphFindDiffWeightEpos.Eval(x_opt)>single_double_weight_data / 1.0139)
+  while(graphFindDiffWeightEpos.Eval(x_opt)>single_double_weight_data / (1.+ratio_unc2))
     x_opt += 0.001;
   cout << " " << x_opt << endl;
 

@@ -31,8 +31,8 @@
 #define _LumiCorrpPb 1.142 //only use if trees don't contain vdm calibration factor
 #define _LumiCorrPbp 1.138
 
-#define _diff_qgs_reweight 1.11
-#define _diff_epos_reweight 1.07
+#define _diff_qgs_reweight 1.202
+#define _diff_epos_reweight 1.132
 
 using namespace std;
 

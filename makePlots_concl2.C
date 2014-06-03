@@ -11,7 +11,7 @@
 
 using namespace std;
 
-#define CSe 0.04
+#define CSe 0.038
 
 void SetAttributes(TGraphErrors* theGraph, int colour, int marker)
 {
@@ -190,7 +190,7 @@ void makePlots_concl2()
   g_cms->Draw("P");
   can1->SetLogx();
   leg1->Draw();
-  CMSText(1,0,1,"","","pPb collisions");
+  CMSText(2,0,1,"","","pPb collisions");
   can1->SaveAs((string("plots/concl_2_paper")+string(".pdf")).c_str());
 
 }
