@@ -52,10 +52,10 @@ void makePlots_concl3()
   double s_pu = 0.1,   d_pu = 0.1;
   double s_acc = 0.5,  d_acc = 1.6;
   double s_diff = 0.8, d_diff = 1.1;
-  double s_em = 0.2,   d_em = 0.1;
+  double s_em = 0.6,   d_em = 0.1;
   double s_mod = 1.7,  d_mod = 0.8;
   double s_sel = 0.6,  d_sel = 0.2;
-  double s_noi = 1.2,  d_noi = 0.2;
+  double s_noi = 1.3,  d_noi = 0.2;
   double s_hadlvl = (*cor_fac_had_e)[0]*100., d_hadlvl = (*cor_fac_had_e)[1]*100.;
 
   double s_withoutl = sqrt(pow(s_pu,2)+pow(s_acc,2)+pow(s_diff,2)+pow(s_em,2)+pow(s_mod,2)+pow(s_sel,2)+pow(s_noi,2));
@@ -92,15 +92,17 @@ void makePlots_concl3()
   vec_sigma_had->Print();
   vec_sigma_vis->Print();
   f.Close();
+  const double sigma_had_single = (*vec_sigma_had)[0]*(*cor_fac_had)[0];
+  const double sigma_had_double = (*vec_sigma_had)[1]*(*cor_fac_had)[1];
 
-  cout << "Data sigma had single = " << fixed << setprecision(3) << (*vec_sigma_had)[0]*(*cor_fac_had)[0] << endl; 
-  cout << "Data sigma had double = " << fixed << setprecision(3) << (*vec_sigma_had)[1]*(*cor_fac_had)[1] << endl; 
+  cout << "Data sigma had single = " << fixed << setprecision(3) << sigma_had_single << endl; 
+  cout << "Data sigma had double = " << fixed << setprecision(3) << sigma_had_double << endl; 
   cout << endl;
 
   cout << "Uncertainty vis single    = " << fixed << setprecision(1) << s_vis << " = " << setprecision(3) << s_vis/100.*(*vec_sigma_vis)[0] << "mb" << endl;
   cout << "Uncertainty vis double    = " << fixed << setprecision(1) << d_vis << " = " << setprecision(3) << d_vis/100.*(*vec_sigma_vis)[1] << "mb" << endl;
-  cout << "Uncertainty had single    = " << fixed << setprecision(1) << s_had << " = " << setprecision(3) << s_had/100.*(*vec_sigma_had)[0]*(*cor_fac_had)[0] << "mb" << endl;
-  cout << "Uncertainty had double    = " << fixed << setprecision(1) << d_had << " = " << setprecision(3) << d_had/100.*(*vec_sigma_had)[1]*(*cor_fac_had)[1] << "mb" << endl;
+  cout << "Uncertainty had single    = " << fixed << setprecision(1) << s_had << " = " << setprecision(3) << s_had/100.*sigma_had_single << "mb" << endl;
+  cout << "Uncertainty had double    = " << fixed << setprecision(1) << d_had << " = " << setprecision(3) << d_had/100.*sigma_had_double << "mb" << endl;
   cout << "Uncertainty inel single   = " << fixed << setprecision(1) << s_inel << " = " << setprecision(3) << s_inel/100.*(*vec_sigma_inel)[1] << "mb" << endl;
   cout << "Uncertainty inel double   = " << fixed << setprecision(1) << d_inel << " = " << setprecision(3) << d_inel/100.*(*vec_sigma_inel)[2] << "mb" << endl;
   cout << endl;
@@ -163,16 +165,16 @@ void makePlots_concl3()
 #endif
 
   h_data->SetBinContent(3,(*vec_sigma_inel)[1]);
-  h_data->SetBinContent(2,(*vec_sigma_had)[0]);
+  h_data->SetBinContent(2,sigma_had_single);
   h_data->SetBinContent(1,(*vec_sigma_vis)[0]);
   h_data->SetBinContent(6,(*vec_sigma_inel)[2]);
-  h_data->SetBinContent(5,(*vec_sigma_had)[1]);
+  h_data->SetBinContent(5,sigma_had_double);
   h_data->SetBinContent(4,(*vec_sigma_vis)[1]);
   h_data->SetBinError(3,s_inel/100.*(*vec_sigma_inel)[1]);
-  h_data->SetBinError(2,s_had/100.*(*vec_sigma_had)[0]);
+  h_data->SetBinError(2,s_had/100.*sigma_had_single);
   h_data->SetBinError(1,s_vis/100.*(*vec_sigma_vis)[0]);
   h_data->SetBinError(6,d_inel/100.*(*vec_sigma_inel)[2]);
-  h_data->SetBinError(5,d_had/100.*(*vec_sigma_had)[1]);
+  h_data->SetBinError(5,d_had/100.*sigma_had_double);
   h_data->SetBinError(4,d_vis/100.*(*vec_sigma_vis)[1]);
 
   double eff_epos_single = (*corr_fac_epos)[0];
@@ -266,14 +268,14 @@ void makePlots_concl3()
 
   cout << endl << "Differences for cross sections:" << endl;
   cout << endl << "Single:" << endl
-       << "HAD -> INEL:" << fixed << setprecision(1) << (*vec_sigma_inel)[1]*1000 - (*vec_sigma_had)[0]*1000 << " mb" << endl
-       << "VIS -> HAD: " << fixed << setprecision(1) <<  (*vec_sigma_had)[0]*1000 - (*vec_sigma_vis)[0]*1000 << " mb" << endl;
+       << "HAD -> INEL:" << fixed << setprecision(1) << (*vec_sigma_inel)[1]*1000 - sigma_had_single*1000 << " mb" << endl
+       << "VIS -> HAD: " << fixed << setprecision(1) <<  sigma_had_single*1000 - (*vec_sigma_vis)[0]*1000 << " mb" << endl;
   cout << endl << "Double:" << endl
-       << "HAD -> INEL:" << fixed << setprecision(1) <<  (*vec_sigma_inel)[2]*1000 - (*vec_sigma_had)[1]*1000 << " mb" << endl
-       << "VIS -> HAD: " << fixed << setprecision(1) <<  (*vec_sigma_had)[1]*1000 - (*vec_sigma_vis)[1]*1000 << " mb" << endl;
+       << "HAD -> INEL:" << fixed << setprecision(1) <<  (*vec_sigma_inel)[2]*1000 - sigma_had_double*1000 << " mb" << endl
+       << "VIS -> HAD: " << fixed << setprecision(1) <<  sigma_had_double*1000 - (*vec_sigma_vis)[1]*1000 << " mb" << endl;
   cout << endl << "Single/Double" << endl
        << "VIS: " << (*vec_sigma_vis)[0]*1000 - (*vec_sigma_vis)[1]*1000 << endl
-       << "HAD: " << (*vec_sigma_had)[0]*1000 - (*vec_sigma_had)[1]*1000 << endl;
+       << "HAD: " << sigma_had_single*1000 - sigma_had_double*1000 << endl;
 
 }
 

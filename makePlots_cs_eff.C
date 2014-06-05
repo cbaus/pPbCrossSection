@@ -21,7 +21,7 @@
 
 #include <iomanip>
 #include <iostream>
-#include <numeric>      // std::accumulate
+//#include <numeric>      // std::accumulate
 #include <sstream>
 #include <set>
 #include <map>
@@ -45,7 +45,8 @@ TVectorD corr_fac_qgsjet(2);
 TVectorD corr_fac_hijing(2);
 TVectorD corr_fac_dpmjet(2);
 
-map< string,map<string,TH1D*> > histoman;
+typedef map<string,TH1D*> histomap;
+map< string,histomap > histoman;
 
 void makePlots_cs_eff(bool draw=1, double cut_value_single = 8., double cut_value_double = 4.,string filename = "histos.root");
 double getEffDiffWeight(string model, double cut, double diffWeight);
@@ -279,7 +280,8 @@ void makePlots_cs_eff(bool draw, double cut_value_single, double cut_value_doubl
           //mc_values.insert(dpm->GetBinContent(i));
 
           const double f_em     = 0.5 * (sl1->GetBinContent(i) + sl2->GetBinContent(i));
-          const double f_mc     = std::accumulate(mc_values.begin(),mc_values.end(),0.0) / double(mc_values.size()); //1./3. * (epos->GetBinContent(i) + qgs->GetBinContent(i) +dpm->GetBinContent(i));
+          const double f_mc     = std::accumulate(mc_values.begin(),mc_values.end(),0.0) / double(mc_values.size());
+          //const double f_mc     = 1./2. * (epos->GetBinContent(i) + qgs->GetBinContent(i));
           const double f_mcsys  = 0.5 * (getEffDiffWeight("Epos", cut_value, _diff_epos_reweight) + getEffDiffWeight("QGSJetII", cut_value, _diff_qgs_reweight));
           const double f_noise  = noise->GetBinContent(i)/noise->GetBinContent(1);
           const double n_sel_zb = zb->GetBinContent(i);

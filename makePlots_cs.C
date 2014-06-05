@@ -31,14 +31,14 @@ using namespace std;
 
 #define _LumiCorrpPb 1.142 //only use if trees don't contain vdm calibration factor
 #define _LumiCorrPbp 1.138
-#define _CSEstimate 2.0608 //used for pileup
-#define _CSEstimate_single 2.0587 //used for pull?
-#define _CSEstimate_double 2.0630
-#define _CSEstimate_e 0.0141//relative. this is needed for the pileup error. enter uncertainty + stat but without lumi error sqrt(sqrt(2.7^2+2.7^2)÷2+0.3^2)
+#define _CSEstimate 2.0607 //used for pileup
+#define _CSEstimate_single 2.0588 //used for pull?
+#define _CSEstimate_double 2.0626
+#define _CSEstimate_e 0.016//relative. this is needed for the pileup error. enter uncertainty + stat but without lumi error sqrt(sqrt(2.7^2+2.7^2)÷2+0.3^2)
 
 //*********************************************************************************
 
-void makePlots_cs(bool draw = 1,double cut_value_single = 8., double cut_value_double = 4, double modfactor = 1.0, string filename = "histos.root");
+void makePlots_cs(bool draw = 1,double cut_value_single = 8., double cut_value_double = 4., double modfactor = 1.0, string filename = "histos.root");
 string cutToString(double cut);
 
 //available cuts single 5, 6.4, 7.2, 8, 8.8, 9.6, 10, 15, 20
@@ -388,14 +388,15 @@ void makePlots_cs(bool draw,double cut_value_single, double cut_value_double, do
           double error_double = sqrt( pow(h_double->GetBinContent(i),2)/pow(lumiPerLS,4)*pow(lumiPerLS_error,2) + 1./pow(lumiPerLS,2)*pow(h_double->GetBinError(i),2));
 
           //systematic errors according to PAS formulas
-          double sigma_mc_single = fabs(-1 * n_single / ( eff_acc_single - f_noise_single * f_pileup_single) * eff_acc_single_e);
-          double sigma_mc_double = fabs(-1 * n_double / ( eff_acc_double - f_noise_double * f_pileup_double) * eff_acc_double_e);
-          double sigma_em_single = fabs(n_em_single / (eff_acc_single / f_pileup_single - f_noise_single) * eff_em_single_e);
-          double sigma_em_double = fabs(n_em_double / (eff_acc_double / f_pileup_double - f_noise_double) * eff_em_double_e);
-          double sigma_pu_single = fabs(n_single / (f_pileup_single - pow(f_pileup_single,2) * f_noise_single / eff_acc_single) * _CSEstimate_e *(f_pileup_single-1));
-          double sigma_pu_double = fabs(n_double / (f_pileup_double - pow(f_pileup_double,2) * f_noise_double / eff_acc_double) * _CSEstimate_e *(f_pileup_double-1));
-          double sigma_oi_single = fabs((n_zb_single/f_pileup_single - n_single) / pow(1/f_pileup_single - f_noise_single,2) * fnoise_e_single);
-          double sigma_oi_double = fabs((n_zb_double/f_pileup_double - n_double) / pow(1/f_pileup_double - f_noise_double,2) * fnoise_e_double);
+          double sigma_mc_single = fabs(-1 * n_single / ( eff_acc_single ) * eff_acc_single_e);
+          double sigma_mc_double = fabs(-1 * n_double / ( eff_acc_double ) * eff_acc_double_e);
+          double sigma_em_single = fabs(0.195 / (eff_acc_single * (1. / f_pileup_single - f_noise_single)) * eff_em_single_e);
+          double sigma_em_double = fabs(0.195 / (eff_acc_double * (1. / f_pileup_double - f_noise_double)) * eff_em_double_e);
+          double sigma_pu_single = fabs(n_single / (f_pileup_single - pow(f_pileup_single,2) * f_noise_single ) * _CSEstimate_e *(f_pileup_single-1.));
+          double sigma_pu_double = fabs(n_double / (f_pileup_double - pow(f_pileup_double,2) * f_noise_double ) * _CSEstimate_e *(f_pileup_double-1.));
+          double sigma_oi_single = fabs(((n_cut_single - n_em_single) - n_zb_single/f_pileup_single) / (eff_acc_single * pow(1/f_pileup_single - f_noise_single,2)) * fnoise_e_single);
+          //double sigma_oi_single = fabs((n_single / pow(1/f_pileup_single - f_noise_single,1) - n_zb_single / (eff_acc_single * pow(1/f_pileup_single - f_noise_single,1))) * fnoise_e_single);
+          double sigma_oi_double = fabs(((n_cut_double - n_em_double) / A_double - n_zb_double/f_pileup_double) / (eff_acc_double * pow(1/f_pileup_double - f_noise_double,2)) * fnoise_e_double);
 
           h_single->SetBinContent(i, n_single);
           h_double->SetBinContent(i, n_double);
