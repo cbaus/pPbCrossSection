@@ -91,7 +91,7 @@ void makePlots_pt_p_correlation()
 #ifdef __CINT__
       CMSText(0,0,1,"single-arm selection",desc.str(),name[i]);
 #endif
-      can1->SaveAs((string("plots/corr_p_ehf_single_")+list[i]+string(".pdf")).c_str());
+      can1->SaveAs((string("plots/corr_p_ehf_single_")+list[i]+string(".png")).c_str());
 
       can1 = new TCanvas;
       cor_p_double->Draw("COLZ");
@@ -101,7 +101,7 @@ void makePlots_pt_p_correlation()
 #ifdef __CINT__
       CMSText(0,0,1,"double-arm selection",desc.str(),name[i]);
 #endif
-      can1->SaveAs((string("plots/corr_p_ehf_double_")+list[i]+string(".pdf")).c_str());
+      can1->SaveAs((string("plots/corr_p_ehf_double_")+list[i]+string(".png")).c_str());
 
       can1 = new TCanvas;
       cor_pt_single->Draw("COLZ");
@@ -111,7 +111,7 @@ void makePlots_pt_p_correlation()
 #ifdef __CINT__
       CMSText(0,0,1,"single-arm selection",desc.str(),name[i]);
 #endif
-      can1->SaveAs((string("plots/corr_pt_ehf_single_")+list[i]+string(".pdf")).c_str());
+      can1->SaveAs((string("plots/corr_pt_ehf_single_")+list[i]+string(".png")).c_str());
 
       can1 = new TCanvas;
       cor_pt_double->Draw("COLZ");
@@ -121,7 +121,7 @@ void makePlots_pt_p_correlation()
 #ifdef __CINT__
       CMSText(0,0,1,"double-arm selection",desc.str(),name[i]);
 #endif
-      can1->SaveAs((string("plots/corr_pt_ehf_double_")+list[i]+string(".pdf")).c_str());
+      can1->SaveAs((string("plots/corr_pt_ehf_double_")+list[i]+string(".png")).c_str());
 
     } //list loop
     

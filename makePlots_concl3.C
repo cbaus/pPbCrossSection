@@ -16,7 +16,7 @@
 using namespace std;
 
 #define WITH_ALICE 1
-#define EPOS_CS 2.081702 //rerun with more statistics. slight changes
+#define EPOS_CS 2.081702 //ran again with more statistics. this introduced slight changes
 #define QGS_CS 2.180836
 #define DPM_CS 2.165823
 
@@ -60,9 +60,9 @@ void makePlots_concl3()
 
   double s_withoutl = sqrt(pow(s_pu,2)+pow(s_acc,2)+pow(s_diff,2)+pow(s_em,2)+pow(s_mod,2)+pow(s_sel,2)+pow(s_noi,2));
   double d_withoutl = sqrt(pow(d_pu,2)+pow(d_acc,2)+pow(d_diff,2)+pow(d_em,2)+pow(d_mod,2)+pow(d_sel,2)+pow(d_noi,2));
-  double unc_syst = sqrt(pow(s_withoutl,2)+pow(d_withoutl,2))/2.;
 
   double combined = sqrt( pow(sqrt( pow(s_withoutl,2)+pow(d_withoutl,2) )/2.,2) + pow(3.5,2) );
+  double combined_withoutl = sqrt( pow(s_withoutl,2)+pow(d_withoutl,2) )/2.;
 
   double s_vis  = sqrt(pow(s_lumi,2)+pow(s_pu,2)+pow(s_sel,2)+pow(s_noi,2));
   double d_vis  = sqrt(pow(d_lumi,2)+pow(d_pu,2)+pow(d_sel,2)+pow(d_noi,2));
@@ -70,6 +70,13 @@ void makePlots_concl3()
   double d_had  = sqrt(pow(d_lumi,2)+pow(d_pu,2)+pow(d_sel,2)+pow(d_noi,2) + pow(d_em,2) + pow(d_mod,2)+pow(d_hadlvl,2));
   double s_inel = sqrt(pow(s_lumi,2)+pow(s_pu,2)+pow(s_sel,2)+pow(s_noi,2) + pow(s_em,2) + pow(s_mod,2)+pow(s_acc,2)+pow(s_diff,2));
   double d_inel = sqrt(pow(d_lumi,2)+pow(d_pu,2)+pow(d_sel,2)+pow(d_noi,2) + pow(d_em,2) + pow(d_mod,2)+pow(d_acc,2)+pow(d_diff,2));
+
+  double s_vis_withoutl = sqrt(pow(s_pu,2)+pow(s_sel,2)+pow(s_noi,2));
+  double d_vis_withoutl  = sqrt(pow(d_pu,2)+pow(d_sel,2)+pow(d_noi,2));
+  double s_had_withoutl  = sqrt(pow(s_pu,2)+pow(s_sel,2)+pow(s_noi,2) + pow(s_em,2) + pow(s_mod,2)+pow(s_hadlvl,2));
+  double d_had_withoutl  = sqrt(pow(d_pu,2)+pow(d_sel,2)+pow(d_noi,2) + pow(d_em,2) + pow(d_mod,2)+pow(d_hadlvl,2));
+  double s_inel_withoutl = sqrt(pow(s_pu,2)+pow(s_sel,2)+pow(s_noi,2) + pow(s_em,2) + pow(s_mod,2)+pow(s_acc,2)+pow(s_diff,2));
+  double d_inel_withoutl = sqrt(pow(d_pu,2)+pow(d_sel,2)+pow(d_noi,2) + pow(d_em,2) + pow(d_mod,2)+pow(d_acc,2)+pow(d_diff,2));
 
 
 
@@ -99,30 +106,29 @@ void makePlots_concl3()
   cout << "Data sigma had double = " << fixed << setprecision(3) << sigma_had_double << endl; 
   cout << endl;
 
-  cout << "Uncertainty vis single    = " << fixed << setprecision(1) << s_vis << " = " << setprecision(3) << s_vis/100.*(*vec_sigma_vis)[0] << "mb" << endl;
-  cout << "Uncertainty vis double    = " << fixed << setprecision(1) << d_vis << " = " << setprecision(3) << d_vis/100.*(*vec_sigma_vis)[1] << "mb" << endl;
-  cout << "Uncertainty had single    = " << fixed << setprecision(1) << s_had << " = " << setprecision(3) << s_had/100.*sigma_had_single << "mb" << endl;
-  cout << "Uncertainty had double    = " << fixed << setprecision(1) << d_had << " = " << setprecision(3) << d_had/100.*sigma_had_double << "mb" << endl;
-  cout << "Uncertainty inel single   = " << fixed << setprecision(1) << s_inel << " = " << setprecision(3) << s_inel/100.*(*vec_sigma_inel)[1] << "mb" << endl;
-  cout << "Uncertainty inel double   = " << fixed << setprecision(1) << d_inel << " = " << setprecision(3) << d_inel/100.*(*vec_sigma_inel)[2] << "mb" << endl;
+  cout << "Uncertainty vis single    = " << fixed << setprecision(1) << s_vis_withoutl << " +lum unc = " << setprecision(3) << s_vis/100.*(*vec_sigma_vis)[0] << "mb" << endl;
+  cout << "Uncertainty vis double    = " << fixed << setprecision(1) << d_vis_withoutl << "  +lum unc = " << setprecision(3) << d_vis/100.*(*vec_sigma_vis)[1] << "mb" << endl;
+  cout << "Uncertainty had single    = " << fixed << setprecision(1) << s_had_withoutl << "  +lum unc = " << setprecision(3) << s_had/100.*sigma_had_single << "mb" << endl;
+  cout << "Uncertainty had double    = " << fixed << setprecision(1) << d_had_withoutl << "  +lum unc = " << setprecision(3) << d_had/100.*sigma_had_double << "mb" << endl;
+  cout << "Uncertainty inel single   = " << fixed << setprecision(1) << s_inel_withoutl << "  +lum unc = " << setprecision(3) << s_inel/100.*(*vec_sigma_inel)[1] << "mb" << endl;
+  cout << "Uncertainty inel double   = " << fixed << setprecision(1) << d_inel_withoutl << "  +lum unc = " << setprecision(3) << d_inel/100.*(*vec_sigma_inel)[2] << "mb" << endl;
   cout << endl;
 
   cout << fixed << setprecision(1) << "single (without lumi)=" << s_withoutl << endl;
   cout << fixed << setprecision(1) << "double (without lumi)=" << d_withoutl << endl;
-  cout << fixed << setprecision(1) << unc_syst << " = " << setprecision(3) << unc_syst/100.*(*vec_sigma_inel)[0] << " mb (syst.)" << endl;
+  cout << fixed << setprecision(1) << combined_withoutl << " = " << setprecision(3) << combined_withoutl/100.*(*vec_sigma_inel)[0] << " mb (syst.)" << endl;
 
   cout << setprecision(3) << s_lumi/100.*(*vec_sigma_inel)[0] << " mb (lumi.)" << endl;
   cout << "Uncertainty inel combined = " << fixed << setprecision(1) << combined << " = " << setprecision(3) << combined/100.*(*vec_sigma_inel)[0] << "mb" << endl;
   cout << endl << endl;
 
 
-  TFile f2("plots/corr_factors.root");
   TVectorD* corr_fac_epos = NULL;
   TVectorD* corr_fac_qgsjet = NULL;
   TVectorD* corr_fac_dpmjet = NULL;
-  corr_fac_epos  = (TVectorD*)f0.Get("corr_fac_had_pt_epos"); //changed to had pt eff
-  corr_fac_qgsjet  = (TVectorD*)f0.Get("corr_fac_had_pt_qgsjet");
-  corr_fac_dpmjet  = (TVectorD*)f0.Get("corr_fac_had_pt_dpmjet");
+  corr_fac_epos  = (TVectorD*)f0.Get("corr_fac_had_epos"); //changed to had pt eff
+  corr_fac_qgsjet  = (TVectorD*)f0.Get("corr_fac_had_qgsjet");
+  corr_fac_dpmjet  = (TVectorD*)f0.Get("corr_fac_had_dpmjet");
   if(!corr_fac_epos || !corr_fac_qgsjet || !corr_fac_dpmjet) {cerr << "error" << endl; return;}
   cout << "EPOS Eff. Correction:" << endl;
   corr_fac_epos->Print();
@@ -130,7 +136,6 @@ void makePlots_concl3()
   corr_fac_qgsjet->Print();
   cout << "DPMJet Eff. Correction:" << endl;
   corr_fac_dpmjet->Print();
-  f2.Close();
   ///!READ IN VALUES
 
   TH1D* h_data = new TH1D("h_data","CMS;;#sigma [b]",6,-0.5,5.5);

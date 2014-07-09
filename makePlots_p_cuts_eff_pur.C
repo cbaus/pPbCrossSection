@@ -291,7 +291,7 @@ void makePlots_p_cuts_eff_pur(bool draw, string filename)
           cout << models[i] << " " << " " << had_p_value[n] << " " <<  (*model_fac)[n] << endl;
         }
 
-      TLine* line = new TLine(had_p_value[n],0.85,had_p_value[n],1);
+      TLine* line = new TLine(had_p_value[n],0.9,had_p_value[n],1);
       line->SetLineWidth(2);
       line->SetLineStyle(2);
       line->Draw("SAME");
@@ -305,10 +305,10 @@ void makePlots_p_cuts_eff_pur(bool draw, string filename)
   corr_fac_had.Write("corr_fac_had");
   had_p_value.Write("had_p_value");
   corr_fac_had_e.Write("corr_fac_had_e");
-  corr_fac_had_p_epos.Write("corr_fac_had_p_epos");
-  corr_fac_had_p_dpmjet.Write("corr_fac_had_p_dpmjet");
-  corr_fac_had_p_hijing.Write("corr_fac_had_p_hijing");
-  corr_fac_had_p_qgsjet.Write("corr_fac_had_p_qgsjet");
+  corr_fac_had_p_epos.Write("corr_fac_had_epos");
+  corr_fac_had_p_dpmjet.Write("corr_fac_had_dpmjet");
+  corr_fac_had_p_hijing.Write("corr_fac_had_hijing");
+  corr_fac_had_p_qgsjet.Write("corr_fac_had_qgsjet");
   outfile.Close();
 
 }

@@ -305,10 +305,10 @@ void makePlots_pt_cuts_eff_pur(bool draw, string filename)
   corr_fac_had.Write("corr_fac_had");
   had_pt_value.Write("had_pt_value");
   corr_fac_had_e.Write("corr_fac_had_e");
-  corr_fac_had_pt_epos.Write("corr_fac_had_pt_epos");
-  corr_fac_had_pt_dpmjet.Write("corr_fac_had_pt_dpmjet");
-  corr_fac_had_pt_hijing.Write("corr_fac_had_pt_hijing");
-  corr_fac_had_pt_qgsjet.Write("corr_fac_had_pt_qgsjet");
+  corr_fac_had_pt_epos.Write("corr_fac_had_epos");
+  corr_fac_had_pt_dpmjet.Write("corr_fac_had_dpmjet");
+  corr_fac_had_pt_hijing.Write("corr_fac_had_hijing");
+  corr_fac_had_pt_qgsjet.Write("corr_fac_had_qgsjet");
   outfile.Close();
 
 }

@@ -21,7 +21,7 @@
 
 #include <iomanip>
 #include <iostream>
-//#include <numeric>      // std::accumulate
+#include <numeric>      // std::accumulate
 #include <sstream>
 #include <set>
 #include <map>
@@ -31,8 +31,10 @@
 #define _LumiCorrpPb 1.142 //only use if trees don't contain vdm calibration factor
 #define _LumiCorrPbp 1.138
 
-#define _diff_qgs_reweight 1.202
-#define _diff_epos_reweight 1.132
+//#define _diff_qgs_reweight 1.202
+//#define _diff_epos_reweight 1.132
+#define _diff_qgs_reweight 0.841
+#define _diff_epos_reweight 0.877
 
 using namespace std;
 

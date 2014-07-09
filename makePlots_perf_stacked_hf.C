@@ -33,8 +33,8 @@ void makePlots_perf_stacked_hf()
   // ShowStack(a,a2,b,c,d,e,f,"m");
   // }
   {
-    TFile* file2 = TFile::Open("histos.root");
-    TFile* file = TFile::Open("histos.root");
+    TFile* file2 = TFile::Open("histos_deleteme.root");
+    TFile* file = TFile::Open("histos_deleteme.root");
   TH1D* a=(TH1D*)file2->Get("data210885/data210885_h_hf_hits_coll_single");
   TH1D* a2=(TH1D*)file2->Get("data210885/data210885_h_hf_hits_noise_single");
   TH1D* b=(TH1D*)file->Get("Hijing/Hijing_h_hf_hits_coll_single");
@@ -47,8 +47,8 @@ void makePlots_perf_stacked_hf()
   ShowStack(a,a2,b,c,d,dpm,e,f,"single");
   }
   {
-  TFile* file2 = TFile::Open("histos.root");
-  TFile* file = TFile::Open("histos.root");
+  TFile* file2 = TFile::Open("histos_deleteme.root");
+  TFile* file = TFile::Open("histos_deleteme.root");
   TH1D* a=(TH1D*)file2->Get("data210885/data210885_h_hf_hits_coll_double");
   TH1D* a2=(TH1D*)file2->Get("data210885/data210885_h_hf_hits_noise_double");
   TH1D* b=(TH1D*)file->Get("Hijing/Hijing_h_hf_hits_coll_double");
@@ -116,7 +116,7 @@ void ShowStack(TH1D* data,TH1D* noise,TH1D* b,TH1D* c,TH1D* d,TH1D* dpm, TH1D* s
   c->SetMarkerColor(kBlue);
   d->SetMarkerColor(kGreen+2);
   dpm->SetMarkerColor(kMagenta);
-  sl->SetMarkerColor(kOrange-9);
+  sl->SetMarkerColor(kOrange+1);
 
   noise->SetMarkerStyle(34);
   b->SetMarkerStyle(4);
@@ -151,7 +151,7 @@ void ShowStack(TH1D* data,TH1D* noise,TH1D* b,TH1D* c,TH1D* d,TH1D* dpm, TH1D* s
   sl->SetTitle("#gamma-p (STARLIGHT+DPMJET/PYTHIA)");
 
   data->GetXaxis()->SetLimits(1,200);
-  data->GetYaxis()->SetRangeUser(1e-6,6e1);
+  data->GetYaxis()->SetRangeUser(1e-6,2e2);
   data->GetXaxis()->SetTitle("E_{HF} [GeV]");
   data->GetYaxis()->SetTitle("events (normalised)");
   data->GetXaxis()->SetTitleOffset(data->GetXaxis()->GetTitleOffset()*1.1);
