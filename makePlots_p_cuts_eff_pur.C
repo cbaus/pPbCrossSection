@@ -76,7 +76,7 @@ void makePlots_p_cuts_eff_pur(bool draw, string filename)
       
       //loop for calculating p and epsilon for each model
       for (int i = 0; i<imax; ++i)
-        {
+        { //histograms contain the following: _cut <- reco AND gen ; _bg: !reco AND gen
           TH1D* histeff = (TH1D*)file->Get(((models[i] + "/" + models[i] + "_h_mc_p_") + type[n] + "_cut").c_str());
           TH1D* histpur = (TH1D*)file->Get(((models[i] + "/" + models[i] + "_h_mc_p_") + type[n] + "_bg").c_str());
           histeff = (TH1D*)histeff->Clone((string("hist_eff_")+models[i]).c_str()); //original histos needed for later
@@ -94,8 +94,8 @@ void makePlots_p_cuts_eff_pur(bool draw, string filename)
           for (int bin = 2; bin < histeff->GetNbinsX(); ++bin)
             {
               //this looks a bit strange but is correct when you see what is in those histograms
-              double effi = histeff->GetBinContent(bin) / (histeff->GetBinContent(bin) + histpur->GetBinContent(bin)); //N(VIS | HADLEVEL) / N(HADLEVEL)
-              double puri = histeff->GetBinContent(bin) / double(histeff->GetBinContent(1)); // N(VIS | HADLEVEL) / N(VIS)
+              double puri = histeff->GetBinContent(bin) / (histeff->GetBinContent(bin) + histpur->GetBinContent(bin)); //N(RECO ^ GEN) / N(GEN)
+              double effi = histeff->GetBinContent(bin) / double(histeff->GetBinContent(1)); // N(RECO ^ GEN) / N(RECO) ...... BinContent(1) is no requ on GEN cut. so only RECO
               histpur->SetBinContent(bin, puri);
               histpur->SetBinError(bin, 0); //WARNING change
               histeff->SetBinContent(bin, effi);
@@ -246,16 +246,16 @@ void makePlots_p_cuts_eff_pur(bool draw, string filename)
 
       ////Find p cut
 
-      double curreff=1.;
-      double currpur=0;
+      double curreff=0.;
+      double currpur=1.;
       const double step = 0.1;
       for(double j=1; j<40; j+=step)
         {
           curreff = interpolateEff->Interpolate(j);
           currpur = interpolatePur->Interpolate(j);
-          double currfactor = (interpolatePur->Interpolate(j)) / interpolateEff->Interpolate(j);
+          double currfactor = (interpolateEff->Interpolate(j)) / interpolatePur->Interpolate(j);
           double currerror = sqrt(pow(interpolateEff->GetBinError(interpolateEff->FindBin(j)),2) + pow(interpolatePur->GetBinError(interpolateEff->FindBin(j)),2)); //correct for rel error
-          if(curreff>currpur) //eff crossing purity
+          if(currpur>curreff) //eff crossing purity
             {
               if (fabs(corr_fac_had[n] - 1) > fabs(currfactor-1)) // if new factor closer to unity
                 {
