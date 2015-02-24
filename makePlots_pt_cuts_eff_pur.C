@@ -1,3 +1,5 @@
+//make plots that show the dependence on gen pt cuts. 1 plot shows eff and pur as function of pt. the other combines all models and shows the same
+
 #include "TCanvas.h"
 #include "TF1.h"
 #include "TFile.h"
@@ -53,12 +55,12 @@ void makePlots_pt_cuts_eff_pur(bool draw, string filename)
   TVectorD corr_fac_had_pt_hijing(2);
   TVectorD corr_fac_had_pt_qgsjet(2);
   TVectorD had_pt_value(2);
-  TVectorD corr_fac_had_e(2);  
-  
+  TVectorD corr_fac_had_e(2);
+
   for(int n=0; n<int(type.size()); n++)
     {
       TFile* file = TFile::Open(filename.c_str());
-      
+
       vector<string> models;
       vector<int> colors;
       vector<double> styles;
@@ -73,7 +75,7 @@ void makePlots_pt_cuts_eff_pur(bool draw, string filename)
       TH1D* interpolateEff = 0;
       TH1D* interpolatePur = 0;
       const int imax = int(models.size());
-      
+
       //loop for calculating p and epsilon for each model
       for (int i = 0; i<imax; ++i)
         {
@@ -181,7 +183,7 @@ void makePlots_pt_cuts_eff_pur(bool draw, string filename)
 #endif
               leg->Draw("");
             }
-          
+
         } // model
 
       //get std dev
@@ -197,48 +199,48 @@ void makePlots_pt_cuts_eff_pur(bool draw, string filename)
       ////////////////averaged plots
       interpolateEff->SetLineWidth(3);
       interpolatePur->SetLineWidth(3);
-      
+
       interpolateEff->SetLineColor(kBlack);
       interpolatePur->SetLineColor(kBlue);
-      
+
       interpolateEff->SetMarkerColor(interpolateEff->GetLineColor());
       interpolatePur->SetMarkerColor(interpolatePur->GetLineColor());
-      
+
       interpolateEff->SetFillColor(interpolateEff->GetLineColor());
       interpolatePur->SetFillColor(interpolatePur->GetLineColor());
-      
+
       interpolateEff->SetLineStyle(1);
       interpolatePur->SetLineStyle(5);
 
       interpolateEff->SetFillStyle(3003);
       interpolatePur->SetFillStyle(3003);
-      
+
       interpolateEff->SetTitle("efficiency");
       interpolatePur->SetTitle("purity");
 
       interpolateEff->GetXaxis()->SetRange(2,interpolateEff->FindBin(1));
       interpolatePur->GetXaxis()->SetRange(2,interpolateEff->FindBin(1));
-      
+
       interpolateEff->GetYaxis()->SetRangeUser(0.85,1.001);
       interpolatePur->GetYaxis()->SetRangeUser(0.85,1.001);
-      
+
       interpolateEff->GetXaxis()->SetTitle("p_{T} cut [GeV]");
       interpolatePur->GetXaxis()->SetTitle("p_{T} cut [GeV]");
-      
+
       interpolateEff->GetYaxis()->SetTitle("");
       interpolatePur->GetYaxis()->SetTitle("");
-      
+
       canvases[n][1]->cd();
       interpolateEff->Draw("E3");
       interpolatePur->Draw("E3 SAME");
-      
+
       TLegend* leg = new TLegend(0.21,0.28,0.55,0.38);
 #ifdef __CINT__
       CMSText(2,1,0);
 #endif
       leg->AddEntry(interpolateEff,"efficiency","FP");
       leg->AddEntry(interpolatePur,"purity","FP");
-  
+
 #ifdef __CINT__
       SetLegAtt(leg,1.1);
 #endif

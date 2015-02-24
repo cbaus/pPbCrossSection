@@ -146,14 +146,14 @@ void makePlots_concl2()
   g_dipsy->SetName("g_dipsy");
   g_dipsy->SetTitle("DIPSY");
   SetAttributes(g_dipsy,kCyan+3,3);
-  g_dipsy->SetPoint(0,200,1.783);  g_dipsy->SetPointError(0,0,0.003);
-  g_dipsy->SetPoint(1,400,1.847);  g_dipsy->SetPointError(1,0,0.003);
-  g_dipsy->SetPoint(2,600,1.882);  g_dipsy->SetPointError(2,0,0.002);
-  g_dipsy->SetPoint(3,1000,1.923);  g_dipsy->SetPointError(3,0,0.004);
-  g_dipsy->SetPoint(4,2000,1.975);  g_dipsy->SetPointError(4,0,0.004);
-  g_dipsy->SetPoint(5,5000,2.042);  g_dipsy->SetPointError(5,0,0.004);
-  g_dipsy->SetPoint(6,7000,2.054);  g_dipsy->SetPointError(6,0,0.004);
-  g_dipsy->SetPoint(7,9000,2.074);  g_dipsy->SetPointError(7,0,0.005);
+  g_dipsy->SetPoint(0,200,1.825);  g_dipsy->SetPointError(0,0,0.005);
+  g_dipsy->SetPoint(1,400,1.890);  g_dipsy->SetPointError(1,0,0.005);
+  g_dipsy->SetPoint(2,600,1.926);  g_dipsy->SetPointError(2,0,0.005);
+  g_dipsy->SetPoint(3,1000,1.968);  g_dipsy->SetPointError(3,0,0.006);
+  g_dipsy->SetPoint(4,2000,2.021);  g_dipsy->SetPointError(4,0,0.006);
+  g_dipsy->SetPoint(5,5000,2.090);  g_dipsy->SetPointError(5,0,0.006);
+  g_dipsy->SetPoint(6,7000,2.102);  g_dipsy->SetPointError(6,0,0.006);
+  g_dipsy->SetPoint(7,9000,2.123);  g_dipsy->SetPointError(7,0,0.007);
 
   TGraphErrors* g_cms  = new TGraphErrors(1);
   g_cms->SetName("g_cms");

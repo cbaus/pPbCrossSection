@@ -71,7 +71,7 @@ void makePlots_concl3()
   double s_inel = sqrt(pow(s_lumi,2)+pow(s_pu,2)+pow(s_sel,2)+pow(s_noi,2) + pow(s_em,2) + pow(s_mod,2)+pow(s_acc,2)+pow(s_diff,2));
   double d_inel = sqrt(pow(d_lumi,2)+pow(d_pu,2)+pow(d_sel,2)+pow(d_noi,2) + pow(d_em,2) + pow(d_mod,2)+pow(d_acc,2)+pow(d_diff,2));
 
-  double s_vis_withoutl = sqrt(pow(s_pu,2)+pow(s_sel,2)+pow(s_noi,2));
+  double s_vis_withoutl  = sqrt(pow(s_pu,2)+pow(s_sel,2)+pow(s_noi,2));
   double d_vis_withoutl  = sqrt(pow(d_pu,2)+pow(d_sel,2)+pow(d_noi,2));
   double s_had_withoutl  = sqrt(pow(s_pu,2)+pow(s_sel,2)+pow(s_noi,2) + pow(s_em,2) + pow(s_mod,2)+pow(s_hadlvl,2));
   double d_had_withoutl  = sqrt(pow(d_pu,2)+pow(d_sel,2)+pow(d_noi,2) + pow(d_em,2) + pow(d_mod,2)+pow(d_hadlvl,2));
@@ -102,8 +102,8 @@ void makePlots_concl3()
   const double sigma_had_single = (*vec_sigma_had)[0]*(*cor_fac_had)[0];
   const double sigma_had_double = (*vec_sigma_had)[1]*(*cor_fac_had)[1];
 
-  cout << "Data sigma had single = " << fixed << setprecision(3) << sigma_had_single << endl; 
-  cout << "Data sigma had double = " << fixed << setprecision(3) << sigma_had_double << endl; 
+  cout << "Data sigma had single = " << fixed << setprecision(3) << sigma_had_single << endl;
+  cout << "Data sigma had double = " << fixed << setprecision(3) << sigma_had_double << endl;
   cout << endl;
 
   cout << "Uncertainty vis single    = " << fixed << setprecision(1) << s_vis_withoutl << " +lum unc = " << setprecision(3) << s_vis/100.*(*vec_sigma_vis)[0] << "mb" << endl;
@@ -166,7 +166,7 @@ void makePlots_concl3()
   SetAttributes<TGraph>(h_lhcb,kCyan+3,22);
   SetAttributes<TGraph>(h_alice_ppb,kCyan+3,29);
   SetAttributes<TGraph>(h_alice_pbp,kCyan+3,30);
-    
+
 #endif
 
   h_data->SetBinContent(3,(*vec_sigma_inel)[1]);

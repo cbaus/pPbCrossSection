@@ -1,3 +1,5 @@
+//makes plot for paper fig. 2. shows optimal working point for e_hf threshold
+
 #include "TCanvas.h"
 #include "TF1.h"
 #include "TFile.h"
@@ -64,14 +66,14 @@ void makePlots_cs_purvseff(bool draw, string filename)
   for(int n=0; n<int(type.size()); n++)
     {
       TFile* file = TFile::Open(filename.c_str());
-      TFile* file2 = TFile::Open("histos_test3.root");
+      TFile* file2 = TFile::Open("histos.root");
 
       TH1D* a=(TH1D*)file->Get((string("data210885/data210885_h_hf_cut_") + type[n]).c_str());
       TH1D* a2=(TH1D*)file->Get((string("data210885/data210885_h_hf_cut_") + type[n] + string("_noise")).c_str());
       TH1D* h_events=(TH1D*)file->Get(string("data210885/data210885_h_lumi").c_str()); //zb
       TH1D* h_lumi=(TH1D*)file->Get(string("data210885/data210885_h_run_events_lumi").c_str());
-      TH1D* eposrew=(TH1D*)file2->Get((string("EposDiffWeightOpt/EposDiffWeightOpt_h_hf_cut_") + type[n]).c_str());
-      TH1D* qgsrew=(TH1D*)file2->Get((string("QGSJetIIDiffWeightOpt/QGSJetIIDiffWeightOpt_h_hf_cut_") + type[n]).c_str());
+      //TH1D* eposrew=(TH1D*)file2->Get((string("EposDiffWeightOpt/EposDiffWeightOpt_h_hf_cut_") + type[n]).c_str());
+      //TH1D* qgsrew=(TH1D*)file2->Get((string("QGSJetIIDiffWeightOpt/QGSJetIIDiffWeightOpt_h_hf_cut_") + type[n]).c_str());
       TH1D* b=(TH1D*)file->Get((string("Hijing/Hijing_h_hf_cut_") + type[n]).c_str());
       TH1D* c=(TH1D*)file->Get((string("Epos/Epos_h_hf_cut_")+ type[n]).c_str());
       TH1D* d=(TH1D*)file->Get((string("QGSJetII/QGSJetII_h_hf_cut_") + type[n]).c_str());
@@ -104,8 +106,8 @@ void makePlots_cs_purvseff(bool draw, string filename)
       d->Scale(1./double(d->GetBinContent(1)));
       e->Scale(1./double(e->GetBinContent(1)));
       f->Scale(1./double(f->GetBinContent(1))/ 195. * 122.); //cross section starlight samples
-      eposrew->Scale(1./double(eposrew->GetBinContent(1)));
-      qgsrew->Scale(1./double(qgsrew->GetBinContent(1)));
+      //eposrew->Scale(1./double(eposrew->GetBinContent(1)));
+      //qgsrew->Scale(1./double(qgsrew->GetBinContent(1)));
 
       a->SetLineWidth(3);
       a2->SetLineWidth(3);
@@ -114,34 +116,34 @@ void makePlots_cs_purvseff(bool draw, string filename)
       d->SetLineWidth(3);
       e->SetLineWidth(3);
       f->SetLineWidth(3);
-      eposrew->SetLineWidth(3);
-      qgsrew->SetLineWidth(3);
+      //eposrew->SetLineWidth(3);
+      //qgsrew->SetLineWidth(3);
       a2->SetLineColor(kBlack);
       b->SetLineColor(kGreen+2);
       c->SetLineColor(kBlue);
       d->SetLineColor(kRed);
       e->SetLineColor(kRed);
       f->SetLineColor(kBlue);
-      eposrew->SetLineColor(kMagenta);
-      qgsrew->SetLineColor(kMagenta);
+      //eposrew->SetLineColor(kMagenta);
+      //qgsrew->SetLineColor(kMagenta);
       a2->SetMarkerColor(a2->GetLineColor());
       b->SetMarkerColor(b->GetLineColor());
       c->SetMarkerColor(c->GetLineColor());
       d->SetMarkerColor(d->GetLineColor());
       e->SetMarkerColor(e->GetLineColor());
       f->SetMarkerColor(f->GetLineColor());
-      eposrew->SetMarkerColor(f->GetLineColor());
-      qgsrew->SetMarkerColor(f->GetLineColor());
+      //eposrew->SetMarkerColor(f->GetLineColor());
+      //qgsrew->SetMarkerColor(f->GetLineColor());
       b->SetLineStyle(7);
       d->SetLineStyle(9);
       f->SetLineStyle(9);
-      eposrew->SetLineStyle(10);
-      qgsrew->SetLineStyle(10);
+      //eposrew->SetLineStyle(10);
+      //qgsrew->SetLineStyle(10);
 
       a->SetTitle("Data");
       a2->SetTitle("Noise");
-      eposrew->SetTitle("EPOS-LHC (#sigma_{diff}x1.12)");
-      qgsrew->SetTitle("QGSJETII-04 (#sigma_{diff}x1.50)");
+      //eposrew->SetTitle("EPOS-LHC (#sigma_{diff}x1.12)");
+      //qgsrew->SetTitle("QGSJETII-04 (#sigma_{diff}x1.50)");
       b->SetTitle("Hijing 1.383");
       c->SetTitle("EPOS-LHC");
       d->SetTitle("QGSJetII-04");
@@ -178,18 +180,18 @@ void makePlots_cs_purvseff(bool draw, string filename)
 
       double f_eme = 0;
       double f_mce = 0;
-      double f_mcesys = 0;
+      //double f_mcesys = 0;
       int count = 0;
       for(int i=a->FindBin(2); i<=a->FindBin(10); i++)
         {
           ++count;
           f_eme += fabs(e->GetBinContent(i) - f->GetBinContent(i));
           f_mce += fabs(c->GetBinContent(i) - d->GetBinContent(i));
-          f_mcesys += fabs(eposrew->GetBinContent(i) - qgsrew->GetBinContent(i));
+          //f_mcesys += fabs(eposrew->GetBinContent(i) - qgsrew->GetBinContent(i));
         }
       f_eme /= double(count);
       f_mce /= double(count);
-      f_mcesys /= double(count);
+      //f_mcesys /= double(count);
 
       pur_single->Expand(a->GetNbinsX());
       pur_double->Expand(a->GetNbinsX());
@@ -198,7 +200,7 @@ void makePlots_cs_purvseff(bool draw, string filename)
         {
           const double f_em     = 0.5 * (e->GetBinContent(i) + f->GetBinContent(i));
           const double f_mc     = 0.5 * (c->GetBinContent(i) + d->GetBinContent(i));
-          const double f_mcsys  = 0.5 * (eposrew->GetBinContent(i) + qgsrew->GetBinContent(i));
+          //const double f_mcsys  = 0.5 * (eposrew->GetBinContent(i) + qgsrew->GetBinContent(i));
           const double f_noise  = a2->GetBinContent(i)/a2->GetBinContent(1);
           const double n_sel_zb = a->GetBinContent(i);
 
@@ -247,7 +249,7 @@ void makePlots_cs_purvseff(bool draw, string filename)
                 << setprecision(3)
                 << endl << i << "(" << a->GetBinCenter(i) << ")"
                 << endl << "f_mc= " << f_mc << " ± " << f_mce << " ( " << f_mce/f_mc*100. << "%)"
-                << endl << "f_mc_scaled= " << f_mcsys << " ± " << f_mcesys << " ( " << f_mcesys/f_mcsys*100. << "%)"
+                //<< endl << "f_mc_scaled= " << f_mcsys << " ± " << f_mcesys << " ( " << f_mcesys/f_mcsys*100. << "%)"
                 << endl << "f_em= " << f_em << " ± " << f_eme << " ( " << f_eme/f_em*100. << "%)"
                 << endl << "n_em= " << n_em << " ± " << f_eme/f_em*n_em << " ( " << f_eme/f_em*100. << "%)"
                 << endl << "n_noise= " << n_noise << " ± ? ( " << f_eme/f_em*100. << "%)"
@@ -268,13 +270,22 @@ void makePlots_cs_purvseff(bool draw, string filename)
           pur_single->GetXaxis()->SetNdivisions(505);
           pur_single->GetYaxis()->SetNdivisions(505);
 
-          pur_double->Draw("C");
-          pur_single->SetTitle(";purity;efficiency");
-          pur_double->SetTitle(";purity;efficiency");
+          TLine* line = new TLine(1,ymin,1,ymax);
+          line->SetLineWidth(2);
+          line->SetLineStyle(2);
+          line->Draw("SAME");
+          line = new TLine(xmin,1,xmax,1);
+          line->SetLineWidth(2);
+          line->SetLineStyle(2);
+          line->Draw("SAME");
+
+          pur_single->SetTitle(";purity p;efficiency #epsilon_{acc}");
+          pur_double->SetTitle(";purity p;efficiency #epsilon_{acc}");
           pur_single->SetLineColor(kRed);
           pur_double->SetLineColor(kBlue);
           pur_single->SetLineWidth(3);
           pur_double->SetLineWidth(3);
+          pur_single->SetLineStyle(5);
 
           pur_selec_single->SetMarkerColor(pur_single->GetLineColor());
           pur_selec_double->SetMarkerColor(pur_double->GetLineColor());
@@ -318,14 +329,8 @@ void makePlots_cs_purvseff(bool draw, string filename)
           SetLegAtt(leg2,1.1);
 #endif
 
-          TLine* line = new TLine(1,ymin,1,ymax);
-          line->SetLineWidth(2);
-          line->SetLineStyle(2);
-          line->Draw("SAME");
-          line = new TLine(xmin,1,xmax,1);
-          line->SetLineWidth(2);
-          line->SetLineStyle(2);
-          line->Draw("SAME");
+          pur_single->Draw("C");
+          pur_double->Draw("C");
 
           for(int n=0; n<int(type.size()); n++)of
             {
@@ -338,7 +343,7 @@ void makePlots_cs_purvseff(bool draw, string filename)
 
               for (cut_ite = cut_value.begin(), int point = 0; cut_ite != cut_value.end(); ++cut_ite, point++)
                 {
-                  const double offsetx = type[n]==string("single")?0.01:0.02;
+                  const double offsetx = type[n]==string("single")?0.001:0.023;
                   const double offsety = type[n]==string("single")?0.01:-0.005;
 
                   double x;
@@ -352,8 +357,10 @@ void makePlots_cs_purvseff(bool draw, string filename)
                 }
               for (cut_ite = cut_value2.begin(), int point = 0; cut_ite != cut_value2.end(); ++cut_ite, point++)
                 {
-                  const double offsetx = type[n]==string("single")?0.01:0.02;
+                  const double offsetx = type[n]==string("single")?0.001:0.023;
                   const double offsety = type[n]==string("single")?0.01:-0.005;
+
+                  if (*cut_ite==3.) offsetx+=0.005;
 
                   double x;
                   double y;
