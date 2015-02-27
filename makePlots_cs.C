@@ -306,17 +306,50 @@ void makePlots_cs(bool draw,double cut_value_single, double cut_value_double, do
       //Loop over LumiSections
       for(int i=0; i<=h_lumi->GetNbinsX();i++)
         {
-          ///////////////////////////////////////////////////////////////////////
-          //PILEUP!!
           const double lumicorr = pPb?_LumiCorrpPb:_LumiCorrPbp;
           const double lumiPerLS=h_lumi->GetBinContent(i) * lumicorr;
           const double lumiPerLS_error=h_lumi->GetBinError(i) * lumicorr; //not 100% correct since from profile but has no contribution
           if (lumiPerLS<0.) {cerr << "lumi neg: " << i << endl; return;}
           else if (lumiPerLS==0.) {continue;}
 
+          double f_pileup_single = 1.0185;
+          double f_pileup_double = 1.0179;
+          //Other Corrections
+
+          const double n_cut_single = h_single->GetBinContent(i) / lumiPerLS;
+          const double n_zb_single = (f_zb_single*n_cut_single);
+          const double n_noise_single = f_noise_single * n_zb_single;
+          const double n_em_single = eff_em_single * 0.195; //these are not n but already n/lumi
+
+          const double n_cut_double = h_double->GetBinContent(i) / lumiPerLS;
+          const double n_zb_double = (f_zb_double*n_cut_double);
+          const double n_noise_double = f_noise_double * n_zb_double;
+          const double n_em_double = eff_em_double * 0.195; //relates to sigma_inel
+
+          double A_single = eff_acc_single*(1/f_pileup_single - f_noise_single);
+          double A_double = eff_acc_double*(1/f_pileup_double - f_noise_double);
+          double A_vis_single = (  1.  /f_pileup_single) - f_noise_single;
+          double A_vis_double = (  1.  /f_pileup_double) - f_noise_double;
+
+          if( A_double == 0 || A_single == 0) {cerr << "div 0 in bin: " << i << endl; return;}
+
+          double n_single = (n_cut_single - n_noise_single - n_em_single) / A_single;
+          double n_double = (n_cut_double - n_noise_double - n_em_double) / A_double;
+          double n_vis_single = (n_cut_single - n_noise_single) / A_vis_single;
+          double n_vis_double = (n_cut_double - n_noise_double) / A_vis_double;
+          double n_had_single = (n_cut_single - n_noise_single - n_em_single) / A_vis_single;
+          double n_had_double = (n_cut_double - n_noise_double - n_em_double) / A_vis_double;
+
+          ///////////////////////////////////////////////////////////////////////
+          //PILEUP!!
+
           double nbunches = run_num[run]<=210638 ? 206 : 296.; //this covers most of the runs
 
-          const double lambda = lumiPerLS*_CSEstimate/11246./23.31/nbunches;
+          const double deletelambda = lumiPerLS*_CSEstimate/11246./23.31/nbunches;
+          const double lambda = n_single*lumiPerLS / 11246./23.31/nbunches;
+            //n_single / h_zb_single->GetBinContent(1);
+          cout << n_single*lumiPerLS << "/" << 11246.*23.31*nbunches << "=" << lambda << " from estimate: " << lumiPerLS*_CSEstimate << "/" << 11246.*23.31*nbunches << "=" << deletelambda << endl;
+          cout << " " << A_single << endl;
           // double f_pileup_single = 1;
           // double f_pileup_double = 1;
           // for (int k=2; k<100; k++)
@@ -328,8 +361,8 @@ void makePlots_cs(bool draw,double cut_value_single, double cut_value_double, do
           //     if(add_single < 0.0001 && add_double < 0.0001)
           //       break;
           //   }
-          double f_pileup_single = 0;
-          double f_pileup_double = 0;
+          f_pileup_single = 0;
+          f_pileup_double = 0;
           double nomi_single = 0;
           double denomi_single = 0;
           double nomi_double = 0;
@@ -357,31 +390,23 @@ void makePlots_cs(bool draw,double cut_value_single, double cut_value_double, do
 
 
           ///////////////////////////////////////////////////////////////////////
-          //Other Corrections
 
-          const double n_cut_single = h_single->GetBinContent(i) / lumiPerLS;
-          const double n_zb_single = (f_zb_single*n_cut_single);
-          const double n_noise_single = f_noise_single * n_zb_single;
-          const double n_em_single = eff_em_single * 0.195; //these are not n but already n/lumi
 
-          const double n_cut_double = h_double->GetBinContent(i) / lumiPerLS;
-          const double n_zb_double = (f_zb_double*n_cut_double);
-          const double n_noise_double = f_noise_double * n_zb_double;
-          const double n_em_double = eff_em_double * 0.195; //relates to sigma_inel
-
-          const double A_single = eff_acc_single*(1/f_pileup_single - f_noise_single);
-          const double A_double = eff_acc_double*(1/f_pileup_double - f_noise_double);
-          const double A_vis_single = (  1.  /f_pileup_single) - f_noise_single;
-          const double A_vis_double = (  1.  /f_pileup_double) - f_noise_double;
+          A_single = eff_acc_single*(1/f_pileup_single - f_noise_single);
+          A_double= eff_acc_double*(1/f_pileup_double - f_noise_double);
+          A_vis_single = (  1.  /f_pileup_single) - f_noise_single;
+          A_vis_double = (  1.  /f_pileup_double) - f_noise_double;
 
           if( A_double == 0 || A_single == 0) {cerr << "div 0 in bin: " << i << endl; return;}
 
-          double n_single = (n_cut_single - n_noise_single - n_em_single) / A_single;
-          double n_double = (n_cut_double - n_noise_double - n_em_double) / A_double;
-          double n_vis_single = (n_cut_single - n_noise_single) / A_vis_single;
-          double n_vis_double = (n_cut_double - n_noise_double) / A_vis_double;
-          double n_had_single = (n_cut_single - n_noise_single - n_em_single) / A_vis_single;
-          double n_had_double = (n_cut_double - n_noise_double - n_em_double) / A_vis_double;
+          n_single = (n_cut_single - n_noise_single - n_em_single) / A_single;
+          n_double = (n_cut_double - n_noise_double - n_em_double) / A_double;
+          n_vis_single = (n_cut_single - n_noise_single) / A_vis_single;
+          n_vis_double = (n_cut_double - n_noise_double) / A_vis_double;
+          n_had_single = (n_cut_single - n_noise_single - n_em_single) / A_vis_single;
+          n_had_double = (n_cut_double - n_noise_double - n_em_double) / A_vis_double;
+
+          cout << n_single << " " << A_single << endl;
 
           //stat error for histos
           double error_single = sqrt( pow(h_single->GetBinContent(i),2)/pow(lumiPerLS,4)*pow(lumiPerLS_error,2) + 1./pow(lumiPerLS,2)*pow(h_single->GetBinError(i),2));
@@ -728,7 +753,7 @@ void makePlots_cs(bool draw,double cut_value_single, double cut_value_double, do
        << " ! sigma_pu_double=" << sigma_pu_runs_double/fit_runs_double->Parameter(0)*100  << "%" << endl
        << " ! si_noise_double=" << sigma_oi_runs_double/fit_runs_double->Parameter(0)*100  << "%" << endl << endl;
   cout << " ! sigma_combine=" << fabs(fit_runs_single->Parameter(0)-fit_runs_double->Parameter(0))/2./sigmainel*100 << "%" << endl << endl;
-           
+
 
 
   //Write to files
