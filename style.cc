@@ -54,36 +54,53 @@ void CMSText(const int data, const bool left, const bool top, const std::string 
     text=std::string("CMS Simulation");
   if(data==2)
     text=std::string("CMS");
-  double size = 0.05;
+  double size1 = 0.04*1.5;
+  double size2 = 0;
   if(str1.length() != 0)
-    size += 0.05;
+    size2 += 0.03*1.5;
   if(str2.length() != 0)
-    size += 0.05;
+    size2 += 0.03*1.5;
   if(str3.length() != 0)
-    size += 0.05;
+    size2 += 0.03*1.5;
+  double size = size1+size2;
 
   TPaveText* txt
     = new TPaveText(left ? gStyle->GetPadLeftMargin()+marg : 1-gStyle->GetPadRightMargin()-marg-0.30, //xlow
-                    top ? 1-gStyle->GetPadTopMargin()-margY-size : gStyle->GetPadBottomMargin() + margY, //ylow
+                    top ? 1-gStyle->GetPadTopMargin()-margY-size1 : gStyle->GetPadBottomMargin() + margY + size2, //ylow
                     left ? gStyle->GetPadLeftMargin()+marg+0.30 : 1-gStyle->GetPadRightMargin()-marg, //xhigh
                     top ? 1-gStyle->GetPadTopMargin()-margY : gStyle->GetPadBottomMargin() + margY + size, //yhigh
                     "NDC b t l");
     txt->SetTextAlign(10*(left ? 1 : 3) + (top ? 1 : 3));
-    txt->SetTextFont(42);
+    txt->SetTextFont(61);
     txt->SetFillStyle(0);
     txt->SetTextColor(kBlack);
-    txt->SetTextSize(0.033);
+    txt->SetTextSize(0.04);
     txt->SetBorderSize(0);
+
+  TPaveText* txt2
+    = new TPaveText(left ? gStyle->GetPadLeftMargin()+marg : 1-gStyle->GetPadRightMargin()-marg-0.30, //xlow
+                    top ? 1-gStyle->GetPadTopMargin()-margY-size : gStyle->GetPadBottomMargin() + margY, //ylow
+                    left ? gStyle->GetPadLeftMargin()+marg+0.30 : 1-gStyle->GetPadRightMargin()-marg, //xhigh
+                    top ? 1-gStyle->GetPadTopMargin()-margY-size1 : gStyle->GetPadBottomMargin() + margY + size2, //yhigh
+                    "NDC b t l");
+    txt2->SetTextAlign(10*(left ? 1 : 3) + (top ? 1 : 3));
+    txt2->SetTextFont(52);
+    txt2->SetFillStyle(0);
+    txt2->SetTextColor(kBlack);
+    txt2->SetTextSize(0.03);
+    txt2->SetBorderSize(0);
+
 
     txt->AddText(text.c_str());
     if(str1.length()!=0)
-      txt->AddText(str1.c_str());
+      txt2->AddText(str1.c_str());
     if(str3.length()!=0)
-      txt->AddText(str3.c_str());
+      txt2->AddText(str3.c_str());
     if(str2.length()!=0)
-      txt->AddText(str2.c_str());
+      txt2->AddText(str2.c_str());
 
     txt->Draw();
+    txt2->Draw();
 }
 
 // #################################################################################

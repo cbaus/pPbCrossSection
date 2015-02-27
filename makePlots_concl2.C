@@ -61,7 +61,7 @@ void makePlots_concl2()
 
   TGraphErrors* g_ihep  = new TGraphErrors(5);
   g_ihep->SetName("g_ihep");
-  g_ihep->SetTitle("IHEP;#sqrt{s_{NN}} [GeV];#sigma_{prod} [b]");
+  g_ihep->SetTitle("IHEP;#sqrt{#it{s}_{NN}} [GeV];#it{#sigma}_{prod} [b]");
   SetAttributes(g_ihep,kBlue,21);
   g_ihep->SetPoint(0,GetSqrtS(20),1.739);  g_ihep->SetPointError(0,0,0.030);
   g_ihep->SetPoint(1,GetSqrtS(30),1.870);  g_ihep->SetPointError(1,0,0.023);
@@ -71,7 +71,7 @@ void makePlots_concl2()
 
   TGraphErrors* g_cosmic  = new TGraphErrors(3);
   g_cosmic->SetName("g_cosmic");
-  g_cosmic->SetTitle("COSMIC;#sqrt{s_{NN}} [GeV];#sigma_{prod} [b]");
+  g_cosmic->SetTitle("COSMIC");
   SetAttributes(g_cosmic,kOrange+2,23);
   g_cosmic->SetPoint(0,GetSqrtS(700),1.786);  g_cosmic->SetPointError(0,0,0.096);
   g_cosmic->SetPoint(1,GetSqrtS(1500),1.863);  g_cosmic->SetPointError(1,0,0.105);
@@ -79,7 +79,7 @@ void makePlots_concl2()
 
   TGraphErrors* g_fnal  = new TGraphErrors(3);
   g_fnal->SetName("g_fnal");
-  g_fnal->SetTitle("IHEP;#sqrt{s_{NN}} [GeV];#sigma_{prod} [b]");
+  g_fnal->SetTitle("IHEP");
   SetAttributes(g_fnal,kGreen-2,22);
   g_fnal->SetPoint(0,GetSqrtS(60),1.730);  g_fnal->SetPointError(0,0,0.052);
   g_fnal->SetPoint(1,GetSqrtS(200),1.765);  g_fnal->SetPointError(1,0,0.053);

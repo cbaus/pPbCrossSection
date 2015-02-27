@@ -279,8 +279,8 @@ void makePlots_cs_purvseff(bool draw, string filename)
           line->SetLineStyle(2);
           line->Draw("SAME");
 
-          pur_single->SetTitle(";purity p;efficiency #epsilon_{acc}");
-          pur_double->SetTitle(";purity p;efficiency #epsilon_{acc}");
+          pur_single->SetTitle(";purity #it{p};efficiency #it{#epsilon}_{acc}");
+          pur_double->SetTitle(";purity #it{p};efficiency #it{#epsilon}_{acc}");
           pur_single->SetLineColor(kRed);
           pur_double->SetLineColor(kBlue);
           pur_single->SetLineWidth(3);

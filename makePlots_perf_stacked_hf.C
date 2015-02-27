@@ -152,7 +152,7 @@ void ShowStack(TH1D* data,TH1D* noise,TH1D* b,TH1D* c,TH1D* d,TH1D* dpm, TH1D* s
 
   data->GetXaxis()->SetLimits(1,200);
   data->GetYaxis()->SetRangeUser(1e-6,2e2);
-  data->GetXaxis()->SetTitle("E_{HF} [GeV]");
+  data->GetXaxis()->SetTitle("#it{E}_{HF} [GeV]");
   data->GetYaxis()->SetTitle("events (normalised)");
   data->GetXaxis()->SetTitleOffset(data->GetXaxis()->GetTitleOffset()*1.1);
 
