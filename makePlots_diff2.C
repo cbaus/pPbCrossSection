@@ -1,5 +1,6 @@
 ///PLEASE MAKE SURE SIGMA_HAD FOR DATA RATIO IS UP-TO-DATE!!!!
 ///makes table for diffractive ratios of MC
+///makes two plots, how ratio_S/D depends on scaling of sigma_diff
 
 #include <TColor.h>
 #include <iomanip>
@@ -53,6 +54,10 @@ void makePlots_diff2()
   vec_sigma_had->Print();
   f.Close();
   double single_double_weight_data = (*vec_sigma_had)[1]/(*vec_sigma_had)[0];
+  //uncertainty on ratio from EM, EvenSel, Noise = sqrt(0.2**2+0.6**2+0.2**2+1.2**2+0.2**2) = 1.39%
+  double ratio_unc = 0.0139;
+  double ratio_unc2 = ratio_unc*2.;
+
 
   vector<string> type;
   type.push_back(string("single"));
@@ -87,7 +92,7 @@ void makePlots_diff2()
   for(int i=0; i<int(list.size()); i++)
     {
       cout << i+1 << "/" << int(list.size()) << endl;
-      TFile* file = TFile::Open("histos_deleteme.root");
+      TFile* file = TFile::Open("histos.root");
       file->cd();
 
       TH1D* sd1_single=(TH1D*)file->Get(string(list[i]+string("/")+list[i]+string("_h_mc_diff_e_single_SD1")).c_str());
@@ -177,9 +182,9 @@ void makePlots_diff2()
            << n_sel_dd_single*100. << " & "
            << n_sel_cd_single*100. << " & "
            << n_sel_nd_single*100. << " & "
-           << n_sel_all_single*100.<< " & "
+           << n_sel_all_single*100.<< " & " << setprecision(3)
            << "\\multirow{2}{*}{" << single_double_weight_mc << "}"
-           << "\\multirow{2}{*}{" << single_double_weight_data << "}" //from data. sigma_had
+           << "\\multirow{2}{*}{" << single_double_weight_data << "\\pm" << single_double_weight_data*ratio_unc <<"}" //from data. sigma_had
            << "\\\\" << endl;
       cout << fixed << setprecision(1)
            << "Double-arm & "
@@ -229,7 +234,7 @@ void makePlots_diff2()
             graphFindDiffWeight->SetPoint(j,diffWeight,single_double_weight);
             graphEffDiffWeight->SetPoint(j,diffWeight,(diffWeight * diff_frac_sel_double + n_sel_nd_double) / (1.+diff_frac*(diffWeight-1.)));
           }
-      
+
 
       ///////////////SCALING DIFF TO 25%///////////////diff*x/(1+diff(x-1)=0.25 -> x=(0.25/diff+0.25)/0.75
       double to25 = diff_frac!=0?(0.25/diff_frac-0.25)/0.75:0;
@@ -368,15 +373,15 @@ void makePlots_diff2()
   graphFindDiffWeightQgsjet.SetMarkerStyle(25);
   graphFindDiffWeightQgsjet.SetMarkerStyle(25);
   graphFindDiffWeightQgsjet.SetMarkerSize(1.3);
-  graphFindDiffWeightQgsjet.SetLineWidth(1.3);
+  graphFindDiffWeightQgsjet.SetLineWidth(2);
   graphFindDiffWeightQgsjet.SetLineColor(kGreen+2);
   graphFindDiffWeightQgsjet.SetLineStyle(9);
-  graphFindDiffWeightQgsjet.SetTitle(";#sigma_{diff} scale factor;#frac{#sigma_{had}(double-arm)}{#sigma_{had}(single-arm)} [%]");
+  graphFindDiffWeightQgsjet.SetTitle(";#sigma_{diff} scale factor;R_{d/s}");
   graphFindDiffWeightQgsjet.Draw("AC");
   graphFindDiffWeightQgsjet.GetXaxis()->SetRangeUser(0.5,1.5);
   graphFindDiffWeightQgsjet.GetYaxis()->SetRangeUser(0.85,1.10);
   graphFindDiffWeightEpos.SetMarkerSize(1.3);
-  graphFindDiffWeightEpos.SetLineWidth(1.3);
+  graphFindDiffWeightEpos.SetLineWidth(2);
   graphFindDiffWeightEpos.SetLineColor(kBlue);
   graphFindDiffWeightEpos.Draw("C");
 
@@ -387,28 +392,35 @@ void makePlots_diff2()
   //  graphFindDiffWeightDpmjet.Draw("P");
   //  graphFindDiffWeightHijing.Draw("P");
 
-  //uncertainty on ratio from EM, EvenSel, Noise = sqrt(0.2**2+0.6**2+0.2**2+1.2**2+0.2**2) = 1.39%
-  double ratio_unc = 0.0139;
-  double ratio_unc2 = 0.0139*2.;
-
   TLine* line0 = new TLine(0.5,single_double_weight_data,1.5,single_double_weight_data);
   line0->SetLineStyle(1);
   line0->Draw("SAME");
-  TLine* line1 = new TLine(0.5,single_double_weight_data*(1.+ratio_unc),1.5,single_double_weight_data*(1.+ratio_unc));
-  line1->SetLineStyle(2);
-  line1->Draw("SAME");
-  TLine* line2 = new TLine(0.5,single_double_weight_data/(1.+ratio_unc),1.5,single_double_weight_data/(1.+ratio_unc));
-  line2->SetLineStyle(2);
-  line2->Draw("SAME");
-  TLegend* leg = new TLegend(0.65,0.7,0.95,0.9);
+  TLine* line1a = new TLine(0.5,single_double_weight_data*(1.+ratio_unc),1.5,single_double_weight_data*(1.+ratio_unc));
+  line1a->SetLineStyle(3);
+  line1a->Draw("SAME");
+  TLine* line2a = new TLine(0.5,single_double_weight_data*(1.+ratio_unc2),1.5,single_double_weight_data*(1.+ratio_unc2));
+  line2a->SetLineStyle(2);
+  line2a->Draw("SAME");
+  TLine* line1b = new TLine(0.5,single_double_weight_data/(1.+ratio_unc),1.5,single_double_weight_data/(1.+ratio_unc));
+  line1b->SetLineStyle(3);
+  line1b->Draw("SAME");
+  TLine* line2b = new TLine(0.5,single_double_weight_data/(1.+ratio_unc2),1.5,single_double_weight_data/(1.+ratio_unc2));
+  line2b->SetLineStyle(2);
+  line2b->Draw("SAME");
+  TLegend* leg_opt = new TLegend(0.25,0.2,0.56,0.4);
 #ifdef __CINT__
-  SetLegAtt(leg);
+  SetLegAtt(leg_opt);
 #endif
-  leg->AddEntry(&graphFindDiffWeightEpos,"EPOS-LHC","l");
-  leg->AddEntry(&graphFindDiffWeightQgsjet,"QGSJetII","l");
+  leg_opt->AddEntry(line0,"Data","l");
+  leg_opt->AddEntry(line1a,"Data #pm 1 std. dev.","l");
+  leg_opt->AddEntry(line2a,"Data #pm 2 std. dev.","l");
+  leg_opt->AddEntry(&graphFindDiffWeightEpos,"EPOS-LHC","l");
+  leg_opt->AddEntry(&graphFindDiffWeightQgsjet,"QGSJetII","l");
   //  leg->AddEntry(&graphFindDiffWeightHijing,"Hijing","P");
   //  leg->AddEntry(&graphFindDiffWeightDpmjet,"Dpmjet","P");
-  leg->Draw("SAME");
+  leg_opt->Draw("SAME");
+
+  CMSText(3,0,1);
   can1->SaveAs((string("plots/diff_optimal_weight.pdf")).c_str());
 
   double x_opt=1;
@@ -444,7 +456,7 @@ void makePlots_diff2()
   TCanvas* can2 = new TCanvas;
   graphEffDiffWeightQgsjet.SetMarkerStyle(25);
   graphEffDiffWeightQgsjet.SetMarkerSize(1.3);
-  graphEffDiffWeightQgsjet.SetLineWidth(1.3);
+  graphEffDiffWeightQgsjet.SetLineWidth(2);
   graphEffDiffWeightQgsjet.SetLineStyle(9);
   graphEffDiffWeightQgsjet.SetLineColor(kGreen+2);
   graphEffDiffWeightQgsjet.SetTitle(";#sigma_{diff} scale factor;double-arm #epsilon_{acc}");
@@ -452,7 +464,7 @@ void makePlots_diff2()
   graphEffDiffWeightQgsjet.GetXaxis()->SetRangeUser(0.5,1.5);
   graphEffDiffWeightQgsjet.GetYaxis()->SetRangeUser(0.8,1);
   graphEffDiffWeightEpos.SetMarkerSize(1.3);
-  graphEffDiffWeightEpos.SetLineWidth(1.3);
+  graphEffDiffWeightEpos.SetLineWidth(2);
   graphEffDiffWeightEpos.SetLineColor(kBlue);
   graphEffDiffWeightEpos.Draw("C");
   graphEffDiffWeightDpmjet.SetMarkerColor(kMagenta);
@@ -461,6 +473,14 @@ void makePlots_diff2()
   graphEffDiffWeightHijing.SetMarkerStyle(4);
   //  graphEffDiffWeightDpmjet.Draw("P");
   //  graphEffDiffWeightHijing.Draw("P");
+
+  CMSText(3,0,1);
+  TLegend* leg = new TLegend(0.25,0.2,0.6,0.3);
+#ifdef __CINT__
+  SetLegAtt(leg);
+#endif
+  leg->AddEntry(&graphFindDiffWeightEpos,"EPOS-LHC","l");
+  leg->AddEntry(&graphFindDiffWeightQgsjet,"QGSJetII","l");
   leg->Draw("SAME");
   can2->SaveAs((string("plots/diff_eff_diffweight.pdf")).c_str());
 

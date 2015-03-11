@@ -48,13 +48,19 @@ void style() {
 void CMSText(const int data, const bool left, const bool top, const std::string str3, const std::string str2, const std::string str1) {
   const double marg = 0.005, margY = 0.03;
   std::string text;
-  if(data)
-    text=std::string("CMS Preliminary");
+  if(data==1)
+    text=std::string("Preliminary");
   if(data==0)
-    text=std::string("CMS Simulation");
-  if(data==2)
-    text=std::string("CMS");
+    text=std::string("Simulation");
+  if(data==3)
+    text=std::string("Own work");
+
   double size1 = 0.04*1.5;
+
+  double sizesub = 0;
+  if(text.length() != 0)
+    sizesub += 0.04*1.5;
+
   double size2 = 0;
   if(str1.length() != 0)
     size2 += 0.03*1.5;
@@ -62,11 +68,12 @@ void CMSText(const int data, const bool left, const bool top, const std::string 
     size2 += 0.03*1.5;
   if(str3.length() != 0)
     size2 += 0.03*1.5;
-  double size = size1+size2;
+
+  double size = size1+sizesub+size2;
 
   TPaveText* txt
     = new TPaveText(left ? gStyle->GetPadLeftMargin()+marg : 1-gStyle->GetPadRightMargin()-marg-0.30, //xlow
-                    top ? 1-gStyle->GetPadTopMargin()-margY-size1 : gStyle->GetPadBottomMargin() + margY + size2, //ylow
+                    top ? 1-gStyle->GetPadTopMargin()-margY-size1 : gStyle->GetPadBottomMargin() + margY + size - size1, //ylow
                     left ? gStyle->GetPadLeftMargin()+marg+0.30 : 1-gStyle->GetPadRightMargin()-marg, //xhigh
                     top ? 1-gStyle->GetPadTopMargin()-margY : gStyle->GetPadBottomMargin() + margY + size, //yhigh
                     "NDC b t l");
@@ -77,11 +84,24 @@ void CMSText(const int data, const bool left, const bool top, const std::string 
     txt->SetTextSize(0.04);
     txt->SetBorderSize(0);
 
+  TPaveText* subtxt
+    = new TPaveText(left ? gStyle->GetPadLeftMargin()+marg : 1-gStyle->GetPadRightMargin()-marg-0.30, //xlow
+                    top ? 1-gStyle->GetPadTopMargin()-margY-size1-sizesub : gStyle->GetPadBottomMargin() + margY + size2, //ylow
+                    left ? gStyle->GetPadLeftMargin()+marg+0.30 : 1-gStyle->GetPadRightMargin()-marg, //xhigh
+                    top ? 1-gStyle->GetPadTopMargin()-margY-size1 : gStyle->GetPadBottomMargin() + margY + size2 + sizesub, //yhigh
+                    "NDC b t l");
+    subtxt->SetTextAlign(10*(left ? 1 : 3) + (top ? 1 : 3));
+    subtxt->SetTextFont(52);
+    subtxt->SetFillStyle(0);
+    subtxt->SetTextColor(kBlack);
+    subtxt->SetTextSize(0.04);
+    subtxt->SetBorderSize(0);
+
   TPaveText* txt2
     = new TPaveText(left ? gStyle->GetPadLeftMargin()+marg : 1-gStyle->GetPadRightMargin()-marg-0.30, //xlow
                     top ? 1-gStyle->GetPadTopMargin()-margY-size : gStyle->GetPadBottomMargin() + margY, //ylow
                     left ? gStyle->GetPadLeftMargin()+marg+0.30 : 1-gStyle->GetPadRightMargin()-marg, //xhigh
-                    top ? 1-gStyle->GetPadTopMargin()-margY-size1 : gStyle->GetPadBottomMargin() + margY + size2, //yhigh
+                    top ? 1-gStyle->GetPadTopMargin()-margY-size+size2 : gStyle->GetPadBottomMargin() + margY + size2, //yhigh
                     "NDC b t l");
     txt2->SetTextAlign(10*(left ? 1 : 3) + (top ? 1 : 3));
     txt2->SetTextFont(52);
@@ -91,7 +111,9 @@ void CMSText(const int data, const bool left, const bool top, const std::string 
     txt2->SetBorderSize(0);
 
 
-    txt->AddText(text.c_str());
+    txt->AddText("CMS");
+    if(text.length()!=0)
+      subtxt->AddText(text.c_str());
     if(str1.length()!=0)
       txt2->AddText(str1.c_str());
     if(str3.length()!=0)
@@ -100,6 +122,7 @@ void CMSText(const int data, const bool left, const bool top, const std::string 
       txt2->AddText(str2.c_str());
 
     txt->Draw();
+    subtxt->Draw();
     txt2->Draw();
 }
 

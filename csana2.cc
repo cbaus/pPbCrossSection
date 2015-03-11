@@ -71,8 +71,8 @@ int main()
    sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211532/*.root"); sample_name.push_back("data211532"); sample_type.push_back(DATA);
    sample_fname.push_back("root://eoscms//eos/cms/store/caf/user/cbaus/pPb2013/trees/Data211538/*.root"); sample_name.push_back("data211538"); sample_type.push_back(DATA);
    sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Data211607/*_*.root"); sample_name.push_back("data211607"); sample_type.push_back(DATA);
-  
-  
+
+
   sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Epos/*.root"); sample_name.push_back("Epos"); sample_type.push_back(MC);
   sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Hijing/*.root"); sample_name.push_back("Hijing"); sample_type.push_back(MC);
   sample_fname.push_back("/afs/cern.ch/work/c/cbaus/public/castortree/pPb_QGSJetII/treeMC.root"); sample_name.push_back("QGSJetII"); sample_type.push_back(MC);
@@ -702,7 +702,7 @@ int main()
           BinLogX(h_mc_pt_double);
           BinLogX(h_mc_pt_single_sel);
           BinLogX(h_mc_pt_double_sel);
-          
+
           h_mc_pt_Ehf_correlation_single = new TH2D((add + string("_h_mc_pt_Ehf_correlation_single")).c_str(),"",100,0,9,100,0,400);
           h_mc_pt_Ehf_correlation_double = new TH2D((add + string("_h_mc_pt_Ehf_correlation_double")).c_str(),"",100,0,7,100,0,300);
           h_mc_p_Ehf_correlation_single  = new TH2D((add + string("_h_mc_p_Ehf_correlation_single")).c_str(),"",100,0,800,100,0,400);
@@ -939,7 +939,7 @@ int main()
                     gen_HF_pt_plus = pt;
                   if(+3 < eta && eta < +5 && p > gen_HF_p_plus)
                     gen_HF_p_plus = p;
-                    
+
 
                   double Rapidity= eta;//it->GetRapidity();
                   if (pt > 0.2 && Rapidity > ymin && Rapidity < ymax)
@@ -970,9 +970,9 @@ int main()
 	      gen_HF_p_single = TMath::Max(gen_HF_p_minus,gen_HF_p_plus);
 	      gen_HF_p_double = TMath::Min(gen_HF_p_minus,gen_HF_p_plus);
 
-	      multimap<double,GenParticle*>& rapidityMassMap = rapidityMassMap_1GeV;		  
+	      multimap<double,GenParticle*>& rapidityMassMap = rapidityMassMap_1GeV;
               if(rapidityMassMap.size() >= 1) //Assume 1 or more final usable particles
-                {		  
+                {
 		  multimap<double,GenParticle*>::const_iterator thisIsIt; //start of m_x
 		  int n=0;
 
@@ -1059,7 +1059,7 @@ int main()
 		  //               multimap<double,GenParticle*>::const_iterator it2 = thisIsIt;
 		  //               for (; it2 != rapidityMassMap.end(); ++it2)
 		  //                 {
-		  //                   if(it->second->GetEta() > 1e9) //skip fragments only for mass calculation
+		  //                   if(it2->second->GetEta() > 1e9) //skip fragments only for mass calculation
 		  //                     continue;
 		  //                   TLorentzVector vec(it2->second->Px,it2->second->Py,it2->second->Pz,it2->second->GetEnergy());
 		  //                   vecP += vec;
@@ -1185,7 +1185,7 @@ int main()
                   if(coll && hf_single_energy_max >= cut)               h_hf_cut_single->Fill(cut,evtWeight);
                   if(noise && hf_single_energy_max >= cut)              h_hf_cut_single_noise->Fill(cut,noiseWeight);
                 }
-              
+
 
               for (int i = 0; i<int(cut_energies_single.size()); i++)
                 {
