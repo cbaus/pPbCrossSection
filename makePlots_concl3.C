@@ -139,11 +139,11 @@ void makePlots_concl3()
   ///!READ IN VALUES
 
   TH1D* h_data = new TH1D("h_data","CMS;;#sigma [b]",6,-0.5,5.5);
-  h_data->GetXaxis()->SetBinLabel(3,"#splitline{hadronic}{inelastic}");
-  h_data->GetXaxis()->SetBinLabel(2,"#splitline{#splitline{}{}}{#splitline{hadron level}{p_{T,S}>0.61 GeV}}");
+  h_data->GetXaxis()->SetBinLabel(3,"production");
+  h_data->GetXaxis()->SetBinLabel(2,"#splitline{#splitline{}{}}{#splitline{hadron-}{level-corrected}}");
   h_data->GetXaxis()->SetBinLabel(1,"visible");
-  h_data->GetXaxis()->SetBinLabel(6,"#splitline{hadronic}{inelastic}");
-  h_data->GetXaxis()->SetBinLabel(5,"#splitline{#splitline{}{}}{#splitline{hadron level}{p_{T,D}>0.41 GeV}}");
+  h_data->GetXaxis()->SetBinLabel(6,"production");
+  h_data->GetXaxis()->SetBinLabel(5,"#splitline{#splitline{}{}}{#splitline{hadron-}{level-corrected}}");
   h_data->GetXaxis()->SetBinLabel(4,"visible");
   TH1D * h_epos = new TH1D("h_epos","EPOS-LHC;;#sigma [b]",6,-0.5,5.5);
   TH1D * h_qgsjet = new TH1D("h_qgsjet","QGSJETII-04;;#sigma [b]",6,-0.5,5.5);
@@ -233,7 +233,7 @@ void makePlots_concl3()
   line->SetLineStyle(2);
   line->Draw("SAME");
 
-  TLegend* leg1 = new TLegend(0.24,0.7,0.55,0.9);
+  TLegend* leg1 = new TLegend(0.24,0.65,0.55,0.9);
   SetLegAtt(leg1);
   leg1->AddEntry(h_data,"CMS","p");
   leg1->AddEntry(h_epos,"EPOS-LHC","p");
@@ -241,7 +241,7 @@ void makePlots_concl3()
   leg1->AddEntry(h_dpmjet,"DPMJet 3.06","p");
 #ifdef WITH_ALICE
   leg1->AddEntry(h_alice_ppb,"ALICE V0 (pPb)","p");
-  leg1->AddEntry(h_alice_pbp,"ALICE V0 (Pbp","p");
+  leg1->AddEntry(h_alice_pbp,"ALICE V0 (Pbp)","p");
   leg1->AddEntry(h_lhcb,"LHCb","p");
 #endif
   leg1->SetBorderSize(1);
@@ -283,6 +283,3 @@ void makePlots_concl3()
        << "HAD: " << sigma_had_single*1000 - sigma_had_double*1000 << endl;
 
 }
-
-
-
