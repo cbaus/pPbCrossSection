@@ -279,8 +279,8 @@ void makePlots_cs_purvseff(bool draw, string filename)
           line->SetLineStyle(2);
           line->Draw("SAME");
 
-          pur_single->SetTitle(";purity #it{p};efficiency #it{#epsilon}_{acc}");
-          pur_double->SetTitle(";purity #it{p};efficiency #it{#epsilon}_{acc}");
+          pur_single->SetTitle(";Purity;Acceptance #it{#epsilon}_{acc}");
+          pur_double->SetTitle(";Purity;Acceptance #it{#epsilon}_{acc}");
           pur_single->SetLineColor(kRed);
           pur_double->SetLineColor(kBlue);
           pur_single->SetLineWidth(3);
@@ -310,12 +310,12 @@ void makePlots_cs_purvseff(bool draw, string filename)
           // a2->GetXaxis()->SetTitleOffset(a2->GetXaxis()->GetTitleOffset()*1.1);
           // a2->GetYaxis()->SetTitleOffset(a2->GetYaxis()->GetTitleOffset()*1.0);
 
-          TLegend* leg2 = new TLegend(0.21,0.73,0.55,0.83);
+          TLegend* leg2 = new TLegend(0.21,0.72,0.55,0.82);
 
               leg2->SetX1(0.21);
-              leg2->SetY1(0.73);
+              leg2->SetY1(0.72);
               leg2->SetX2(0.55);
-              leg2->SetY2(0.83);
+              leg2->SetY2(0.82);
 #ifdef __CINT__
               CMSText(2,1,1);
 #endif
@@ -323,8 +323,8 @@ void makePlots_cs_purvseff(bool draw, string filename)
 
           leg2->Draw();
 
-          leg2->AddEntry(pur_single,"single-arm selection","l");
-          leg2->AddEntry(pur_double,"double-arm selection","l");
+          leg2->AddEntry(pur_single,"Single-arm selection","l");
+          leg2->AddEntry(pur_double,"Double-arm selection","l");
 #ifdef __CINT__
           SetLegAtt(leg2,1.1);
 #endif

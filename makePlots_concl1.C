@@ -8,7 +8,7 @@
 
 
 
-void DataText2(const bool left=true, const bool top=true, const std::string txt="pPb, #sqrt{s_{_{NN}}}=5.02 TeV",bool sim=false);
+void DataText2(const bool left=true, const bool top=true, const std::string txt="pPb, #sqrt{s_{_{NN}}} = 5.02 TeV",bool sim=false);
 
 void CMSPreliminary() {
   TLatex* txt = new TLatex();
@@ -207,7 +207,7 @@ void makePlots_concl1()
   leg2->SetBorderSize(1);
 
   can1->cd(1);
-  DataText2(true,true,"pp, #sqrt{s_{_{NN}}}=5.02 TeV",true);
+  DataText2(true,true,"pp, #sqrt{s_{_{NN}}} = 5.02 TeV",true);
   leg2->Draw();
   can1->cd(2);
   DataText2(true,true);

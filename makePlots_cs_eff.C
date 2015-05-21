@@ -5,7 +5,6 @@
 #include "TFitResultPtr.h"
 #include "TGraph.h"
 #include "TGraphErrors.h"
-#include "TH1D.h"
 #include "TH2D.h"
 #include "TLegend.h"
 #include "TLine.h"
@@ -69,7 +68,7 @@ void makePlots_cs_eff(bool draw, double cut_value_single, double cut_value_doubl
   models.push_back("Hijing");
   models.push_back("Epos");
   models.push_back("QGSJetII");
-  
+
   for(int n=0; n<int(type.size()); n++)
     {
       TFile* file = TFile::Open(filename.c_str());
@@ -96,7 +95,7 @@ void makePlots_cs_eff(bool draw, double cut_value_single, double cut_value_doubl
           histoman[model]["DD" ]=(TH1D*)file->Get((model+string("/")+model+string("_h_hf_cut_DD_") + type[n]).c_str());
           histoman[model]["ND" ]=(TH1D*)file->Get((model+string("/")+model+string("_h_hf_cut_ND_") + type[n]).c_str());
         }
-      
+
       TH1D* dpm=histoman["DPMJet"]["ALL"];
       TH1D* hijing=histoman["Hijing"]["ALL"];
       TH1D* epos=histoman["Epos"]["ALL"];
@@ -188,8 +187,8 @@ void makePlots_cs_eff(bool draw, double cut_value_single, double cut_value_doubl
       hijing->GetYaxis()->SetRangeUser(0.8,1.001);
       noise->GetYaxis()->SetRangeUser(2e-5,100);//type[n]=="double"?1e-5:1e-5,1.01);
 
-      hijing->GetXaxis()->SetTitle("E_{HF} [GeV]");
-      hijing->GetYaxis()->SetTitle("efficiency");
+      hijing->GetXaxis()->SetTitle("#it{E}_{th} [GeV]");
+      hijing->GetYaxis()->SetTitle("efficiency #epsilon_{acc}");
       hijing->GetXaxis()->SetLabelSize(hijing->GetXaxis()->GetLabelSize()*1.2);
       hijing->GetYaxis()->SetLabelSize(hijing->GetYaxis()->GetLabelSize()*1.2);
       hijing->GetXaxis()->SetTitleSize(hijing->GetXaxis()->GetTitleSize()*1.1);
@@ -216,21 +215,21 @@ void makePlots_cs_eff(bool draw, double cut_value_single, double cut_value_doubl
           if(type[n]=="single")
             {
               leg->SetX1(0.22);
-              leg->SetX2(0.56);
-              leg->SetY1(0.35);
-              leg->SetY2(0.58);
+              leg->SetX2(0.58);
+              leg->SetY1(0.37);
+              leg->SetY2(0.62);
 #ifdef __CINT__
-              CMSText(1,1,0,"single-arm selection");
+              CMSText(3,1,0,"single-arm selection");
 #endif
             }
           if(type[n]=="double")
             {
-              leg->SetX1(0.42);
-              leg->SetX2(0.75);
+              leg->SetX1(0.22);
+              leg->SetX2(0.58);
               leg->SetY1(0.18);
               leg->SetY2(0.41);
 #ifdef __CINT__
-              CMSText(1,0,1,"double-arm selection");
+              CMSText(3,0,1,"double-arm selection");
 #endif
             }
 
@@ -282,8 +281,8 @@ void makePlots_cs_eff(bool draw, double cut_value_single, double cut_value_doubl
           //mc_values.insert(dpm->GetBinContent(i));
 
           const double f_em     = 0.5 * (sl1->GetBinContent(i) + sl2->GetBinContent(i));
-          const double f_mc     = std::accumulate(mc_values.begin(),mc_values.end(),0.0) / double(mc_values.size());
-          //const double f_mc     = 1./2. * (epos->GetBinContent(i) + qgs->GetBinContent(i));
+          //const double f_mc     = std::accumulate(mc_values.begin(),mc_values.end(),0.0) / double(mc_values.size());
+          const double f_mc     = 1./2. * (epos->GetBinContent(i) + qgs->GetBinContent(i));
           const double f_mcsys  = 0.5 * (getEffDiffWeight("Epos", cut_value, _diff_epos_reweight) + getEffDiffWeight("QGSJetII", cut_value, _diff_qgs_reweight));
           const double f_noise  = noise->GetBinContent(i)/noise->GetBinContent(1);
           const double n_sel_zb = zb->GetBinContent(i);
@@ -354,8 +353,8 @@ void makePlots_cs_eff(bool draw, double cut_value_single, double cut_value_doubl
       if(draw)
         {
           TCanvas* can2 = new TCanvas;
-          noise->GetXaxis()->SetTitle("E_{HF} [GeV]");
-          noise->GetYaxis()->SetTitle("N/#it{L} [b]");
+          noise->GetXaxis()->SetTitle("#it{E}_{th} [GeV]");
+          noise->GetYaxis()->SetTitle("#it{N}/#it{L} [b]");
           noise->GetXaxis()->SetLabelSize(noise->GetXaxis()->GetLabelSize()*1.2);
           noise->GetYaxis()->SetLabelSize(noise->GetYaxis()->GetLabelSize()*1.2);
           noise->GetXaxis()->SetTitleSize(noise->GetXaxis()->GetTitleSize()*1.1);
@@ -370,21 +369,21 @@ void makePlots_cs_eff(bool draw, double cut_value_single, double cut_value_doubl
           if(type[n]=="single")
             {
               leg2->SetX1(0.22);
-              leg2->SetY1(0.32);
               leg2->SetX2(0.56);
-              leg2->SetY2(0.52);
+              leg2->SetY1(0.18);
+              leg2->SetY2(0.38);
 #ifdef __CINT__
-              CMSText(1,1,0,"single-arm selection");
+              CMSText(3,0,1,"single-arm selection");
 #endif
             }
           if(type[n]=="double")
             {
               leg2->SetX1(0.42);
               leg2->SetX2(0.93);
-              leg2->SetY1(0.60);
-              leg2->SetY2(0.80);
+              leg2->SetY1(0.55);
+              leg2->SetY2(0.75);
 #ifdef __CINT__
-              CMSText(1,0,1,"double-arm selection");
+              CMSText(3,0,1,"double-arm selection");
 #endif
             }
           leg2->Draw();

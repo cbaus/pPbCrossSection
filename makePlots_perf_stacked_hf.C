@@ -144,16 +144,16 @@ void ShowStack(TH1D* data,TH1D* noise,TH1D* b,TH1D* c,TH1D* d,TH1D* dpm, TH1D* s
 
   data->SetTitle("Data");
   noise->SetTitle("Noise");
-  b->SetTitle("HIJING 1.383");
+  b->SetTitle("HIJING1.383");
   c->SetTitle("EPOS-LHC");
-  d->SetTitle("QGSJetII-04");
-  dpm->SetTitle("DPMJet 3.06");
-  sl->SetTitle("#gamma-p (STARLIGHT+DPMJET/PYTHIA)");
+  d->SetTitle("QGSJETII-04");
+  dpm->SetTitle("DPMJET3.06");
+  sl->SetTitle("#gammap (STARLIGHT+DPMJET/PYTHIA)");
 
   data->GetXaxis()->SetLimits(1,200);
   data->GetYaxis()->SetRangeUser(1e-6,2e2);
   data->GetXaxis()->SetTitle("#it{E}_{HF} [GeV]");
-  data->GetYaxis()->SetTitle("events (normalised)");
+  data->GetYaxis()->SetTitle("Events (normalised)");
   data->GetXaxis()->SetTitleOffset(data->GetXaxis()->GetTitleOffset()*1.1);
 
 
@@ -190,7 +190,7 @@ void ShowStack(TH1D* data,TH1D* noise,TH1D* b,TH1D* c,TH1D* d,TH1D* dpm, TH1D* s
   leg->Draw();
   c1->SetLogy();
   c1->SetLogx();
-  CMSText(2,0,1,type=="single"?"single-arm selection":"double-arm selection");
+  CMSText(2,0,1,type=="single"?"Single-arm selection":"Double-arm selection","12.6 nb^{-1}");
 
   TLine* line = new TLine(type=="single"?8:4,1e-6,type=="single"?8:4,0.1);
   line->SetLineWidth(2);

@@ -61,7 +61,7 @@ void makePlots_concl2()
 
   TGraphErrors* g_ihep  = new TGraphErrors(5);
   g_ihep->SetName("g_ihep");
-  g_ihep->SetTitle("IHEP;#sqrt{#it{s}_{NN}} [GeV];#it{#sigma}_{prod} [b]");
+  g_ihep->SetTitle("IHEP;#sqrt{#it{s}_{NN}} [GeV];#it{#sigma}_{inel} [b]");
   SetAttributes(g_ihep,kBlue,21);
   g_ihep->SetPoint(0,GetSqrtS(20),1.739);  g_ihep->SetPointError(0,0,0.030);
   g_ihep->SetPoint(1,GetSqrtS(30),1.870);  g_ihep->SetPointError(1,0,0.023);
@@ -170,8 +170,8 @@ void makePlots_concl2()
   leg1->AddEntry(g_cosmic,"Avakian et al.","p");
   leg1->AddEntry(g_glauber,"(COMPETE+TOTEM)+Glauber","l");
   leg1->AddEntry(g_eposlhc,"EPOS-LHC","l");
-  leg1->AddEntry(g_q4,"QGSJetII-04","l");
-  leg1->AddEntry(g_dpm,"DPMJet 3.06","l");
+  leg1->AddEntry(g_q4,"QGSJETII-04","l");
+  leg1->AddEntry(g_dpm,"DPMJET3.06","l");
   leg1->AddEntry(g_dipsy,"DIPSY","l");
 
   TCanvas* can1 = new TCanvas;
@@ -190,7 +190,7 @@ void makePlots_concl2()
   g_cms->Draw("P");
   can1->SetLogx();
   leg1->Draw();
-  CMSText(2,0,1,"","","pPb collisions");
+  CMSText(2,0,1,"12.6 nb^{-1}","","pPb collisions");
   can1->SaveAs((string("plots/concl_2_paper")+string(".pdf")).c_str());
 
 }
