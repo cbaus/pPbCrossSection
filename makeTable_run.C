@@ -48,7 +48,8 @@ void makeTable_run()
 
 
   double totallumi = 0;
-  cout << "\\hlineRun number & Intgrated luminosity (nb$^{-1}$) & Peak Pileup (\\%)\\\\\\hline\\hline" << endl; 
+  int totalevents = 0;
+  cout << "\\hlineRun number & Intgrated luminosity (nb$^{-1}$) & Peak Pileup (\\%)\\\\\\hline\\hline" << endl;
   for (int run=0; run<int(run_num.size()); run++)
     {
       bool pPb=false;
@@ -69,14 +70,17 @@ void makeTable_run()
       const double lumiIntegral=h_lumi->Integral() * lumiCorr * 1e-9;
       totallumi += lumiIntegral;
 
+      const int nEvents=h_lumi->GetEntries();
+      totalevents += nEvents;
+
       if (lumiPerLS<=0.) {cerr << "lumi neg: " << i << endl; return;}
-      
+
       const double lambda = lumiPerLS*2.13/11246./23.31/296.;
 
       if(runname == "211256") cout << "\\hline\\multicolumn{3}{|c|}{Beam Reversal} \\\\\\hline\\hline" << endl;
-      cout << runname << " & " << setprecision(5) << lumiIntegral << " & " << lambda*100 << "\\\\\\hline" << endl;
+      cout << runname << " & " << setprecision(5) << lumiIntegral << " & " << lambda*100 << " & " << nEvents << "\\\\\\hline" << endl;
     }
   cout << "\\hline" << endl;
-  cout << "Total (" << run_num.size() ")" << " & " << setprecision(3) << totallumi << " & - \\\\\\hline" << endl;
+  cout << "Total (" << run_num.size() ")" << " & " << setprecision(3) << totallumi << " & - & " << totalevents << "\\\\\\hline" << endl;
 }
-      
+
