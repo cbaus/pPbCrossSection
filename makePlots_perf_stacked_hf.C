@@ -37,28 +37,28 @@ void makePlots_perf_stacked_hf()
     TFile* file = TFile::Open("histos.root");
   TH1D* a=(TH1D*)file2->Get("data247324/data247324_h_hf_hits_coll_single");
   TH1D* a2=(TH1D*)file2->Get("data247324/data247324_h_hf_hits_noise_single");
-  TH1D* b=(TH1D*)file->Get("PythiaZ2Star/PythiaZ2Star_h_hf_hits_coll_single");
+  TH1D* mc1=(TH1D*)file->Get("PythiaZ2Star/PythiaZ2Star_h_hf_hits_coll_single");
+  TH1D* mc2=(TH1D*)file->Get("PythiaMonash/PythiaMonash_h_hf_hits_coll_single");
   TH1D* c=(TH1D*)file->Get("Epos/Epos_h_hf_hits_coll_single");
-  TH1D* dpm=(TH1D*)file->Get("DPMJet/DPMJet_h_hf_hits_coll_single");
   //TH1D* c=(TH1D*)file->Get("Epos_SL/Epos_SL_h_hf_hits_coll_single");
   TH1D* d=(TH1D*)file->Get("QGSJetII/QGSJetII_h_hf_hits_coll_single");
   TH1D* e=(TH1D*)file->Get("Starlight_DPMJet/Starlight_DPMJet_h_hf_hits_coll_single");
   TH1D* f=(TH1D*)file->Get("Starlight_Pythia/Starlight_Pythia_h_hf_hits_coll_single");
-  ShowStack(a,a2,b,0,0,0,0,0,"single");
+  ShowStack(a,a2,mc1,mc2,0,0,0,0,"single");
   }
   {
   TFile* file2 = TFile::Open("histos.root");
   TFile* file = TFile::Open("histos.root");
   TH1D* a=(TH1D*)file2->Get("data247324/data247324_h_hf_hits_coll_double");
   TH1D* a2=(TH1D*)file2->Get("data247324/data247324_h_hf_hits_noise_double");
-  TH1D* b=(TH1D*)file->Get("PythiaZ2Star/PythiaZ2Star_h_hf_hits_coll_double");
+  TH1D* mc1=(TH1D*)file->Get("PythiaZ2Star/PythiaZ2Star_h_hf_hits_coll_double");
+  TH1D* mc2=(TH1D*)file->Get("PythiaMonash/PythiaMonash_h_hf_hits_coll_double");
   TH1D* c=(TH1D*)file->Get("Epos/Epos_h_hf_hits_coll_double");
   //TH1D* c=(TH1D*)file->Get("Epos_SL/Epos_SL_h_hf_hits_coll_double");
   TH1D* d=(TH1D*)file->Get("QGSJetII/QGSJetII_h_hf_hits_coll_double");
-  TH1D* dpm=(TH1D*)file->Get("DPMJet/DPMJet_h_hf_hits_coll_double");
   TH1D* e=(TH1D*)file->Get("Starlight_DPMJet/Starlight_DPMJet_h_hf_hits_coll_double");
   TH1D* f=(TH1D*)file->Get("Starlight_Pythia/Starlight_Pythia_h_hf_hits_coll_double");
-  ShowStack(a,a2,b,0,0,0,0,0,"double");
+  ShowStack(a,a2,mc1,mc2,0,0,0,0,"double");
   }
 }
 
@@ -96,13 +96,13 @@ void ShowStack(TH1D* data,TH1D* noise,TH1D* mc1,TH1D* mc2,TH1D* mc3,TH1D* mc4, T
   double mc1norm=data->Integral(normbin,normendbin)/mc1->Integral(normbin,normendbin);
   mc1->Scale(mc1norm);
   if(mc2) mc2->Scale(data->Integral(normbin,normendbin)/mc2->Integral(normbin,normendbin));
-  if(mc2) mc3->Scale(data->Integral(normbin,normendbin)/mc3->Integral(normbin,normendbin));
-  if(mc2) mc4->Scale(data->Integral(normbin,normendbin)/mc4->Integral(normbin,normendbin));
-  if(mc2) sl1->Scale(mc1scale*195./2085.*mc1norm);
-  if(mc2) sl2->Scale(mc1scale2*122./2085.*mc1norm);
+  if(mc3) mc3->Scale(data->Integral(normbin,normendbin)/mc3->Integral(normbin,normendbin));
+  if(mc4) mc4->Scale(data->Integral(normbin,normendbin)/mc4->Integral(normbin,normendbin));
+  if(sl1) sl1->Scale(mc1scale*195./2085.*mc1norm);
+  if(sl2) sl2->Scale(mc1scale2*122./2085.*mc1norm);
   if(sl1) sl1->SetBit(TH1::kIsAverage);
   if(sl2) sl2->SetBit(TH1::kIsAverage);
-  if(mc2) if(sl1->Add(sl2) == kFALSE) {new TCanvas; sl1->Draw(); new TCanvas; sl2->Draw(); cerr << "add failed" << endl; return;}
+  if(sl1 && sl2) if(sl1->Add(sl2) == kFALSE) {new TCanvas; sl1->Draw(); new TCanvas; sl2->Draw(); cerr << "add failed" << endl; return;}
   TH1D* sl = 0;
   if(sl1) sl = sl1;
 
@@ -121,48 +121,48 @@ void ShowStack(TH1D* data,TH1D* noise,TH1D* mc1,TH1D* mc2,TH1D* mc3,TH1D* mc4, T
   noise->SetMarkerColor(kGreen-9);
   mc1->SetMarkerColor(kRed);
   if(mc2) mc2->SetMarkerColor(kBlue);
-  if(mc2) mc3->SetMarkerColor(kGreen+2);
-  if(mc2) mc4->SetMarkerColor(kMagenta);
-  if(mc2) sl->SetMarkerColor(kOrange+1);
+  if(mc3) mc3->SetMarkerColor(kGreen+2);
+  if(mc4) mc4->SetMarkerColor(kMagenta);
+  if(sl) sl->SetMarkerColor(kOrange+1);
 
   noise->SetMarkerStyle(34);
   mc1->SetMarkerStyle(4);
   if(mc2) mc2->SetMarkerStyle(25);
-  if(mc2) mc3->SetMarkerStyle(28);
-  if(mc2) mc4->SetMarkerStyle(26);
-  if(mc2) sl->SetMarkerStyle(22);
+  if(mc3) mc3->SetMarkerStyle(28);
+  if(mc4) mc4->SetMarkerStyle(26);
+  if(sl) sl->SetMarkerStyle(22);
 
   data->SetLineColor(data->GetMarkerColor());
   noise->SetLineColor(noise->GetMarkerColor());
   mc1->SetLineColor(mc1->GetMarkerColor());
   if(mc2) mc2->SetLineColor(mc2->GetMarkerColor());
-  if(mc2) mc3->SetLineColor(mc3->GetMarkerColor());
-  if(mc2) mc4->SetLineColor(mc4->GetMarkerColor());
-  if(mc2) sl->SetLineColor(sl->GetMarkerColor());
+  if(mc3) mc3->SetLineColor(mc3->GetMarkerColor());
+  if(mc4) mc4->SetLineColor(mc4->GetMarkerColor());
+  if(sl) sl->SetLineColor(sl->GetMarkerColor());
 
   data->SetFillColor(data->GetMarkerColor());
   noise->SetFillColor(noise->GetMarkerColor());
   mc1->SetFillColor(mc1->GetMarkerColor());
   if(mc2) mc2->SetFillColor(mc2->GetMarkerColor());
-  if(mc2) mc3->SetFillColor(mc3->GetMarkerColor());
-  if(mc2) mc4->SetFillColor(mc4->GetMarkerColor());
-  if(mc2) sl->SetFillColor(sl->GetMarkerColor());
+  if(mc3) mc3->SetFillColor(mc3->GetMarkerColor());
+  if(mc4) mc4->SetFillColor(mc4->GetMarkerColor());
+  if(sl) sl->SetFillColor(sl->GetMarkerColor());
 
   data->SetFillStyle(1001);
   noise->SetFillStyle(1001);
   mc1->SetFillStyle(1001);
   if(mc2) mc2->SetFillStyle(1001);
-  if(mc2) mc3->SetFillStyle(1001);
-  if(mc2) mc4->SetFillStyle(1001);
-  if(mc2) sl->SetFillStyle(1001);
+  if(mc3) mc3->SetFillStyle(1001);
+  if(mc4) mc4->SetFillStyle(1001);
+  if(sl) sl->SetFillStyle(1001);
 
   data->SetTitle("Data");
   noise->SetTitle("Noise");
   mc1->SetTitle("Pythia6 Z2*");
   if(mc2) mc2->SetTitle("EPOS-LHC");
-  if(mc2) mc3->SetTitle("QGSJETII-04");
-  if(mc2) mc4->SetTitle("DPMJET3.06");
-  if(mc2) sl->SetTitle("#gammap (STARLIGHT+DPMJET/PYTHIA)");
+  if(mc3) mc3->SetTitle("QGSJETII-04");
+  if(mc4) mc4->SetTitle("DPMJET3.06");
+  if(sl) sl->SetTitle("#gammap (STARLIGHT+DPMJET/PYTHIA)");
 
   data->GetXaxis()->SetLimits(1,200);
   data->GetYaxis()->SetRangeUser(1e-6,2e2);
@@ -179,7 +179,7 @@ void ShowStack(TH1D* data,TH1D* noise,TH1D* mc1,TH1D* mc2,TH1D* mc3,TH1D* mc4, T
     {
       if(sl1) mc1 = merge(noise,sl,mc1);
       if(mc2) mc2 = merge(noise,sl,mc2);
-      if(mc2) mc3 = merge(noise,sl,mc3);
+      if(mc3) mc3 = merge(noise,sl,mc3);
     }
 
   TCanvas* c1 = new TCanvas;
@@ -187,8 +187,8 @@ void ShowStack(TH1D* data,TH1D* noise,TH1D* mc1,TH1D* mc2,TH1D* mc3,TH1D* mc4, T
   h_s_bg->Draw("SAME HIST F");
   mc1->Draw("SAME");
   if(mc2) mc2->Draw("SAME");
-  if(mc2) mc3->Draw("SAME");
-  if(mc2) mc4->Draw("SAME");
+  if(mc3) mc3->Draw("SAME");
+  if(mc4) mc4->Draw("SAME");
   data->Draw("SAME P");
   data->Draw("SAME AXIS");
 
@@ -197,9 +197,9 @@ void ShowStack(TH1D* data,TH1D* noise,TH1D* mc1,TH1D* mc2,TH1D* mc3,TH1D* mc4, T
   leg->AddEntry(data,"","p");
   leg->AddEntry(mc1,"","p");
   if(mc2) leg->AddEntry(mc2,"","p");
-  if(mc2) leg->AddEntry(mc3,"","p");
-  if(mc2) leg->AddEntry(mc4,"","p");
-  if(mc2) leg->AddEntry(sl,"","f");
+  if(mc3) leg->AddEntry(mc3,"","p");
+  if(mc4) leg->AddEntry(mc4,"","p");
+  if(sl) leg->AddEntry(sl,"","f");
   leg->AddEntry(noise,"","f");
   leg->Draw();
   c1->SetLogy();

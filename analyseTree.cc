@@ -1,4 +1,4 @@
-#define _MAXEVT 50000
+#define _MAXEVT 100000
 #define _SkipHFRings 1 //skip 41 and 29 as suggested by HCAL DPG
 #define _HFEnergyScale 1.0 //1.0 //0.8
 #define _HFEnergyCalibration 0 //0 or 1 (rescale MC) or 2 this does not scale MC but data according to raddam from lev
@@ -759,19 +759,23 @@ int main()
 
 
           //---------------------------------------------CASTOR
-          double sum_CAS_e_em = 0;
-          double sum_CAS_e_had = 0;
+          double sum_CAS_E_em = 0;
+          double sum_CAS_E_had = 0;
+          vector<double> sum_CAS_E_mod(16,0.);
 
           for (vector<RecHitCASTOR>::const_iterator it = event->CASTOR.begin(); it < event->CASTOR.end(); ++it)
-            {//break;              double RecHitGeV =  it->Energy;
+            {//break;
+              double RecHitGeV =  it->Energy;
               const int sec = it->GetSectorId();
               const int mod = it->GetModuleId();
 
               if(sample_type[sample] == DATA)
                 {
                   //RecHitGeV -= castor::channelPedMean[sec][mod];
+                  #warning "remove for 3.8 T"
+                  RecHitGeV *= castor::corr0Tto38T[sec-1][mod-1];
                   RecHitGeV *= castor::channelGainQE[sec][mod];
-                  RecHitGeV *= castor::absEscaleFactor;
+                  RecHitGeV *= castor::absCasEscaleFactor;
                 }
               RecHitGeV *= (int)castor::channelQuality[sec][mod];
 
@@ -783,8 +787,8 @@ int main()
                 sum_CAS_E_had += RecHitGeV;
             }
 
-          const double sum_CAS_e = sum_CAS_e_had + sum_CAS_e_em;
-          const bool castor_tag = sum_CAS_e > 5.6; //esstimated by sebastian for data only!
+          const double sum_CAS_E = sum_CAS_E_had + sum_CAS_E_em;
+          const bool castor_tag = sum_CAS_E > 5.6; //esstimated by sebastian for data only!
 
 
 
@@ -1095,12 +1099,12 @@ int main()
           if(coll)                                                  h_hf_hits_plus->Fill(hf_p_energy_max);
           if(coll)                                                  h_hf_hits_minus->Fill(hf_m_energy_max);
 
-          if(coll && hf_double_energy_max < 3)                      h_castor_hf_diff_3->Fill(sum_CAS_e,evtWeight);
-          if(coll && hf_double_energy_max < 5)                      h_castor_hf_diff_5->Fill(sum_CAS_e,evtWeight);
-          if(coll && hf_double_energy_max < 10)                     h_castor_hf_diff_10->Fill(sum_CAS_e,evtWeight);
+          if(coll && hf_double_energy_max < 3)                      h_castor_hf_diff_3->Fill(sum_CAS_E,evtWeight);
+          if(coll && hf_double_energy_max < 5)                      h_castor_hf_diff_5->Fill(sum_CAS_E,evtWeight);
+          if(coll && hf_double_energy_max < 10)                     h_castor_hf_diff_10->Fill(sum_CAS_E,evtWeight);
 
-          if(coll && sum_CAS_e <= 700)                              h_castor_gap_hf->Fill(hf_single_energy_max,evtWeight);
-          if(coll && sum_CAS_e >  700)                              h_castor_nogap_hf->Fill(hf_single_energy_max,evtWeight);
+          if(coll && sum_CAS_E <= 700)                              h_castor_gap_hf->Fill(hf_single_energy_max,evtWeight);
+          if(coll && sum_CAS_E >  700)                              h_castor_nogap_hf->Fill(hf_single_energy_max,evtWeight);
 
           if(coll && hf_double_tag)                                 h_hf_hits_coll_lumi->Fill(event->lumiNb,hf_double_energy_max,evtWeight);
           if(coll && hf_double_tag)                                 h_hf_hits_minus_lumi->Fill(event->lumiNb,hf_m_energy_max,evtWeight);

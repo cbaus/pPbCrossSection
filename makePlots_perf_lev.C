@@ -10,27 +10,30 @@ void makePlots_perf_lev()
 
   TFile* file = TFile::Open("histos.root");
   TFile* file2 = TFile::Open("histos.root");
-  TH1D* e= (TH1D*)file->Get("data247324/data247324_h_perf_hf_totE_eta_lev_m");
-  TH1D* f= (TH1D*)file->Get("PythiaZ2Star/PythiaZ2Star_h_perf_hf_totE_eta_lev_m");
+  TH1D* data= (TH1D*)file->Get("data247324/data247324_h_perf_hf_totE_eta_lev_m");
+  TH1D* mc1= (TH1D*)file->Get("PythiaZ2Star/PythiaZ2Star_h_perf_hf_totE_eta_lev_m");
+  TH1D* mc2= (TH1D*)file->Get("PythiaMonash/PythiaMonash_h_perf_hf_totE_eta_lev_m");
+  TH1D* mc3= (TH1D*)file->Get("PythiaMBR/PythiaMBR_h_perf_hf_totE_eta_lev_m");
   TH1D* g= (TH1D*)file->Get("Epos/Epos_h_perf_hf_totE_eta_lev_m");
-  TH1D* epossl= (TH1D*)file->Get("Epos_SL/Epos_SL_h_perf_hf_totE_eta_lev_m");
   TH1D* h= (TH1D*)file->Get("QGSJetII/QGSJetII_h_perf_hf_totE_eta_lev_m");
   // TH1D* i=(TH1D*)file->Get("Starlight_DPMJet/Starlight_DPMJet_h_perf_hf_totE_eta_lev_m");
   // TH1D* j=(TH1D*)file->Get("Starlight_Pythia/Starlight_Pythia_h_perf_hf_totE_eta_lev_m");
 
-  Show(e,f,g,epossl,h,0,0,"lev_minus");
+  Show(data,mc1,mc2,mc3,h,0,0,"lev_minus");
 
   TFile* file = TFile::Open("histos.root");
   TFile* file2 = TFile::Open("histos.root");
-  TH1D* e= (TH1D*)file->Get("data247324/data247324_h_perf_hf_totE_eta_lev_p");
-  TH1D* f= (TH1D*)file->Get("PythiaZ2Star/PythiaZ2Star_h_perf_hf_totE_eta_lev_p");
+  TH1D* data= (TH1D*)file->Get("data247324/data247324_h_perf_hf_totE_eta_lev_p");
+  TH1D* mc1= (TH1D*)file->Get("PythiaZ2Star/PythiaZ2Star_h_perf_hf_totE_eta_lev_p");
+  TH1D* mc2= (TH1D*)file->Get("PythiaMonash/PythiaMonash_h_perf_hf_totE_eta_lev_p");
+  TH1D* mc2= (TH1D*)file->Get("PythiaMBR/PythiaMBR_h_perf_hf_totE_eta_lev_p");
   TH1D* g= (TH1D*)file->Get("Epos/Epos_h_perf_hf_totE_eta_lev_p");
   TH1D* epossl= (TH1D*)file->Get("Epos_SL/Epos_SL_h_perf_hf_totE_eta_lev_p");
   TH1D* h= (TH1D*)file->Get("QGSJetII/QGSJetII_h_perf_hf_totE_eta_lev_p");
   // TH1D* i=(TH1D*)file->Get("Starlight_DPMJet/Starlight_DPMJet_h_perf_hf_totE_eta_lev_p");
   // TH1D* j=(TH1D*)file->Get("Starlight_Pythia/Starlight_Pythia_h_perf_hf_totE_eta_lev_p");
 
-  Show(e,f,g,epossl,h,0,0,"lev_plus");
+  Show(data,mc1,mc2,mc3,h,0,0,"lev_plus");
 }
 
 void Show(TH1D* data, TH1D* mc1, TH1D* mc2, TH1D* mc3, TH1D* mc4, TH1D* sl1, TH1D* sl2, string type)
@@ -71,9 +74,9 @@ void Show(TH1D* data, TH1D* mc1, TH1D* mc2, TH1D* mc3, TH1D* mc4, TH1D* sl1, TH1
   if(mc4) mc4->SetLineColor(kGreen+2);
   // sl->SetLineColor(kOrange-9);
 
-  data->SetTitle("zero bias + single track (p_{t}>0.1 GeV)");
+  data->SetTitle("unbiased trigger + CASTOR E_{tot}>5.6 GeV");
   mc1->SetTitle("Pythia6 Z2*");
-  if(mc2) mc2->SetTitle("EPOS");
+  if(mc2) mc2->SetTitle("Pythia8 Monash Tune");
   if(mc3) mc3->SetTitle("EPOS (SL)");
   if(mc4) mc4->SetTitle("QGSJetII");
   // sl->SetTitle("#gamma-p (STARLIGHT+DPMJET/PYTHIA)");

@@ -1,16 +1,13 @@
 #ifndef __CASTORCORRFACTORPP2015_H__
 #define __CASTORCORRFACTORPP2015_H__
 
-namespace ForwardRecord {
+namespace castor {
   static const unsigned int CSectors = 16;
   static const unsigned int CModules = 14;
   static const double absCasEscaleFactor = 0.020;
-} //end namespace ForwardRecord
-
-namespace castor {
   //E-map swap: s5m10<->s5m12, s6m10<->s6m12, s7m10<->s7m12
   //using for Katerina's value's (some correction values seem too big (for me big is all >3), some are zeros)
-  const bool channelQuality[ForwardRecord::CSectors][ForwardRecord::CModules] =             // sector
+  const bool channelQuality[CSectors][CModules] =             // sector
     //mod 1   2     3     4     5      6    7     8     9    10     11    12   13    14
     {{true ,true ,true ,false,true ,true ,false,true ,true ,true ,true ,true ,true ,true }, // 1
      {true ,true ,true ,true ,true ,true ,false,true ,true ,false,true ,true ,true ,true }, // 2
@@ -30,7 +27,7 @@ namespace castor {
      {true ,true ,true ,true ,true ,false,false,false,true ,true ,true ,true ,true ,true }};// 16 //m8s16-strange-noise-peak(SNP),closer look needed
 
   // Katerina's values using halo muon data (w/o TOTEM), already scaled by s9m4 (what about factor 2 EM vs HAD ?)
-  const double channelGainQE[ForwardRecord::CSectors][ForwardRecord::CModules] =                                                                                // sector
+  const double channelGainQE[CSectors][CModules] =                                                                                // sector
     //mod 1          2          3          4           5          6          7         8          9          10         11          12        13           14
     {{  0.7510,    0.8700,    2.7370,    0.0000,    0.3630,    0.6430,    0.0000,    0.3100,    0.2120,    0.2740,    0.3030,    0.1690,    0.2650,    0.1550}, //1
      {  0.6190,    0.6160,    1.8130,    0.8690,    0.1820,    0.6280,    0.0000,    0.5070,    0.1680,    0.2910,    0.3380,    0.1460,    0.2490,    0.1250}, //2
@@ -50,7 +47,7 @@ namespace castor {
      {  0.7420,    0.9720,    2.4600,    0.9240,    0.2200,    0.1630,    3.9070,    0.1970,    0.2700,    0.2580,    0.1510,    0.1340,    0.2790,    0.2620}};//16
 
   //LED data, r238434(B=3.8T) to r238342(B=0T), HV ~ 1800V, average amplitude w/o ZS
-  const double corr0Tto38T[ForwardRecord::CSectors][ForwardRecord::CModules] =
+  const double corr0Tto38T[CSectors][CModules] =
      //mod 1          2              3          4           5               6          7               8          9          10              11          12        13           14
 {{     1.48512,     1.39079,     1.23936,     1.20485,     1.53704,     0.53953,     0.00404,     0.73703,     0.99343,     0.97474,     1.07208,     1.00473,     1.21792,     1.38684}, // s 1
  {     1.34932,     1.31645,     1.16597,     1.07258,     1.10938,     0.91177,     0.00558,     0.06076,     0.94764,     0.92360,     0.96920,     1.16183,     1.18510,     1.23530}, // s 2
