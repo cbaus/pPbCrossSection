@@ -29,6 +29,7 @@
 
 #define _LumiCorrpPb 1.142 //only use if trees don't contain vdm calibration factor
 #define _LumiCorrPbp 1.138
+#define _LumiCorr 1. //pp2015
 
 //#define _diff_qgs_reweight 1.202
 //#define _diff_epos_reweight 1.132
@@ -74,10 +75,10 @@ void makePlots_cs_eff(bool draw, double cut_value_single, double cut_value_doubl
       TFile* file = TFile::Open(filename.c_str());
       TFile* file2 = TFile::Open("histos_deleteme.root");
 
-      TH1D* zb=(TH1D*)file->Get((string("data210885/data210885_h_hf_cut_") + type[n]).c_str());
-      TH1D* noise=(TH1D*)file->Get((string("data210885/data210885_h_hf_cut_") + type[n] + string("_noise")).c_str());
-      TH1D* h_events=(TH1D*)file->Get(string("data210885/data210885_h_lumi").c_str()); //zb
-      TH1D* h_lumi=(TH1D*)file->Get(string("data210885/data210885_h_run_events_lumi").c_str());
+      TH1D* zb=(TH1D*)file->Get((string("data247324/data242324_h_hf_cut_") + type[n]).c_str());
+      TH1D* noise=(TH1D*)file->Get((string("data247324/data247324_h_hf_cut_") + type[n] + string("_noise")).c_str());
+      TH1D* h_events=(TH1D*)file->Get(string("data247324/data247324_h_lumi").c_str()); //zb
+      TH1D* h_lumi=(TH1D*)file->Get(string("data247324/data247324_h_run_events_lumi").c_str());
       TH1D* sl1=(TH1D*)file->Get((string("Starlight_DPMJet/Starlight_DPMJet_h_hf_cut_") + type[n]).c_str());
       TH1D* sl2=(TH1D*)file->Get((string("Starlight_Pythia/Starlight_Pythia_h_hf_cut_") + type[n]).c_str());
 
@@ -107,7 +108,7 @@ void makePlots_cs_eff(bool draw, double cut_value_single, double cut_value_doubl
       double events_integral = 0;
       for(int i=0; i<=h_lumi->GetNbinsX();i++)
         {
-          const double lumicorr = _LumiCorrpPb; //might be different for other run than 210885
+          const double lumicorr = _LumiCorr; //might be different for other run than 247324
           const double lumiPerLS=h_lumi->GetBinContent(i) * lumicorr;
           const double lumiPerLS_error=h_lumi->GetBinError(i) * lumicorr; //not 100% correct since from profile but has no contribution
           if (lumiPerLS<0.) {cerr << "lumi neg: " << i << endl; return;}

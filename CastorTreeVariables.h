@@ -14,7 +14,7 @@ namespace ForwardRecord {
   const unsigned int CModules = 14;
 
   const unsigned int nMaxEEMRecHits = 14406;
-  const unsigned int nMaxHBHERecHits = 5183;
+  const unsigned int nMaxHBHERecHits = 5184;
   const unsigned int nMaxEBMRecHits = 60555;
   const unsigned int nMaxHFMRecHits = 1728;
   // const int nMaxHFRecHits = 900;
@@ -32,6 +32,7 @@ class CentralityData {
 
  public:
   CentralityData();
+  virtual ~CentralityData() {}
 
   std::string id; // centrality id
   int cenBin;
@@ -51,6 +52,7 @@ class CentralityData {
 class RecHit {
  public:
   RecHit();
+  virtual ~RecHit() {}
 
   float Energy;
   float Phi;
@@ -68,6 +70,7 @@ class RecHit {
 class RecHitEB : public RecHit {
  public:
   RecHitEB();
+  virtual ~RecHitEB() {}
 
   int    Iphi;// do we need this?
   int    Ieta;// do we need this?
@@ -84,6 +87,7 @@ class RecHitEB : public RecHit {
 class RecHitEE : public RecHit {
  public:
   RecHitEE();
+  virtual ~RecHitEE() {}
 
   int Ix;// do we need this?
   int Iy;// do we need this?
@@ -100,6 +104,7 @@ class RecHitEE : public RecHit {
 class RecHitHBHE : public RecHit {
  public:
   RecHitHBHE();
+  virtual ~RecHitHBHE() {}
 
   int Iphi;// do we need this?
   int Ieta;// do we need this?
@@ -116,6 +121,7 @@ class RecHitHBHE : public RecHit {
 class RecHitHF : public RecHit {
  public:
   RecHitHF();
+  virtual ~RecHitHF() {}
 
   int Iphi;// do we need this?
   int Ieta;// do we need this?
@@ -139,6 +145,7 @@ class RecHitHF : public RecHit {
 class TowerHF {
  public:
   TowerHF();
+  virtual ~TowerHF() {}
 
   float Energy; //// l - s ~ e; l + s ~ h + e; h ~ 2 s ? // 900
   float Pt;
@@ -155,6 +162,7 @@ class TowerHF {
 class RecHitZDC : public RecHit {
  public:
   RecHitZDC();
+  virtual ~RecHitZDC() {}
 
   // do we need these?
   int Isection; //if(zside==-1) Detector=ZDCM; if(section==1) SubDetector=EM; 2=HAD
@@ -170,6 +178,7 @@ class RecHitZDC : public RecHit {
 class DigiZDC {
  public:
   DigiZDC();
+  virtual ~DigiZDC() {}
 
   // do we need zdc digis in general?
   float FC[10];
@@ -189,6 +198,7 @@ class DigiZDC {
 class DigiCASTOR {
  public:
   DigiCASTOR();
+  virtual ~DigiCASTOR() {}
 
   // do we need castor digis in general?
   float FC[10];
@@ -206,6 +216,7 @@ class DigiCASTOR {
 class RecHitCASTOR : public RecHit {
  public:
   RecHitCASTOR();
+  virtual ~RecHitCASTOR() {}
 
   int GetModuleId() const { return Module-1; }
   int GetSectorId() const { return Sector-1; }
@@ -227,6 +238,7 @@ class RecHitCASTOR : public RecHit {
 class TrackData {
  public:
   TrackData();
+  virtual ~TrackData() {}
 
   // do we need tracks? (no...)
   float Pt;
@@ -242,6 +254,7 @@ class TrackData {
 class GenParticle {
  public:
   GenParticle();
+  virtual ~GenParticle() {}
 
   // simplify content:
   int Id;
@@ -279,6 +292,7 @@ class AnalysisEvent {
 
  public:
   AnalysisEvent();
+  virtual ~AnalysisEvent() {}
 
   // event variables
   unsigned int runNb;
@@ -365,7 +379,7 @@ class AnalysisEvent {
   // --------- Luminosity ------------
   float instLuminosity;
   float instLuminosityCorr;
-  
+
   ClassDef(AnalysisEvent, 10);
 };
 
