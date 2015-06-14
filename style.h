@@ -7,7 +7,7 @@ void style();
 
 // #################################################################################
 // helper function to specify that lead lead data is used
-void CMSText(const int data=1, const bool left=true, const bool top=true, const std::string str3="", const std::string str2="", const std::string str1="pPb, #sqrt{s_{_{NN}}} = 5.02 TeV");
+void CMSText(const int data=1, const bool left=true, const bool top=true, const std::string str3="", const std::string str2="", const std::string str1="pp, #sqrt{s} = 13 TeV");
 
 // #################################################################################
 // helper function for legend

@@ -1,4 +1,4 @@
-#define _MAXEVT 10000
+#define _MAXEVT 50000
 #define _SkipHFRings 1 //skip 41 and 29 as suggested by HCAL DPG
 #define _HFEnergyScale 1.0 //1.0 //0.8
 #define _HFEnergyCalibration 0 //0 or 1 (rescale MC) or 2 this does not scale MC but data according to raddam from lev
@@ -25,6 +25,8 @@
 
 #include <CastorTreeVariables.h>
 #include <ParticleInfo.h>
+
+#include "CastorCorrFactorpp2015.h"
 
 //#include "style.h"
 
@@ -62,13 +64,12 @@ int main()
 
   // sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Epos/*.root"); sample_name.push_back("Epos"); sample_type.push_back(MC);
   sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_diffraction/cbaus/pp13TeV/inel_cross_section/pythiaz2star.root"); sample_name.push_back("PythiaZ2Star"); sample_type.push_back(MC);
+  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_diffraction/cbaus/pp13TeV/inel_cross_section/pythiamonash.root"); sample_name.push_back("PythiaMonash"); sample_type.push_back(MC);
+//  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_diffraction/cbaus/pp13TeV/inel_cross_section/pythiambr.root"); sample_name.push_back("PythiaMBR"); sample_type.push_back(MC);
+
   // sample_fname.push_back("/afs/cern.ch/work/c/cbaus/public/castortree/pPb_QGSJetII/treeMC.root"); sample_name.push_back("QGSJetII"); sample_type.push_back(MC);
   // sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/DPMJet/treeMC.root"); sample_name.push_back("DPMJet"); sample_type.push_back(MC);
   // sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/StarlightDPMjet_v2/treeMC.root"); sample_name.push_back("Starlight_DPMJet");  sample_type.push_back(MC);
-  // sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/StarlightPythia/treeMC.root"); sample_name.push_back("Starlight_Pythia");  sample_type.push_back(MC);
-
-  // sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/DPMJet_pp/treeMC.root"); sample_name.push_back("DPMJet_pp"); sample_type.push_back(MC);
-  // sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Epos_SL/*.root"); sample_name.push_back("Epos_SL"); sample_type.push_back(MC);
 
 #if _HFEnergyCalibration == 1
   TFile calibfile("plots/hf_calibration_data.root");
@@ -137,7 +138,7 @@ int main()
 
   //**************************************************************OUTPUT*********************************************************
 
-  TFile* out_file = new TFile("histos_deleteme.root","RECREATE");
+  TFile* out_file = new TFile("histos_new.root","RECREATE");
 
   TH1D* h_zero_count_zb_coll;
   TH1D* h_zero_count_zb_no_coll;
@@ -758,19 +759,32 @@ int main()
 
 
           //---------------------------------------------CASTOR
-          double sum_cas_e_em = 0;
-          double sum_cas_e_had = 0;
+          double sum_CAS_e_em = 0;
+          double sum_CAS_e_had = 0;
 
           for (vector<RecHitCASTOR>::const_iterator it = event->CASTOR.begin(); it < event->CASTOR.end(); ++it)
-            {//break;
+            {//break;              double RecHitGeV =  it->Energy;
+              const int sec = it->GetSectorId();
+              const int mod = it->GetModuleId();
+
+              if(sample_type[sample] == DATA)
+                {
+                  //RecHitGeV -= castor::channelPedMean[sec][mod];
+                  RecHitGeV *= castor::channelGainQE[sec][mod];
+                  RecHitGeV *= castor::absEscaleFactor;
+                }
+              RecHitGeV *= (int)castor::channelQuality[sec][mod];
+
+              sum_CAS_E_mod[it->GetModuleId()] += RecHitGeV;
+
               if(it->GetModuleId() < 2)
-                sum_cas_e_em += it->Energy;
+                sum_CAS_E_em += RecHitGeV;
               else if(it->GetModuleId() < 5)
-                sum_cas_e_had += it->Energy;
+                sum_CAS_E_had += RecHitGeV;
             }
 
-          const double sum_cas_e = sum_cas_e_had + sum_cas_e_em;
-          const bool castor_tag = sum_cas_e > 12.5;
+          const double sum_CAS_e = sum_CAS_e_had + sum_CAS_e_em;
+          const bool castor_tag = sum_CAS_e > 5.6; //esstimated by sebastian for data only!
 
 
 
@@ -1081,12 +1095,12 @@ int main()
           if(coll)                                                  h_hf_hits_plus->Fill(hf_p_energy_max);
           if(coll)                                                  h_hf_hits_minus->Fill(hf_m_energy_max);
 
-          if(coll && hf_double_energy_max < 3)                      h_castor_hf_diff_3->Fill(sum_cas_e,evtWeight);
-          if(coll && hf_double_energy_max < 5)                      h_castor_hf_diff_5->Fill(sum_cas_e,evtWeight);
-          if(coll && hf_double_energy_max < 10)                     h_castor_hf_diff_10->Fill(sum_cas_e,evtWeight);
+          if(coll && hf_double_energy_max < 3)                      h_castor_hf_diff_3->Fill(sum_CAS_e,evtWeight);
+          if(coll && hf_double_energy_max < 5)                      h_castor_hf_diff_5->Fill(sum_CAS_e,evtWeight);
+          if(coll && hf_double_energy_max < 10)                     h_castor_hf_diff_10->Fill(sum_CAS_e,evtWeight);
 
-          if(coll && sum_cas_e <= 700)                              h_castor_gap_hf->Fill(hf_single_energy_max,evtWeight);
-          if(coll && sum_cas_e >  700)                              h_castor_nogap_hf->Fill(hf_single_energy_max,evtWeight);
+          if(coll && sum_CAS_e <= 700)                              h_castor_gap_hf->Fill(hf_single_energy_max,evtWeight);
+          if(coll && sum_CAS_e >  700)                              h_castor_nogap_hf->Fill(hf_single_energy_max,evtWeight);
 
           if(coll && hf_double_tag)                                 h_hf_hits_coll_lumi->Fill(event->lumiNb,hf_double_energy_max,evtWeight);
           if(coll && hf_double_tag)                                 h_hf_hits_minus_lumi->Fill(event->lumiNb,hf_m_energy_max,evtWeight);
@@ -1125,7 +1139,7 @@ int main()
                 }
               if(coll && hf_single_tag)
                 h_perf_hf_totE_eta_single_3gev->Fill(it->Eta,it->Energy);
-              if(coll && event->Tracks.size()>=1)
+              if(coll && castor_tag)// event->Tracks.size()>=1)
                 {
                   const double eta = it->Eta;
                   const int Ieta = eta>0?it->IetaAbs:-it->IetaAbs;

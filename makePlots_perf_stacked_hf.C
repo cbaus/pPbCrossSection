@@ -5,8 +5,8 @@ TH1D* merge(TH1D* bg1, TH1D* bg2, TH1D* signal);
 
 void makePlots_perf_stacked_hf()
 {
-  // gROOT->ProcessLine(" .L style.cc");
-  // style();
+  gROOT->ProcessLine(" .L style.cc");
+  style();
 
   // {
   // TFile* file2 = TFile::Open("histos_old.root");
@@ -193,7 +193,7 @@ void ShowStack(TH1D* data,TH1D* noise,TH1D* mc1,TH1D* mc2,TH1D* mc3,TH1D* mc4, T
   data->Draw("SAME AXIS");
 
   TLegend* leg = new TLegend(0.23,0.70,0.43,0.93);
-  //SetLegAtt(leg);
+  SetLegAtt(leg);
   leg->AddEntry(data,"","p");
   leg->AddEntry(mc1,"","p");
   if(mc2) leg->AddEntry(mc2,"","p");
@@ -204,7 +204,7 @@ void ShowStack(TH1D* data,TH1D* noise,TH1D* mc1,TH1D* mc2,TH1D* mc3,TH1D* mc4, T
   leg->Draw();
   c1->SetLogy();
   c1->SetLogx();
-  //CMSText(2,0,1,type=="single"?"Single-arm selection":"Double-arm selection");
+  CMSText(3,0,1,type=="single"?"Single-arm selection":"Double-arm selection");
 
   TLine* line = new TLine(type=="single"?8:4,1e-6,type=="single"?8:4,0.1);
   line->SetLineWidth(2);
