@@ -102,7 +102,7 @@ void makePlots_concl2()
 
   //bin/crmc -o hepmc -m 7 -n 1 -i1 -I208 -p4000 -P-1580 -T --out test -s124
   //in models.F or in epos-sem.f change niter = 50000
-  TGraphErrors* g_eposlhc  = new TGraphErrors(7);
+  TGraphErrors* g_eposlhc  = new TGraphErrors(14);
   g_eposlhc->SetName("g_eposlhc");
   g_eposlhc->SetTitle("EPOS-LHC");
   SetAttributes(g_eposlhc,kGreen-1,7);
@@ -113,6 +113,23 @@ void makePlots_concl2()
   g_eposlhc->SetPoint(4,1000.0,1.926894);
   g_eposlhc->SetPoint(5,5020,2.081702);
   g_eposlhc->SetPoint(6,9000,2.139162);
+  TGraphErrors* g_m0 = g_eposlhc;
+g_m0->SetPoint(0,100,1788.44/1000);
+g_m0->SetPoint(1,110,1795.26/1000);
+g_m0->SetPoint(2,120,1799.43/1000);
+g_m0->SetPoint(3,140,1810.94/1000);
+g_m0->SetPoint(4,170,1823.81/1000);
+g_m0->SetPoint(5,200,1833.6/1000);
+g_m0->SetPoint(6,210,1837.19/1000);
+g_m0->SetPoint(7,220,1841.46/1000);
+g_m0->SetPoint(8,240,1845.21/1000);
+g_m0->SetPoint(9,260,1853.73/1000);
+g_m0->SetPoint(10,280,1846.58/1000);
+g_m0->SetPoint(11,320,1840.05/1000);
+g_m0->SetPoint(12,350,1848.24/1000);
+g_m0->SetPoint(13,400,1857.0/1000);
+
+
 
   TGraphErrors* g_q4  = new TGraphErrors(7);
   g_q4->SetName("g_q4");
@@ -164,7 +181,7 @@ void makePlots_concl2()
 
   TLegend* leg1 = new TLegend(0.25,0.60,0.55,0.90);
   SetLegAtt(leg1);
-  leg1->AddEntry(g_cms,"CMS","p");
+  leg1->AddEntry(g_cms,"CMS (12.6 nb^{-1})","p");
   leg1->AddEntry(g_ihep,"IHEP","p");
   leg1->AddEntry(g_fnal,"FNAL","p");
   leg1->AddEntry(g_cosmic,"Avakian et al.","p");
@@ -183,14 +200,14 @@ void makePlots_concl2()
   g_fnal->Draw("P");
   g_cosmic->Draw("P");
   g_glauber->Draw("C");
-  g_eposlhc->Draw("C");
+  g_eposlhc->Draw("PL");
   g_q4->Draw("C");
   g_dpm->Draw("C");
-  g_dipsy->Draw("xl");
+  g_dipsy->Draw("L");
   g_cms->Draw("P");
   can1->SetLogx();
   leg1->Draw();
-  CMSText(2,0,1,"12.6 nb^{-1}","","pPb collisions");
+  CMSText(2,0,1,"","","pPb collisions");
   can1->SaveAs((string("plots/concl_2_paper")+string(".pdf")).c_str());
 
 }

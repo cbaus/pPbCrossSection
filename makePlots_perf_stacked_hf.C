@@ -190,7 +190,7 @@ void ShowStack(TH1D* data,TH1D* noise,TH1D* b,TH1D* c,TH1D* d,TH1D* dpm, TH1D* s
   leg->Draw();
   c1->SetLogy();
   c1->SetLogx();
-  CMSText(2,0,1,type=="single"?"Single-arm selection":"Double-arm selection","12.6 nb^{-1}");
+  CMSText(2,0,1,type=="single"?"Single-arm selection":"Double-arm selection");
 
   TLine* line = new TLine(type=="single"?8:4,1e-6,type=="single"?8:4,0.1);
   line->SetLineWidth(2);
