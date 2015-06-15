@@ -12,6 +12,9 @@ all: $(EXE)
 CastorTreeVariablesDict.cc: CastorTreeVariables.h CastorTreeVariablesLinkDef.h
 	rootcint -f $@  -c  $^
 
+modelInfoClassDict.cc: modelInfoClass.h modelInfoClassLinkDef.h
+	rootcint -f $@  -c  $^
+
 $(EXE): $(DEP_OBJ)
 
 clean:

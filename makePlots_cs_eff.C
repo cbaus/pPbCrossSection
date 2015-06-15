@@ -26,8 +26,9 @@
 #include <map>
 #include <string>
 #include <utility>
+#include <vector>
 
-#include "modelInfo.h"
+#include "modelInfoClass.h"
 
 #define _LumiCorrpPb 1.142 //only use if trees don't contain vdm calibration factor
 #define _LumiCorrPbp 1.138
@@ -40,21 +41,18 @@
 
 using namespace std;
 
+//TVectors are written to file later
 // TVectorD corr_fac_em(2);
 // TVectorD corr_fac_eme(2);
 TVectorD corr_fac_mc(4);
 TVectorD corr_fac_mce(4);
-vector<TVectorD*> corr_facs;
+//vector<TVectorD*> corr_facs;
 
-for (int i=0; i<int(models.size()); ++i)
-  {
-    corr_facs.push_back(new TVectorD(2));
-  }
 
 typedef map<string,TH1D*> histomap;
 map< string,histomap > histoman;
 
-void makePlots_cs_eff(bool draw=1, double cut_value_single = 8., double cut_value_double = 4.,string filename = "histos.root");
+void makePlots_cs_eff(bool draw=1, double cut_value_single = 4., double cut_value_double = 3,string filename = "histos.root");
 double getEffDiffWeight(string model, double cut, double diffWeight);
 
 //available cuts single 5, 6.4, 7.2, 8, 8.8, 9.6, 10, 15, 20
@@ -66,6 +64,12 @@ void makePlots_cs_eff(bool draw, double cut_value_single, double cut_value_doubl
 #ifdef __CINT__
   style();
 #endif
+
+  modelInfoClass modelInfo;
+  for (int i=0; i<int(modelInfo.models.size()); ++i)
+    {
+      //corr_facs.push_back(new TVectorD(2));
+    }
 
   vector<string> type; type.push_back("single"); type.push_back("double");
 
@@ -86,16 +90,16 @@ void makePlots_cs_eff(bool draw, double cut_value_single, double cut_value_doubl
 
       vector<TH1D*> h_models;
       histoman.clear();
-      for (int i=0; i<int(models.size()); ++i)
+      for (int i=0; i<int(modelInfo.models.size()); ++i)
         {
-          string model = models[i];
+          string model = modelInfo.models[i];
           histoman[model]["ALL"] = (TH1D*)file->Get((model+string("/")+model+string("_h_hf_cut_") + type[n]).c_str());
           histoman[model]["SD1"] = (TH1D*)file->Get((model+string("/")+model+string("_h_hf_cut_SD1_") + type[n]).c_str());
           histoman[model]["SD2"] = (TH1D*)file->Get((model+string("/")+model+string("_h_hf_cut_SD2_") + type[n]).c_str());
           histoman[model]["CD" ] = (TH1D*)file->Get((model+string("/")+model+string("_h_hf_cut_CD_") + type[n]).c_str());
           histoman[model]["DD" ] = (TH1D*)file->Get((model+string("/")+model+string("_h_hf_cut_DD_") + type[n]).c_str());
           histoman[model]["ND" ] = (TH1D*)file->Get((model+string("/")+model+string("_h_hf_cut_ND_") + type[n]).c_str());
-          h_models[model] = histoman[model]["ALL"];
+          h_models.push_back(histoman[model]["ALL"]);
         }
 
       /////
@@ -113,15 +117,15 @@ void makePlots_cs_eff(bool draw, double cut_value_single, double cut_value_doubl
           events_integral += h_events->GetBinContent(i);
         }
 
-      for (int i=0; i<int(models.size()); ++i)
+      for (int i=0; i<int(modelInfo.models.size()); ++i)
         {
-          TH1D* hist = h_models[model];
+          TH1D* hist = h_models[i];
           hist->Scale(1./double(hist->GetBinContent(1)));
           hist->SetLineWidth(3);
-          hist->SetLineColor(colors[i]);
+          hist->SetLineColor(modelInfo.colors[i]);
           hist->SetMarkerColor(hist->GetLineColor());
-          hist->SetLineStyle(styles[i]);
-          hist->SetTitle(names[i]);
+          hist->SetLineStyle(modelInfo.styles[i]);
+          hist->SetTitle(modelInfo.names[i].c_str());
 
           hist->GetYaxis()->SetRangeUser(0.6,1.001);
           hist->GetXaxis()->SetRange(2,hist->GetNbinsX()*(type[n]=="double"?0.5:0.75));
@@ -188,9 +192,9 @@ void makePlots_cs_eff(bool draw, double cut_value_single, double cut_value_doubl
       if(draw)
         {
           TCanvas* can1 = new TCanvas;
-          for (int i=0; i<int(models.size()); ++i)
+          for (int i=0; i<int(modelInfo.models.size()); ++i)
             {
-              if (i=0)
+              if (i==0)
                 h_models[i]->Draw("HIST L");
               else
                 h_models[i]->Draw("HIST L SAME");
@@ -222,7 +226,7 @@ void makePlots_cs_eff(bool draw, double cut_value_single, double cut_value_doubl
               CMSText(3,0,1,"Double-arm");
 #endif
             }
-          for (int i=0; i<int(models.size()); ++i)
+          for (int i=0; i<int(modelInfo.models.size()); ++i)
             {
               leg->AddEntry(h_models[i],"","l");
             }
@@ -248,11 +252,13 @@ void makePlots_cs_eff(bool draw, double cut_value_single, double cut_value_doubl
       for(int i=zb->FindBin(2); i<=zb->FindBin(10); i++) //this is saved
         {
           double f_mc = 0;
-          for (int i=0; i<int(models.size()); ++i)
+          set<double> mc_values;
+          for (int imod=0; imod<int(modelInfo.models.size()); ++imod)
             {
-              f_mc += h_models[i]->GetBinContent(i);
+              f_mc += h_models[imod]->GetBinContent(i);
+              mc_values.insert(h_models[imod]->GetBinContent(i));
             }
-          f_mc /= double(models.size());
+          f_mc /= double(modelInfo.models.size());
 
           ++count;
           // f_eme += fabs(sl1->GetBinContent(i) - sl2->GetBinContent(i));
@@ -267,11 +273,11 @@ void makePlots_cs_eff(bool draw, double cut_value_single, double cut_value_doubl
       for(int i=1; i<=zb->GetNbinsX(); i++) //this is for display?? can't remember
         {
           double f_mc = 0;
-          for (int i=0; i<int(models.size()); ++i)
+          for (int imod=0; imod<int(modelInfo.models.size()); ++imod)
             {
-              f_mc += h_models[i]->GetBinContent(i);
+              f_mc += h_models[imod]->GetBinContent(i);
             }
-          f_mc /= double(models.size());
+          f_mc /= double(modelInfo.models.size());
 
           // const double f_em     = 0.5 * (sl1->GetBinContent(i) + sl2->GetBinContent(i));
           const double f_mcsys  = 0.5 * (getEffDiffWeight("PythiaMonash", cut_value, _diff_epos_reweight) + getEffDiffWeight("PythiaZ2Star", cut_value, _diff_qgs_reweight));
@@ -311,8 +317,8 @@ void makePlots_cs_eff(bool draw, double cut_value_single, double cut_value_doubl
               corr_fac_mce[2] = f_mcesys;
 
 
-              for (int i=0; i<int(models.size()); ++i)
-                corr_facs[i][0] = h_models[i]->GetBinContent(i);
+              // for (int imod=0; imod<int(modelInfo.models.size()); ++imod)
+              //   corr_facs[imod][0] = h_models[imod]->GetBinContent(i);
             }
           if(i==zb->FindBin(cut_value_double) && type[n]==string("double"))
             {
@@ -332,8 +338,8 @@ void makePlots_cs_eff(bool draw, double cut_value_single, double cut_value_doubl
               corr_fac_mc[3] = f_mcsys;
               corr_fac_mce[3] = f_mcesys;
 
-              for (int i=0; i<int(models.size()); ++i)
-                corr_facs[i][1] = h_models[i]->GetBinContent(i);
+              // for (int imod=0; imod<int(modelInfo.models.size()); ++imod)
+              //   corr_facs[imod][1] = h_models[imod]->GetBinContent(i);
             }
         }
 
@@ -402,8 +408,8 @@ void makePlots_cs_eff(bool draw, double cut_value_single, double cut_value_doubl
   corr_fac_mc.Write("corr_fac_mc");
   // corr_fac_eme.Write("corr_fac_eme");
   corr_fac_mce.Write("corr_fac_mce");
-  for (int i=0; i<int(models.size()); ++i)
-    corr_facs[i].Write((string("corr_fac_") + models[i]).c_str());
+  // for (int i=0; i<int(modelInfo.models.size()); ++i)
+  //   corr_facs[i]->Write((string("corr_fac_") + modelInfo.models[i]).c_str());
 
   outfile.Close();
 }
