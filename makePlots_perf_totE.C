@@ -11,9 +11,9 @@
 #include "TROOT.h"
 #include "TMath.h"
 
-#ifndef __CINT__
-#include "style.h"
-#endif
+// #ifndef __CINT__
+// #include "style.h"
+// #endif
 
 #include <iostream>
 #include <sstream>
@@ -25,85 +25,83 @@ void makePlots_perf_totE()
   gROOT->ProcessLine(" .L style.cc+");
   style();
 
-  TFile* file = TFile::Open("histos_test.root");
-  TFile* file2 = TFile::Open("histos_test.root");
-  TH1D* a=(TH1D*)file->Get("data210885/data210885_h_perf_hf_totE_ZBSingleTrack");
-  TH1D* b=(TH1D*)file->Get("Hijing/Hijing_h_perf_hf_totE_ZBSingleTrack");
-  TH1D* c=(TH1D*)file->Get("Epos/Epos_h_perf_hf_totE_ZBSingleTrack");
-  TH1D* d=(TH1D*)file->Get("QGSJetII/QGSJetII_h_perf_hf_totE_ZBSingleTrack");
+  // TFile* file = TFile::Open("histos.root");
+  // TFile* file2 = TFile::Open("histos.root");
+  // TH1D* data=(TH1D*)file->Get("data247324/data247324_h_perf_hf_totE_ZBSingleTrack");
+  // TH1D* mc1=(TH1D*)file->Get("Hijing/Hijing_h_perf_hf_totE_ZBSingleTrack");
+  // TH1D* mc2=(TH1D*)file->Get("PythiaMonash/PythiaMonash_h_perf_hf_totE_ZBSingleTrack");
+  // TH1D* mc3=(TH1D*)file->Get("PythiaMBR/PythiaMBR_h_perf_hf_totE_ZBSingleTrack");
 
   //Show(a,b,c,d,"SingleTrack");
 
   TFile* file = TFile::Open("histos.root");
-  TH1D* a=(TH1D*)file->Get("data210885/data210885_h_perf_hf_totE_single_3gev");
-  TH1D* b=(TH1D*)file->Get("Hijing/Hijing_h_perf_hf_totE_single_3gev");
-  TH1D* c=(TH1D*)file->Get("Epos/Epos_h_perf_hf_totE_single_3gev");
-  TH1D* d=(TH1D*)file->Get("QGSJetII/QGSJetII_h_perf_hf_totE_single_3gev");
+  TH1D* data=(TH1D*)file->Get("data247324/data247324_h_perf_hf_totE_single_3gev");
+  TH1D* mc1=(TH1D*)file->Get("PythiaZ2Star/PythiaZ2Star_h_perf_hf_totE_single_3gev");
+  TH1D* mc2=(TH1D*)file->Get("PythiaMonash/PythiaMonash_h_perf_hf_totE_single_3gev");
+  TH1D* mc3=(TH1D*)file->Get("PythiaMBR/PythiaMBR_h_perf_hf_totE_single_3gev");
 
-  Show(a,b,c,d,"single");
+  Show(data,mc1,mc2,mc3,"single");
 
   TFile* file = TFile::Open("histos.root");
-  TH1D* e=(TH1D*)file->Get("data210885/data210885_h_perf_hf_totE_double_1dot5gev");
-  TH1D* f=(TH1D*)file->Get("Hijing/Hijing_h_perf_hf_totE_double_1dot5gev");
-  TH1D* g=(TH1D*)file->Get("Epos/Epos_h_perf_hf_totE_double_1dot5gev");
-  TH1D* h=(TH1D*)file->Get("QGSJetII/QGSJetII_h_perf_hf_totE_double_1dot5gev");
+  TH1D* e=(TH1D*)file->Get("data247324/data247324_h_perf_hf_totE_double_1dot5gev");
+  TH1D* f=(TH1D*)file->Get("PythiaZ2Star/PythiaZ2Star_h_perf_hf_totE_double_1dot5gev");
+  TH1D* g=(TH1D*)file->Get("PythiaMonash/PythiaMonash_h_perf_hf_totE_double_1dot5gev");
+  TH1D* h=(TH1D*)file->Get("PythiaMBR/PythiaMBR_h_perf_hf_totE_double_1dot5gev");
 
-  Show(e,f,g,h,"double");
+  Show(data,mc1,mc2,mc3,"double");
 }
 
-void Show(TH1D* a,TH1D* b,TH1D* c,TH1D* d, string type)
+void Show(TH1D* data,TH1D* mc1,TH1D* mc2,TH1D* mc3, string type)
 {
-  const int normbin1 = a->FindBin(1.);
-  const int normbin2 = a->GetNbinsX();
-  a->Scale(1./double(a->GetEntries()));
-  b->Scale(a->Integral(normbin1,normbin2)/b->Integral(normbin1,normbin2));
-  c->Scale(a->Integral(normbin1,normbin2)/c->Integral(normbin1,normbin2));
-  d->Scale(a->Integral(normbin1,normbin2)/d->Integral(normbin1,normbin2));
+  const int normbin = data->FindBin(0.5);
+  const int normendbin = data->GetNbinsX();
+  data->Scale(1./double(data->Integral()));
+  if(mc1) mc1->Scale(data->Integral(normbin,normendbin)/mc1->Integral(normbin,normendbin));
+  if(mc2) mc2->Scale(data->Integral(normbin,normendbin)/mc2->Integral(normbin,normendbin));
+  if(mc3) mc3->Scale(data->Integral(normbin,normendbin)/mc3->Integral(normbin,normendbin));
 
-  a->SetMarkerSize(1.1);
-  a->SetLineWidth(2.5);
-  b->SetLineWidth(2.5);
-  c->SetLineWidth(2.5);
-  d->SetLineWidth(2.5);
+  data->SetMarkerSize(1.2);
+  data->SetLineWidth(2.5);
+  if(mc1) mc1->SetLineWidth(2.5);
+  if(mc2) mc2->SetLineWidth(2.5);
+  if(mc3) mc3->SetLineWidth(2.5);
 
 
-  a->SetMarkerColor(kBlack);
-  b->SetMarkerColor(kRed);
-  c->SetMarkerColor(kBlue);
-  d->SetMarkerColor(kGreen+2);
+  data->SetMarkerColor(kBlack);
+  if(mc1) mc1->SetMarkerColor(kRed);
+  if(mc2) mc2->SetMarkerColor(kBlue);
+  if(mc3) mc3->SetMarkerColor(kGreen+2);
 
-  a->SetLineColor(kBlack);
-  b->SetLineColor(kRed);
-  c->SetLineColor(kBlue);
-  d->SetLineColor(kGreen+2);
+  data->SetLineColor(kBlack);
+  if(mc1) mc1->SetLineColor(kRed);
+  if(mc2) mc2->SetLineColor(kBlue);
+  if(mc3) mc3->SetLineColor(kGreen+2);
 
-  a->SetTitle("Data");
-  b->SetTitle("HIJING 1.383");
-  c->SetTitle("EPOS-LHC");
-  d->SetTitle("QGSJetII-4");
+  data->SetTitle("unbiased trigger");
+  if(mc1) mc1->SetTitle("Pythia6 Z2*");
+  if(mc2) mc2->SetTitle("Pythia8 Monash Tune");
+  if(mc3) mc3->SetTitle("Pythia8 MBR Tune");
 
-  a->GetXaxis()->SetRange(2,250);
-  a->GetYaxis()->SetRangeUser(0.5,5000);
-  a->GetXaxis()->SetTitle("_{#sumE_{HF} [TeV]}");
-  a->GetYaxis()->SetTitle("events (normalised)");
-  a->GetXaxis()->SetTitleOffset(a->GetXaxis()->GetTitleOffset()*1.1);
+  data->GetXaxis()->SetRangeUser(0,3.5);
+  data->GetYaxis()->SetRangeUser(1e-6,1e2);
+  data->GetXaxis()->SetNdivisions(505);
+  data->GetXaxis()->SetTitle("_{#sumE_{HF} [TeV]}");
+  data->GetYaxis()->SetTitle("events (normalised)");
+  data->GetXaxis()->SetTitleOffset(data->GetXaxis()->GetTitleOffset()*1.1);
 
-  a->GetXaxis()->SetNdivisions(505);
 
   TCanvas* c1 = new TCanvas;
-  a->Draw("");
-  b->Draw("HIST SAME");
-  c->Draw("HIST SAME");
-  d->Draw("HIST SAME");
-  TLegend* leg = new TLegend(0.24,0.20,0.54,0.4);
-  leg->AddEntry(a,"","p");
-  leg->AddEntry(b,"","l");
-  leg->AddEntry(c,"","l");
-  leg->AddEntry(d,"","l");
+  data->Draw("");
+  if(mc1) mc1->Draw("HIST SAME");
+  if(mc2) mc2->Draw("HIST SAME");
+  if(mc3) mc3->Draw("HIST SAME");
+  TLegend* leg = c1->BuildLegend(0.22,0.72,0.62,0.92);
   SetLegAtt(leg);
-  CMSText(1,0,1,type=="single"?"single-arm selection":"double-arm selection");
   leg->Draw();
 
+  CMSText(3,0,1,type=="single"?"Single-arm selection":"Double-arm selection");
+
   c1->SetLogy();
-  c1->SaveAs((string("plots/hf_perf_3_")+type+string(".pdf")).c_str());
+  c1->SaveAs((string("plots/hf_perf_totE_")+type+string(".pdf")).c_str());
+  c1->SaveAs((string("plots/hf_perf_totE_")+type+string(".eps")).c_str());
 }
