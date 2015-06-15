@@ -27,6 +27,8 @@
 #include <string>
 #include <utility>
 
+#include "modelInfo.h"
+
 #define _LumiCorrpPb 1.142 //only use if trees don't contain vdm calibration factor
 #define _LumiCorrPbp 1.138
 #define _LumiCorr 1. //pp2015
@@ -42,10 +44,12 @@ using namespace std;
 // TVectorD corr_fac_eme(2);
 TVectorD corr_fac_mc(4);
 TVectorD corr_fac_mce(4);
-TVectorD corr_fac_epos(2);
-TVectorD corr_fac_qgsjet(2);
-TVectorD corr_fac_hijing(2);
-TVectorD corr_fac_dpmjet(2);
+vector<TVectorD*> corr_facs;
+
+for (int i=0; i<int(models.size()); ++i)
+  {
+    corr_facs.push_back(new TVectorD(2));
+  }
 
 typedef map<string,TH1D*> histomap;
 map< string,histomap > histoman;
@@ -64,12 +68,6 @@ void makePlots_cs_eff(bool draw, double cut_value_single, double cut_value_doubl
 #endif
 
   vector<string> type; type.push_back("single"); type.push_back("double");
-  vector<string> models; vector<string> names; vector<int> colors;   vector<int> styles;
-  models.push_back("PythiaMonash"); names.push_back("Pythia8 Monash Tune"); styles.push_back(7); colors.push_back(kGreen+2);
-  models.push_back("PythiaZ2Star"); names.push_back("Pythia6 Z2*"); styles.push_back(9); colors.push_back(kBlue);
-  //models.push_back("PythiaMBR"); names.push_back("Pythia8 MBR Tune"); styles.push_back(9); colors.push_back(kBlue);
-  // models.push_back("Epos"); names.push_back("EPOS-LHC"); styles.push_back(7); colors.push_back(kRed);
-  // models.push_back("QGSJetII"); names.push_back("QGSJETII-04"); styles.push_back(9); colors.push_back(kOrange);
 
   for(int n=0; n<int(type.size()); n++)
     {
@@ -224,11 +222,10 @@ void makePlots_cs_eff(bool draw, double cut_value_single, double cut_value_doubl
               CMSText(3,0,1,"Double-arm");
 #endif
             }
-
-          leg->AddEntry(hijing,"","l");
-          leg->AddEntry(epos,"","l");
-          leg->AddEntry(qgs,"","l");
-          leg->AddEntry(dpm,"","l");
+          for (int i=0; i<int(models.size()); ++i)
+            {
+              leg->AddEntry(h_models[i],"","l");
+            }
 #ifdef __CINT__
           SetLegAtt(leg,1.3);
 #endif
@@ -313,10 +310,9 @@ void makePlots_cs_eff(bool draw, double cut_value_single, double cut_value_doubl
               corr_fac_mce[0] = f_mce;
               corr_fac_mce[2] = f_mcesys;
 
-              corr_fac_epos[0] = epos->GetBinContent(i);
-              corr_fac_qgsjet[0] = qgs->GetBinContent(i);
-              corr_fac_hijing[0] = hijing->GetBinContent(i);
-              corr_fac_dpmjet[0] = dpm->GetBinContent(i);
+
+              for (int i=0; i<int(models.size()); ++i)
+                corr_facs[i][0] = h_models[i]->GetBinContent(i);
             }
           if(i==zb->FindBin(cut_value_double) && type[n]==string("double"))
             {
@@ -336,10 +332,8 @@ void makePlots_cs_eff(bool draw, double cut_value_single, double cut_value_doubl
               corr_fac_mc[3] = f_mcsys;
               corr_fac_mce[3] = f_mcesys;
 
-              corr_fac_epos[1] = epos->GetBinContent(i);
-              corr_fac_qgsjet[1] = qgs->GetBinContent(i);
-              corr_fac_hijing[1] = hijing->GetBinContent(i);
-              corr_fac_dpmjet[1] = dpm->GetBinContent(i);
+              for (int i=0; i<int(models.size()); ++i)
+                corr_facs[i][1] = h_models[i]->GetBinContent(i);
             }
         }
 
@@ -408,10 +402,9 @@ void makePlots_cs_eff(bool draw, double cut_value_single, double cut_value_doubl
   corr_fac_mc.Write("corr_fac_mc");
   // corr_fac_eme.Write("corr_fac_eme");
   corr_fac_mce.Write("corr_fac_mce");
-  corr_fac_epos.Write("corr_fac_epos");
-  corr_fac_qgsjet.Write("corr_fac_qgsjet");
-  corr_fac_hijing.Write("corr_fac_hijing");
-  corr_fac_dpmjet.Write("corr_fac_dpmjet");
+  for (int i=0; i<int(models.size()); ++i)
+    corr_facs[i].Write((string("corr_fac_") + models[i]).c_str());
+
   outfile.Close();
 }
 
