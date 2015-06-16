@@ -1,4 +1,4 @@
-#define _MAXEVT -100000
+#define _MAXEVT -10000
 #define _SkipHFRings 1 //skip 41 and 29 as suggested by HCAL DPG
 #define _HFEnergyScale 1.0 //1.0 //0.8
 #define _HFEnergyCalibration 0 //0 or 1 (rescale MC) or 2 this does not scale MC but data according to raddam from lev
@@ -53,20 +53,21 @@ int main()
 
   vector<double> cut_energies_single;
   vector<double> cut_energies_double;
-  for(double x=1; x<=10; x+=0.5)
+  for(double x=1; x<=6; x+=0.25)
     {
       cut_energies_single.push_back(x*2);
       cut_energies_double.push_back(x);
     }
 
   //*************************************************************INPUT***********************************************************
-  //sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_diffraction/cbaus/pp13TeV/inel_cross_section/data_247324.root"); sample_name.push_back("data247324"); sample_type.push_back(DATA);
+  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_diffraction/cbaus/pp13TeV/inel_cross_section/data_247324.root"); sample_name.push_back("data247324"); sample_type.push_back(DATA);
 
-  // sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Epos/*.root"); sample_name.push_back("Epos"); sample_type.push_back(MC);
   //sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_diffraction/cbaus/pp13TeV/inel_cross_section/pythiaz2star.root"); sample_name.push_back("PythiaZ2Star"); sample_type.push_back(MC);
-  //sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_diffraction/cbaus/pp13TeV/inel_cross_section/pythiamonash.root"); sample_name.push_back("PythiaMonash"); sample_type.push_back(MC);
+sample_fname.push_back("/tmp/cbaus/pythiaz2star.root"); sample_name.push_back("PythiaZ2Star"); sample_type.push_back(MC);
+  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_diffraction/cbaus/pp13TeV/inel_cross_section/pythiamonash.root"); sample_name.push_back("PythiaMonash"); sample_type.push_back(MC);
   sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_diffraction/cbaus/pp13TeV/inel_cross_section/pythiambr.root"); sample_name.push_back("PythiaMBR"); sample_type.push_back(MC);
 
+  // sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Epos/*.root"); sample_name.push_back("Epos"); sample_type.push_back(MC);
   // sample_fname.push_back("/afs/cern.ch/work/c/cbaus/public/castortree/pPb_QGSJetII/treeMC.root"); sample_name.push_back("QGSJetII"); sample_type.push_back(MC);
   // sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/DPMJet/treeMC.root"); sample_name.push_back("DPMJet"); sample_type.push_back(MC);
   // sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/StarlightDPMjet_v2/treeMC.root"); sample_name.push_back("Starlight_DPMJet");  sample_type.push_back(MC);
@@ -220,8 +221,10 @@ int main()
   TH1D* h_lumi;
   TH1D* h_lumi_3GeV;
 
-  TH1D* h_perf_hf_rechits_single_3gev;
-  TH1D* h_perf_hf_rechits_double_1dot5gev;
+  TH1D* h_perf_no_of_towers_single;
+  TH1D* h_perf_no_of_towers_double;
+  TH1D* h_perf_no_of_towers_aboveth_single;
+  TH1D* h_perf_no_of_towers_aboveth_double;
   TH1D* h_perf_hf_totE_single_3gev;
   TH1D* h_perf_hf_totE_double_1dot5gev;
   TH1D* h_perf_hf_totE_ZBSingleTrack;
@@ -384,8 +387,11 @@ int main()
         cout << "No tree files have been found \"" << sample_fname[sample] << "\"" << endl;
         return 0;
       }
+      tree->SetCacheSize(50000000);
+      tree->AddBranchToCache("*");
 
       double n_total = double(tree->GetEntries());
+      int n_castor_tag = 0;
       if (n_total == 0.) {
         cout << "No events found in file \"" << sample_fname[sample] << "\"" << endl;
         return 0;
@@ -408,6 +414,10 @@ int main()
       //       tree->SetBranchStatus("L1Tech_BPTX_plus_AND_minus.v0_DecisionBeforeMask",1);
       //       tree->SetBranchStatus("L1Tech_BPTX_plus_AND_NOT_minus.v0_DecisionBeforeMask",1);
       //       tree->SetBranchStatus("L1Tech_BPTX_minus_AND_not_plus.v0_DecisionBeforeMask",1);
+
+      tree->SetBranchStatus("EB*",0);
+      tree->SetBranchStatus("EE*",0);
+      tree->SetBranchStatus("HBHE*",0);
 
       //________________________________________________________________________________
 
@@ -549,8 +559,10 @@ int main()
       h_lumi                      = new TH1D((add + string("_h_lumi")).c_str(),"",2000,0,2000);
       h_lumi_3GeV                 = new TH1D((add + string("_h_lumi_3GeV")).c_str(),"",2000,0,2000);
 
-      h_perf_hf_rechits_single_3gev        = new TH1D((add + string("_h_perf_hf_rechits_single_3gev")).c_str(),"",100,0,1000);
-      h_perf_hf_rechits_double_1dot5gev    = new TH1D((add + string("_h_perf_hf_rechits_double_1dot5gev")).c_str(),"",100,0,1000);
+      h_perf_no_of_towers_single           = new TH1D((add + string("_h_perf_no_of_towers_single")).c_str(),"",100,0,1000);
+      h_perf_no_of_towers_double           = new TH1D((add + string("_h_perf_no_of_towers_double")).c_str(),"",100,0,1000);
+      h_perf_no_of_towers_aboveth_single   = new TH1D((add + string("_h_perf_no_of_towers_aboveth_single")).c_str(),"",100,0,1000);
+      h_perf_no_of_towers_aboveth_double   = new TH1D((add + string("_h_perf_no_of_towers_aboveth_double")).c_str(),"",100,0,1000);
       h_perf_hf_totE_single_3gev           = new TH1D((add + string("_h_perf_hf_totE_single_3gev")).c_str(),"",500,0,10);
       h_perf_hf_totE_double_1dot5gev       = new TH1D((add + string("_h_perf_hf_totE_double_1dot5gev")).c_str(),"",500,0,10);
       h_perf_hf_totE_ZBSingleTrack         = new TH1D((add + string("_h_perf_hf_totE_ZBSingleTrack")).c_str(),"",500,0,10);
@@ -756,6 +768,9 @@ int main()
           if(!coll && !noise) //not intersted
             continue;
 
+          if (sample_type[sample] == DATA && event->lumiNb <= 88 && event->runNb == 247324)
+            continue; //hack for wrong json
+
 
 
           //---------------------------------------------CASTOR
@@ -789,11 +804,13 @@ int main()
 
           const double sum_CAS_E = sum_CAS_E_had + sum_CAS_E_em;
           const bool castor_tag = sum_CAS_E > 5.6; //esstimated by sebastian for data only!
+          if (castor_tag) n_castor_tag++;
 
 
 
 
           //---------------------------------------------HF
+          int hf_n_aboveth = 0;
           int hf_n = event->HFtowers.size();
           int hf_zero_count = ForwardRecord::nMaxHFMRecHits - hf_n;
           double hf_double_energy_max = 0;
@@ -852,6 +869,9 @@ int main()
               else
                 hf_m_energy += tower_e;
 
+              if(tower_e > 3.)
+                hf_n_aboveth++;
+
               if(coll)               h_hf_hitdistr_coll->   Fill(tower_e);
               if(coll && eta <= 0.)  h_hf_hitdistr_coll_m-> Fill(tower_e);
               if(coll && eta > 0.)   h_hf_hitdistr_coll_p-> Fill(tower_e);
@@ -866,8 +886,8 @@ int main()
 
           hf_double_energy_max = TMath::Min(hf_m_energy_max,hf_p_energy_max);
           hf_single_energy_max = TMath::Max(hf_m_energy_max,hf_p_energy_max);
-          bool hf_single_tag = hf_single_energy_max >= 8;
-          bool hf_double_tag = hf_double_energy_max >= 4;
+          bool hf_single_tag = hf_single_energy_max >= 4;
+          bool hf_double_tag = hf_double_energy_max >= 3;
 
 
 
@@ -1117,8 +1137,10 @@ int main()
           if(coll && hf_double_tag)                                 h_lumi_3GeV->Fill(event->lumiNb,evtWeight);
           if(coll)                                                  h_lumi->Fill(event->lumiNb,evtWeight);
 
-          if(coll && hf_single_tag)                                 h_perf_hf_rechits_single_3gev->Fill(hf_n,evtWeight);
-          if(coll && hf_double_tag)                                 h_perf_hf_rechits_double_1dot5gev->Fill(hf_n,evtWeight);
+          if(coll && hf_single_tag)                                 h_perf_no_of_towers_single->Fill(hf_n,evtWeight);
+          if(coll && hf_double_tag)                                 h_perf_no_of_towers_double->Fill(hf_n,evtWeight);
+          if(coll && hf_single_tag)                                 h_perf_no_of_towers_aboveth_single->Fill(hf_n_aboveth,evtWeight);
+          if(coll && hf_double_tag)                                 h_perf_no_of_towers_aboveth_double->Fill(hf_n_aboveth,evtWeight);
 
           if(coll && hf_single_tag)                                 h_perf_hf_totE_single_3gev->Fill(hf_pm_energy/1000.,evtWeight);
           if(coll && hf_double_tag)                                 h_perf_hf_totE_double_1dot5gev->Fill(hf_pm_energy/1000.,evtWeight);
@@ -1413,13 +1435,13 @@ int main()
       for (int j=0;j<=neta_lev;j++)
         {
           int bin=j+1;
-          if(h_perf_hf_totE_eta_lev_n_m->GetBinContent(bin))
-            h_perf_hf_totE_eta_lev_m->SetBinContent(bin,h_perf_hf_totE_eta_lev_m->GetBinContent(bin)/(eta_lev_m[j+1]-eta_lev_m[j])/double(h_perf_hf_totE_eta_lev_n_m->GetBinContent(bin)));
+          if(n_castor_tag)
+            h_perf_hf_totE_eta_lev_m->SetBinContent(bin,h_perf_hf_totE_eta_lev_m->GetBinContent(bin)/(eta_lev_m[j+1]-eta_lev_m[j])/double(n_castor_tag));
           else
             h_perf_hf_totE_eta_lev_m->SetBinContent(bin,0);
 
-          if(h_perf_hf_totE_eta_lev_n_p->GetBinContent(bin))
-            h_perf_hf_totE_eta_lev_p->SetBinContent(bin,h_perf_hf_totE_eta_lev_p->GetBinContent(bin)/(eta_lev_p[j+1]-eta_lev_p[j])/double(h_perf_hf_totE_eta_lev_n_p->GetBinContent(bin)));
+          if(n_castor_tag)
+            h_perf_hf_totE_eta_lev_p->SetBinContent(bin,h_perf_hf_totE_eta_lev_p->GetBinContent(bin)/(eta_lev_p[j+1]-eta_lev_p[j])/double(n_castor_tag));
           else
             h_perf_hf_totE_eta_lev_p->SetBinContent(bin,0);
         }

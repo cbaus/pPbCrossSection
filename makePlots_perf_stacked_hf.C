@@ -39,12 +39,13 @@ void makePlots_perf_stacked_hf()
   TH1D* a2=(TH1D*)file2->Get("data247324/data247324_h_hf_hits_noise_single");
   TH1D* mc1=(TH1D*)file->Get("PythiaZ2Star/PythiaZ2Star_h_hf_hits_coll_single");
   TH1D* mc2=(TH1D*)file->Get("PythiaMonash/PythiaMonash_h_hf_hits_coll_single");
-  TH1D* c=(TH1D*)file->Get("Epos/Epos_h_hf_hits_coll_single");
+  TH1D* mc3=(TH1D*)file->Get("PythiaMBR/PythiaMBR_h_hf_hits_coll_single");
+  TH1D* mc4=(TH1D*)file->Get("Epos/Epos_h_hf_hits_coll_single");
   //TH1D* c=(TH1D*)file->Get("Epos_SL/Epos_SL_h_hf_hits_coll_single");
   TH1D* d=(TH1D*)file->Get("QGSJetII/QGSJetII_h_hf_hits_coll_single");
   TH1D* e=(TH1D*)file->Get("Starlight_DPMJet/Starlight_DPMJet_h_hf_hits_coll_single");
   TH1D* f=(TH1D*)file->Get("Starlight_Pythia/Starlight_Pythia_h_hf_hits_coll_single");
-  ShowStack(a,a2,mc1,mc2,0,0,0,0,"single");
+  ShowStack(a,a2,mc1,mc2,mc3,0,0,0,"single");
   }
   {
   TFile* file2 = TFile::Open("histos.root");
@@ -53,12 +54,13 @@ void makePlots_perf_stacked_hf()
   TH1D* a2=(TH1D*)file2->Get("data247324/data247324_h_hf_hits_noise_double");
   TH1D* mc1=(TH1D*)file->Get("PythiaZ2Star/PythiaZ2Star_h_hf_hits_coll_double");
   TH1D* mc2=(TH1D*)file->Get("PythiaMonash/PythiaMonash_h_hf_hits_coll_double");
-  TH1D* c=(TH1D*)file->Get("Epos/Epos_h_hf_hits_coll_double");
+  TH1D* mc3=(TH1D*)file->Get("PythiaMBR/PythiaMBR_h_hf_hits_coll_double");
+  TH1D* mc4=(TH1D*)file->Get("Epos/Epos_h_hf_hits_coll_double");
   //TH1D* c=(TH1D*)file->Get("Epos_SL/Epos_SL_h_hf_hits_coll_double");
   TH1D* d=(TH1D*)file->Get("QGSJetII/QGSJetII_h_hf_hits_coll_double");
   TH1D* e=(TH1D*)file->Get("Starlight_DPMJet/Starlight_DPMJet_h_hf_hits_coll_double");
   TH1D* f=(TH1D*)file->Get("Starlight_Pythia/Starlight_Pythia_h_hf_hits_coll_double");
-  ShowStack(a,a2,mc1,mc2,0,0,0,0,"double");
+  ShowStack(a,a2,mc1,mc2,mc3,0,0,0,"double");
   }
 }
 
@@ -159,8 +161,8 @@ void ShowStack(TH1D* data,TH1D* noise,TH1D* mc1,TH1D* mc2,TH1D* mc3,TH1D* mc4, T
   data->SetTitle("Data");
   noise->SetTitle("Noise");
   mc1->SetTitle("Pythia6 Z2*");
-  if(mc2) mc2->SetTitle("EPOS-LHC");
-  if(mc3) mc3->SetTitle("QGSJETII-04");
+  if(mc2) mc2->SetTitle("Pythia8 Monash Tune");
+  if(mc3) mc3->SetTitle("Pythia8 MBR Tune");
   if(mc4) mc4->SetTitle("DPMJET3.06");
   if(sl) sl->SetTitle("#gammap (STARLIGHT+DPMJET/PYTHIA)");
 
@@ -211,7 +213,7 @@ void ShowStack(TH1D* data,TH1D* noise,TH1D* mc1,TH1D* mc2,TH1D* mc3,TH1D* mc4, T
   line->SetLineStyle(2);
   line->Draw("SAME");
 
-  c1->SaveAs((string("plots/hf_") + type + string("_signal_paper")+string(".pdf")).c_str());
+  c1->SaveAs((string("plots/hf_") + type + string("_signal_paper")+string(".eps")).c_str());
 
 }
 

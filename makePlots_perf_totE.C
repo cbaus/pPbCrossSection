@@ -85,7 +85,7 @@ void Show(TH1D* data,TH1D* mc1,TH1D* mc2,TH1D* mc3, string type)
   data->GetXaxis()->SetRangeUser(0,3.5);
   data->GetYaxis()->SetRangeUser(1e-6,1e2);
   data->GetXaxis()->SetNdivisions(505);
-  data->GetXaxis()->SetTitle("_{#sumE_{HF} [TeV]}");
+  data->GetXaxis()->SetTitle("_{#sumE_{towers} [TeV]}");
   data->GetYaxis()->SetTitle("events (normalised)");
   data->GetXaxis()->SetTitleOffset(data->GetXaxis()->GetTitleOffset()*1.1);
 

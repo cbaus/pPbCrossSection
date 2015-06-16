@@ -26,7 +26,7 @@ void makePlots_perf_lev()
   TH1D* data= (TH1D*)file->Get("data247324/data247324_h_perf_hf_totE_eta_lev_p");
   TH1D* mc1= (TH1D*)file->Get("PythiaZ2Star/PythiaZ2Star_h_perf_hf_totE_eta_lev_p");
   TH1D* mc2= (TH1D*)file->Get("PythiaMonash/PythiaMonash_h_perf_hf_totE_eta_lev_p");
-  TH1D* mc2= (TH1D*)file->Get("PythiaMBR/PythiaMBR_h_perf_hf_totE_eta_lev_p");
+  TH1D* mc3= (TH1D*)file->Get("PythiaMBR/PythiaMBR_h_perf_hf_totE_eta_lev_p");
   TH1D* g= (TH1D*)file->Get("Epos/Epos_h_perf_hf_totE_eta_lev_p");
   TH1D* epossl= (TH1D*)file->Get("Epos_SL/Epos_SL_h_perf_hf_totE_eta_lev_p");
   TH1D* h= (TH1D*)file->Get("QGSJetII/QGSJetII_h_perf_hf_totE_eta_lev_p");
@@ -77,13 +77,12 @@ void Show(TH1D* data, TH1D* mc1, TH1D* mc2, TH1D* mc3, TH1D* mc4, TH1D* sl1, TH1
   data->SetTitle("unbiased trigger + CASTOR E_{tot}>5.6 GeV");
   mc1->SetTitle("Pythia6 Z2*");
   if(mc2) mc2->SetTitle("Pythia8 Monash Tune");
-  if(mc3) mc3->SetTitle("EPOS (SL)");
-  if(mc4) mc4->SetTitle("QGSJetII");
+  if(mc3) mc3->SetTitle("Pythia8 MBR Tune");
+  if(mc4) mc->SetTitle("EPOS (SL)");
   // sl->SetTitle("#gamma-p (STARLIGHT+DPMJET/PYTHIA)");
 
-  double maximumy = 1.2 * TMath::Max(data->GetMaximum(),mc1->GetMaximum());
-  if (mc2&&mc4) maximumy = 1.2 * TMath::Max(TMath::Max(data->GetMaximum(),mc1->GetMaximum()),TMath::Max(mc2->GetMaximum(),mc4->GetMaximum()));
-  data->GetYaxis()->SetRangeUser(0,100);
+  double maximumy = 1.8 * TMath::Max(data->GetMaximum(),mc1->GetMaximum());
+  data->GetYaxis()->SetRangeUser(0,maximumy);
   data->GetXaxis()->SetTitle("#eta");
   data->GetYaxis()->SetTitle("1/N dE_{HF,tot}/d#eta [GeV]");
 
@@ -105,7 +104,7 @@ void Show(TH1D* data, TH1D* mc1, TH1D* mc2, TH1D* mc3, TH1D* mc4, TH1D* sl1, TH1
   SetLegAtt(leg);
   leg->SetFillColor(kWhite);
   leg->Draw();
-  //c1->SaveAs((string("plots/hf_perf_2_")+type+string(".pdf")).c_str());
+  c1->SaveAs((string("plots/hf_perf_eta_")+type+string(".eps")).c_str());
 
 }
 

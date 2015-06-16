@@ -239,7 +239,7 @@ void makePlots_cs_eff(bool draw, double cut_value_single, double cut_value_doubl
           zb->GetXaxis()->SetTitle("E_{HF} [GeV]");
           zb->GetYaxis()->SetTitle("efficiency");
 
-          can1->SaveAs((string("plots/full_p_space_eff_PAS_")+type[n]+string(".pdf")).c_str());
+          can1->SaveAs((string("plots/full_p_space_eff_PAS_")+type[n]+string(".eps")).c_str());
         }
 
       //////////////////////////////////////////////////////////////////////////////////////////////
@@ -349,7 +349,7 @@ void makePlots_cs_eff(bool draw, double cut_value_single, double cut_value_doubl
         {
           TCanvas* can2 = new TCanvas;
           noise->GetXaxis()->SetTitle("#it{E}_{th} [GeV]");
-          noise->GetYaxis()->SetTitle("#it{N}/#it{L} [b]");
+          noise->GetYaxis()->SetTitle("#it{f}_{noise}");//"#it{N}/#it{L} [b]");
           noise->GetXaxis()->SetLabelSize(noise->GetXaxis()->GetLabelSize()*1.2);
           noise->GetYaxis()->SetLabelSize(noise->GetYaxis()->GetLabelSize()*1.2);
           noise->GetXaxis()->SetTitleSize(noise->GetXaxis()->GetTitleSize()*1.1);
@@ -396,7 +396,7 @@ void makePlots_cs_eff(bool draw, double cut_value_single, double cut_value_doubl
           line->Draw("SAME");
 
           can2->SetLogy();
-          can2->SaveAs((string("plots/noise_eff_")+type[n]+string(".pdf")).c_str());
+          can2->SaveAs((string("plots/noise_eff_")+type[n]+string(".eps")).c_str());
 
           //file->Close();
           //file2->Close();
