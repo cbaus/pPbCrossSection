@@ -66,11 +66,9 @@ int main()
 sample_fname.push_back("/tmp/cbaus/pythiaz2star.root"); sample_name.push_back("PythiaZ2Star"); sample_type.push_back(MC);
   sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_diffraction/cbaus/pp13TeV/inel_cross_section/pythiamonash.root"); sample_name.push_back("PythiaMonash"); sample_type.push_back(MC);
   sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_diffraction/cbaus/pp13TeV/inel_cross_section/pythiambr.root"); sample_name.push_back("PythiaMBR"); sample_type.push_back(MC);
+  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_diffraction/cbaus/pp13TeV/inel_cross_section/epos.root"); sample_name.push_back("Epos"); sample_type.push_back(MC);
+  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_diffraction/cbaus/pp13TeV/inel_cross_section/qgsjetii.root"); sample_name.push_back("QGSJetII"); sample_type.push_back(MC);
 
-  // sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/Epos/*.root"); sample_name.push_back("Epos"); sample_type.push_back(MC);
-  // sample_fname.push_back("/afs/cern.ch/work/c/cbaus/public/castortree/pPb_QGSJetII/treeMC.root"); sample_name.push_back("QGSJetII"); sample_type.push_back(MC);
-  // sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/DPMJet/treeMC.root"); sample_name.push_back("DPMJet"); sample_type.push_back(MC);
-  // sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/StarlightDPMjet_v2/treeMC.root"); sample_name.push_back("Starlight_DPMJet");  sample_type.push_back(MC);
 
 #if _HFEnergyCalibration == 1
   TFile calibfile("plots/hf_calibration_data.root");
@@ -348,29 +346,31 @@ sample_fname.push_back("/tmp/cbaus/pythiaz2star.root"); sample_name.push_back("P
   TH2D* h_mc_xix_xiy;
   TH2D* h_mc_unfold;
 
-  const int neta_lev = 13;
-  double deta_lev[neta_lev+1],eta_lev_m[neta_lev+1],eta_lev_p[neta_lev+1];
-  eta_lev_p[0] = 2.865;
-  eta_lev_p[1] = 2.975;
-  eta_lev_p[2] = 3.15;
-  eta_lev_p[3] = 3.325;
-  eta_lev_p[4] = 3.5;
-  eta_lev_p[5] = 3.675;
-  eta_lev_p[6] = 3.85;
-  eta_lev_p[7] = 4.025;
-  eta_lev_p[8] = 4.2;
-  eta_lev_p[9] = 4.375;
-  eta_lev_p[10] = 4.55;
-  eta_lev_p[11] = 4.725;
-  eta_lev_p[12] = 4.9;
-  eta_lev_p[13] = 5.2;
-  for (int j=0;j<neta_lev+1;j++)
+  vector<double> deta_lev, eta_lev_m,eta_lev_p;
+  //eta_lev_p.push_back(2.865);
+  eta_lev_p.push_back(2.975);
+  eta_lev_p.push_back(3.15);
+  eta_lev_p.push_back(3.325);
+  eta_lev_p.push_back(3.5);
+  eta_lev_p.push_back(3.675);
+  eta_lev_p.push_back(3.85);
+  eta_lev_p.push_back(4.025);
+  eta_lev_p.push_back(4.2);
+  eta_lev_p.push_back(4.375);
+  eta_lev_p.push_back(4.55);
+  eta_lev_p.push_back(4.725);
+  eta_lev_p.push_back(4.9);
+  //eta_lev_p.push_back(5.2);
+
+  const int neta_lev = eta_lev_p.size()-1; //-1 because of last bin low edge
+
+  for (int j=eta_lev_p.size()-1; j>=0; j--)
     {
-      eta_lev_m[neta_lev-j]=-eta_lev_p[j];
+      eta_lev_m.push_back(-eta_lev_p[j]);
     }
-  for (int j=0;j<neta_lev+1;j++)
+  for (int j=0; j<int(eta_lev_p.size()); j++)
     {
-      cout << j << eta_lev_p[j] << " " << eta_lev_m[j] << endl;
+      cout << j << " " << eta_lev_p[j] << " " << eta_lev_m[j] << endl;
     }
 
 
@@ -392,6 +392,8 @@ sample_fname.push_back("/tmp/cbaus/pythiaz2star.root"); sample_name.push_back("P
 
       double n_total = double(tree->GetEntries());
       int n_castor_tag = 0;
+      int n_hf_single_tag = 0;
+      int n_hf_double_tag = 0;
       if (n_total == 0.) {
         cout << "No events found in file \"" << sample_fname[sample] << "\"" << endl;
         return 0;
@@ -569,10 +571,10 @@ sample_fname.push_back("/tmp/cbaus/pythiaz2star.root"); sample_name.push_back("P
       h_perf_hf_totE_ZBSingleTrack_noise   = new TH1D((add + string("_h_perf_hf_totE_ZBSingleTrack_noise")).c_str(),"",500,0,10);
       h_perf_hf_totE_eta_single_3gev       = new TH1D((add + string("_h_perf_hf_totE_eta_single_3gev")).c_str(),"",100,-5.2,5.2);
       h_perf_hf_totE_eta_double_1dot5gev   = new TH1D((add + string("_h_perf_hf_totE_eta_double_1dot5gev")).c_str(),"",100,-5.2,5.2);
-      h_perf_hf_totE_eta_lev_m     = new TH1D((add + string("_h_perf_hf_totE_eta_lev_m")).c_str(),"",neta_lev,eta_lev_m);
-      h_perf_hf_totE_eta_lev_p     = new TH1D((add + string("_h_perf_hf_totE_eta_lev_p")).c_str(),"",neta_lev,eta_lev_p);
-      h_perf_hf_totE_eta_lev_n_m   = new TH1I((add + string("_h_perf_hf_totE_eta_lev_n_m")).c_str(),"",neta_lev,eta_lev_m);
-      h_perf_hf_totE_eta_lev_n_p   = new TH1I((add + string("_h_perf_hf_totE_eta_lev_n_p")).c_str(),"",neta_lev,eta_lev_p);
+      h_perf_hf_totE_eta_lev_m     = new TH1D((add + string("_h_perf_hf_totE_eta_lev_m")).c_str(),"",neta_lev,eta_lev_m.data());
+      h_perf_hf_totE_eta_lev_p     = new TH1D((add + string("_h_perf_hf_totE_eta_lev_p")).c_str(),"",neta_lev,eta_lev_p.data());
+      h_perf_hf_totE_eta_lev_n_m   = new TH1I((add + string("_h_perf_hf_totE_eta_lev_n_m")).c_str(),"",neta_lev,eta_lev_m.data());
+      h_perf_hf_totE_eta_lev_n_p   = new TH1I((add + string("_h_perf_hf_totE_eta_lev_n_p")).c_str(),"",neta_lev,eta_lev_p.data());
       if(sample_type[sample] == MC)
         {
           h_mc_diffraction_single = new TH1D((add + string("_h_mc_diffraction_single")).c_str(),"",100,-9,2);
@@ -804,8 +806,6 @@ sample_fname.push_back("/tmp/cbaus/pythiaz2star.root"); sample_name.push_back("P
 
           const double sum_CAS_E = sum_CAS_E_had + sum_CAS_E_em;
           const bool castor_tag = sum_CAS_E > 5.6; //esstimated by sebastian for data only!
-          if (castor_tag) n_castor_tag++;
-
 
 
 
@@ -886,7 +886,7 @@ sample_fname.push_back("/tmp/cbaus/pythiaz2star.root"); sample_name.push_back("P
 
           hf_double_energy_max = TMath::Min(hf_m_energy_max,hf_p_energy_max);
           hf_single_energy_max = TMath::Max(hf_m_energy_max,hf_p_energy_max);
-          bool hf_single_tag = hf_single_energy_max >= 4;
+          bool hf_single_tag = hf_single_energy_max >= 5;
           bool hf_double_tag = hf_double_energy_max >= 3;
 
 
@@ -1100,6 +1100,9 @@ sample_fname.push_back("/tmp/cbaus/pythiaz2star.root"); sample_name.push_back("P
             evtWeight = double(prescale);
           const double noiseWeight = random_prescale_HLT;
 
+          if (castor_tag) n_castor_tag++;
+          if (hf_single_tag) n_hf_single_tag++;
+          if (hf_double_tag) n_hf_double_tag++;
 
           //cout << prescale << " " << event->instLuminosity << " " <<  event->instLuminosityCorr << endl;
 
@@ -1165,7 +1168,7 @@ sample_fname.push_back("/tmp/cbaus/pythiaz2star.root"); sample_name.push_back("P
                 }
               if(coll && hf_single_tag)
                 h_perf_hf_totE_eta_single_3gev->Fill(it->Eta,it->Energy);
-              if(coll && castor_tag)// event->Tracks.size()>=1)
+              if(coll && hf_single_tag)// event->Tracks.size()>=1)
                 {
                   const double eta = it->Eta;
                   const int Ieta = eta>0?it->IetaAbs:-it->IetaAbs;
@@ -1432,16 +1435,16 @@ sample_fname.push_back("/tmp/cbaus/pythiaz2star.root"); sample_name.push_back("P
           h_mc_eta_e_ND   ->Scale(1./n_total/h_mc_eta_e_ND->GetBinWidth(1));
         }
 
-      for (int j=0;j<=neta_lev;j++)
+      for (int j=0;j<=neta_lev;j++)//bin_size reduced for skipped rings
         {
           int bin=j+1;
-          if(n_castor_tag)
-            h_perf_hf_totE_eta_lev_m->SetBinContent(bin,h_perf_hf_totE_eta_lev_m->GetBinContent(bin)/(eta_lev_m[j+1]-eta_lev_m[j])/double(n_castor_tag));
+          if(n_hf_single_tag)
+            h_perf_hf_totE_eta_lev_m->SetBinContent(bin,h_perf_hf_totE_eta_lev_m->GetBinContent(bin)/(eta_lev_m[j+1]-eta_lev_m[j])/double(n_hf_single_tag));
           else
             h_perf_hf_totE_eta_lev_m->SetBinContent(bin,0);
 
-          if(n_castor_tag)
-            h_perf_hf_totE_eta_lev_p->SetBinContent(bin,h_perf_hf_totE_eta_lev_p->GetBinContent(bin)/(eta_lev_p[j+1]-eta_lev_p[j])/double(n_castor_tag));
+          if(n_hf_single_tag)
+            h_perf_hf_totE_eta_lev_p->SetBinContent(bin,h_perf_hf_totE_eta_lev_p->GetBinContent(bin)/(eta_lev_p[j+1]-eta_lev_p[j])/double(n_hf_single_tag));
           else
             h_perf_hf_totE_eta_lev_p->SetBinContent(bin,0);
         }

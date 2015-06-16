@@ -89,7 +89,7 @@ void Show(TH1D* data,TH1D* mc1,TH1D* mc2,TH1D* mc3, string type)
   if (type=="double")
     CMSText(3,0,1,"Double-arm selection");
   if (type=="singleth")
-    CMSText(3,0,1,"Single-arm selection","E_{tower}>0.5 GeV");
+    CMSText(3,0,1,"Single-arm selection","only towers with E_{tower}>3 GeV");
 
 
   c1->SetLogy();
