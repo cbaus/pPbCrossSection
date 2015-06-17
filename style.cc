@@ -53,7 +53,7 @@ void CMSText(const int data, const bool left, const bool top, const std::string 
   if(data==0)
     text=std::string("Simulation");
   if(data==3)
-    text=std::string("Own work");
+    text=std::string("CMS internal use only");
 
   double size1 = 0.04*1.5;
 
