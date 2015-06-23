@@ -31,8 +31,6 @@
 #define _LumiCorrpPb 1.142 //only use if trees don't contain vdm calibration factor
 #define _LumiCorrPbp 1.138
 
-TVectorD corr_fac_em(2);
-TVectorD corr_fac_eme(2);
 TVectorD corr_fac_mc(4);
 TVectorD corr_fac_mce(4);
 TVectorD corr_fac_epos(2);
@@ -50,10 +48,10 @@ void makePlots_cs_purvseff(bool draw, string filename)
 
   //available cuts single 5, 6.4, 7.2, 8, 8.8, 9.6, 10, 15, 20
   //available cuts double 1.5, 2, 2.25, 2.5, 2.75, 3, 3.5, 4, 5
-  set<double> cut_value_single; cut_value_single.insert(8);
-  set<double> cut_value_double; cut_value_double.insert(4);
-  set<double> cut_value2_single; cut_value2_single.insert(6); cut_value2_single.insert(10);
-  set<double> cut_value2_double; cut_value2_double.insert(3); cut_value2_double.insert(5);
+  set<double> cut_value_single; cut_value_single.insert(5);
+  set<double> cut_value_double; cut_value_double.insert(2.5);
+  set<double> cut_value2_single; cut_value2_single.insert(3); cut_value2_single.insert(5);
+  set<double> cut_value2_double; cut_value2_double.insert(2); cut_value2_double.insert(3);
 
   vector<string> type; type.push_back("single"); type.push_back("double");
   TGraph* pur_single = new TGraph(0);
@@ -68,17 +66,17 @@ void makePlots_cs_purvseff(bool draw, string filename)
       TFile* file = TFile::Open(filename.c_str());
       TFile* file2 = TFile::Open("histos.root");
 
-      TH1D* a=(TH1D*)file->Get((string("data210885/data210885_h_hf_cut_") + type[n]).c_str());
-      TH1D* a2=(TH1D*)file->Get((string("data210885/data210885_h_hf_cut_") + type[n] + string("_noise")).c_str());
-      TH1D* h_events=(TH1D*)file->Get(string("data210885/data210885_h_lumi").c_str()); //zb
-      TH1D* h_lumi=(TH1D*)file->Get(string("data210885/data210885_h_run_events_lumi").c_str());
+      TH1D* a=(TH1D*)file->Get((string("data247324/data247324_h_hf_cut_") + type[n]).c_str());
+      TH1D* a2=(TH1D*)file->Get((string("data247324/data247324_h_hf_cut_") + type[n] + string("_noise")).c_str());
+      TH1D* h_events=(TH1D*)file->Get(string("data247324/data247324_h_lumi").c_str()); //zb
+      TH1D* h_lumi=(TH1D*)file->Get(string("data247324/data247324_h_run_events_lumi").c_str());
       //TH1D* eposrew=(TH1D*)file2->Get((string("EposDiffWeightOpt/EposDiffWeightOpt_h_hf_cut_") + type[n]).c_str());
       //TH1D* qgsrew=(TH1D*)file2->Get((string("QGSJetIIDiffWeightOpt/QGSJetIIDiffWeightOpt_h_hf_cut_") + type[n]).c_str());
-      TH1D* b=(TH1D*)file->Get((string("Hijing/Hijing_h_hf_cut_") + type[n]).c_str());
+      TH1D* b=(TH1D*)file->Get((string("PythiaMBR/PythiaMBR_h_hf_cut_") + type[n]).c_str());
       TH1D* c=(TH1D*)file->Get((string("Epos/Epos_h_hf_cut_")+ type[n]).c_str());
       TH1D* d=(TH1D*)file->Get((string("QGSJetII/QGSJetII_h_hf_cut_") + type[n]).c_str());
-      TH1D* e=(TH1D*)file->Get((string("Starlight_DPMJet/Starlight_DPMJet_h_hf_cut_") + type[n]).c_str());
-      TH1D* f=(TH1D*)file->Get((string("Starlight_Pythia/Starlight_Pythia_h_hf_cut_") + type[n]).c_str());
+      TH1D* e=(TH1D*)file->Get((string("PythiaZ2Star/PythiaZ2Star_h_hf_cut_") + type[n]).c_str());
+      TH1D* f=(TH1D*)file->Get((string("PythiaMonash/PythiaMonash_h_hf_cut_") + type[n]).c_str());
 
       TGraph* pur = type[n]==string("single")?pur_single:pur_double;
       TGraph* pur_selec = type[n]==string("single")?pur_selec_single:pur_selec_double;
@@ -90,7 +88,7 @@ void makePlots_cs_purvseff(bool draw, string filename)
       double events_integral = 0;
       for(int i=0; i<=h_lumi->GetNbinsX();i++)
         {
-          const double lumicorr = _LumiCorrpPb; //might be different for other run than 210885
+          const double lumicorr = _LumiCorrpPb; //might be different for other run than 247324
           const double lumiPerLS=h_lumi->GetBinContent(i) * lumicorr;
           const double lumiPerLS_error=h_lumi->GetBinError(i) * lumicorr; //not 100% correct since from profile but has no contribution
           if (lumiPerLS<0.) {cerr << "lumi neg: " << i << endl; return;}
@@ -105,50 +103,11 @@ void makePlots_cs_purvseff(bool draw, string filename)
       c->Scale(1./double(c->GetBinContent(1)));
       d->Scale(1./double(d->GetBinContent(1)));
       e->Scale(1./double(e->GetBinContent(1)));
-      f->Scale(1./double(f->GetBinContent(1))/ 195. * 122.); //cross section starlight samples
+      f->Scale(1./double(f->GetBinContent(1)));
       //eposrew->Scale(1./double(eposrew->GetBinContent(1)));
       //qgsrew->Scale(1./double(qgsrew->GetBinContent(1)));
 
-      a->SetLineWidth(3);
-      a2->SetLineWidth(3);
-      b->SetLineWidth(3);
-      c->SetLineWidth(3);
-      d->SetLineWidth(3);
-      e->SetLineWidth(3);
-      f->SetLineWidth(3);
-      //eposrew->SetLineWidth(3);
-      //qgsrew->SetLineWidth(3);
-      a2->SetLineColor(kBlack);
-      b->SetLineColor(kGreen+2);
-      c->SetLineColor(kBlue);
-      d->SetLineColor(kRed);
-      e->SetLineColor(kRed);
-      f->SetLineColor(kBlue);
-      //eposrew->SetLineColor(kMagenta);
-      //qgsrew->SetLineColor(kMagenta);
-      a2->SetMarkerColor(a2->GetLineColor());
-      b->SetMarkerColor(b->GetLineColor());
-      c->SetMarkerColor(c->GetLineColor());
-      d->SetMarkerColor(d->GetLineColor());
-      e->SetMarkerColor(e->GetLineColor());
-      f->SetMarkerColor(f->GetLineColor());
-      //eposrew->SetMarkerColor(f->GetLineColor());
-      //qgsrew->SetMarkerColor(f->GetLineColor());
-      b->SetLineStyle(7);
-      d->SetLineStyle(9);
-      f->SetLineStyle(9);
-      //eposrew->SetLineStyle(10);
-      //qgsrew->SetLineStyle(10);
 
-      a->SetTitle("Data");
-      a2->SetTitle("Noise");
-      //eposrew->SetTitle("EPOS-LHC (#sigma_{diff}x1.12)");
-      //qgsrew->SetTitle("QGSJETII-04 (#sigma_{diff}x1.50)");
-      b->SetTitle("Hijing 1.383");
-      c->SetTitle("EPOS-LHC");
-      d->SetTitle("QGSJetII-04");
-      e->SetTitle("#gamma-p (STARLIGHT+DPMJet)");
-      f->SetTitle("#gamma-p (STARLIGHT+Pythia)");
 
 
       // a->GetXaxis()->SetLimits(a->GetBinLowEdge(3),a->GetBinLowEdge(a->GetNbinsX())); //cut away first bin
@@ -159,68 +118,50 @@ void makePlots_cs_purvseff(bool draw, string filename)
       // e->GetXaxis()->SetLimits(3,e->GetBinLowEdge(e->GetNbinsX())); //cut away first bin
       // f->GetXaxis()->SetLimits(4,f->GetBinLowEdge(f->GetNbinsX())); //cut away first bin
 
-      b->GetXaxis()->SetRange(2,b->GetNbinsX()*(type[n]=="double"?0.5:0.75));
-      a2->GetXaxis()->SetRange(2,a2->GetNbinsX()*(type[n]=="double"?0.5:0.75));
-
-      b->GetYaxis()->SetRangeUser(0.8,1.001);
-      a2->GetYaxis()->SetRangeUser(2e-5,100);//type[n]=="double"?1e-5:1e-5,1.01);
-
-      b->GetXaxis()->SetTitle("E_{HF} [GeV]");
-      b->GetYaxis()->SetTitle("efficiency");
-      b->GetXaxis()->SetLabelSize(b->GetXaxis()->GetLabelSize()*1.2);
-      b->GetYaxis()->SetLabelSize(b->GetYaxis()->GetLabelSize()*1.2);
-      b->GetXaxis()->SetTitleSize(b->GetXaxis()->GetTitleSize()*1.1);
-      b->GetYaxis()->SetTitleSize(b->GetYaxis()->GetTitleSize()*1.1);
-      b->GetXaxis()->SetTitleOffset(b->GetXaxis()->GetTitleOffset()*1.1);
-      b->GetYaxis()->SetTitleOffset(b->GetYaxis()->GetTitleOffset()*1.1);
-
 
       //////////////////////////////////////////////////////////////////////////////////////////////
       //LOOPING AND OUTPUT//
 
-      double f_eme = 0;
       double f_mce = 0;
       //double f_mcesys = 0;
       int count = 0;
       for(int i=a->FindBin(2); i<=a->FindBin(10); i++)
         {
           ++count;
-          f_eme += fabs(e->GetBinContent(i) - f->GetBinContent(i));
           f_mce += fabs(c->GetBinContent(i) - d->GetBinContent(i));
           //f_mcesys += fabs(eposrew->GetBinContent(i) - qgsrew->GetBinContent(i));
         }
-      f_eme /= double(count);
       f_mce /= double(count);
       //f_mcesys /= double(count);
 
       pur_single->Expand(a->GetNbinsX());
       pur_double->Expand(a->GetNbinsX());
 
+      cerr << "fix lumi" << endl;
       for(int i=1; i<=a->GetNbinsX(); i++)
         {
-          const double f_em     = 0.5 * (e->GetBinContent(i) + f->GetBinContent(i));
-          const double f_mc     = 0.5 * (c->GetBinContent(i) + d->GetBinContent(i));
+          const double f_mc     = (b->GetBinContent(i) + c->GetBinContent(i) + d->GetBinContent(i) + e->GetBinContent(i) + f->GetBinContent(i)) / 5.;
           //const double f_mcsys  = 0.5 * (eposrew->GetBinContent(i) + qgsrew->GetBinContent(i));
           const double f_noise  = a2->GetBinContent(i)/a2->GetBinContent(1);
-          const double n_sel_zb = a->GetBinContent(i);
+          const double f_sel_zb = a->GetBinContent(i)/a->GetBinContent(1);
 
           ///////////////////////////////////////////////////////////////////////
           //Number of events
-          const double n_zb = (events_integral/lumi_integral);
-          const double n_noise = f_noise * n_zb;
-          const double n_em = f_em * 0.195; //these are not n but already n/lumi
+          const double n_sel = f_sel_zb * events_integral;//(events_integral/lumi_integral);
+          const double n_noise = f_noise * events_integral;
+          cout << events_integral << " " << f_noise  << " " << f_sel_zb << endl;
 
 
           ///////////////////////////////////////////////////////////////////////
           //Purity
-          double purity = 2.06 / (2.06 + n_noise + n_em);
+          double purity = 2.06 / (2.06 + n_noise);
           pur->SetPoint(i,purity,f_mc);
 
           if(i!=1)
             {
               a2->SetBinContent(i,n_noise);
-              e->SetBinContent(i,e->GetBinContent(i)*0.195);
-              f->SetBinContent(i,f->GetBinContent(i)*0.195);
+              //e->SetBinContent(i,e->GetBinContent(i)*0.195);
+              //f->SetBinContent(i,f->GetBinContent(i)*0.195);
             }
 
           set<double>& cut_value = type[n]==string("single")?cut_value_single:cut_value_double;
@@ -250,9 +191,7 @@ void makePlots_cs_purvseff(bool draw, string filename)
                 << endl << i << "(" << a->GetBinCenter(i) << ")"
                 << endl << "f_mc= " << f_mc << " ± " << f_mce << " ( " << f_mce/f_mc*100. << "%)"
                 //<< endl << "f_mc_scaled= " << f_mcsys << " ± " << f_mcesys << " ( " << f_mcesys/f_mcsys*100. << "%)"
-                << endl << "f_em= " << f_em << " ± " << f_eme << " ( " << f_eme/f_em*100. << "%)"
-                << endl << "n_em= " << n_em << " ± " << f_eme/f_em*n_em << " ( " << f_eme/f_em*100. << "%)"
-                << endl << "n_noise= " << n_noise << " ± ? ( " << f_eme/f_em*100. << "%)"
+                << endl << "n_noise= " << n_noise << " ± ? ( " << "?" << "%)"
                 << endl << "purity= " << purity
                 << endl << "for f_noise and n_noise consult makePlots_cs.C" << endl << endl;
             }

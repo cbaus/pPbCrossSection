@@ -1,4 +1,4 @@
-#define MAXEVT -1000000
+#define MAXEVT -10000
 
 #include "TChain.h"
 #include "TFile.h"
@@ -20,6 +20,9 @@
 #include <CastorTreeVariables.h>
 #include <ParticleInfo.h>
 
+#include "CastorCorrFactorpp2015.h"
+
+
 //#include "style.h"
 
 enum e_type
@@ -34,21 +37,26 @@ vector<string> sample_fname;
 vector<string> sample_name;
 vector<e_type> sample_type;
 
+void BinLogX(TH1* h);
+
 int main()
 {
   TH1::SetDefaultSumw2();
   //style();
 
   //*************************************************************INPUT***********************************************************
-  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_heavyions/cbaus/trees/DataNoise/*.root"); sample_name.push_back("noise"); sample_type.push_back(DATA);
+  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_diffraction/cbaus/pp13TeV/inel_cross_section/data_247324.root"); sample_name.push_back("data247324"); sample_type.push_back(DATA);
 
   //**************************************************************OUTPUT*********************************************************
 
-  TFile* out_file = new TFile("histos_noise2.root","RECREATE");
+  TFile* out_file = new TFile("histos_noise.root","RECREATE");
 
 
   TH1D* h_hf_hits_noise;
   TH1D* h_hf_hits_beamgas;
+  TH1D* h_castor_sumE_noise;
+  TH1D* h_castor_sumE_beam_plus;
+  TH1D* h_castor_sumE_beam_minus;
 
   TH2D* h_noise_tracks_hf;
   TH2D* h_beamgas_tracks_hf;
@@ -72,6 +80,9 @@ int main()
         return 0;
       }
 
+      tree->SetCacheSize(50000000);
+      tree->AddBranchToCache("*");
+
       if (tree->GetEntries() == 0) {
         cout << "No events found in file \"" << sample_fname[sample] << "\"" << endl;
         return 0;
@@ -80,6 +91,9 @@ int main()
       //________________________________________________________________________________
 
       tree->SetBranchStatus("*", 1);
+      tree->SetBranchStatus("EB*",0);
+      tree->SetBranchStatus("EE*",0);
+      tree->SetBranchStatus("HBHE*",0);
 //       tree->SetBranchStatus("event", 1);
 //       tree->SetBranchStatus("genProcessID", 1);
 //       tree->SetBranchStatus("GEN*", 1);
@@ -107,22 +121,20 @@ int main()
       int zero_bias;
       int zero_bias_prescale_L1;
       int zero_bias_prescale_HLT;
-      int min_bias;
       int random;
       int random_prescale_HLT;
       int bptx_p_m;
-      int bptx_p_nm;
-      int bptx_np_m;
+      int bptx_p;
+      int bptx_m;
       int bptx_quiet;
       tree->SetBranchAddress("L1_ZeroBias_algPrescale",&zero_bias_prescale_L1);
-      tree->SetBranchAddress("HLT_PAZeroBias_v1_Prescl",&zero_bias_prescale_HLT);
-      tree->SetBranchAddress("HLT_PAZeroBias_v1",&zero_bias);
-      tree->SetBranchAddress("HLT_PAL1Tech53_MB_SingleTrack_v1",&min_bias);
-      tree->SetBranchAddress("HLT_PARandom_v1",&random);
-      tree->SetBranchAddress("HLT_PARandom_v1_Prescl",&random_prescale_HLT);
+      tree->SetBranchAddress("HLT_ZeroBias_part0_v1_Prescl",&zero_bias_prescale_HLT);
+      tree->SetBranchAddress("HLT_ZeroBias_part0_v1",&zero_bias);
+      tree->SetBranchAddress("HLT_Random_v2",&random);
+      tree->SetBranchAddress("HLT_Random_v2_Prescl",&random_prescale_HLT);
       tree->SetBranchAddress("L1Tech_BPTX_plus_AND_minus.v0_DecisionBeforeMask",&bptx_p_m);
-      tree->SetBranchAddress("L1Tech_BPTX_plus_AND_NOT_minus.v0_DecisionBeforeMask",&bptx_p_nm);
-      tree->SetBranchAddress("L1Tech_BPTX_minus_AND_not_plus.v0_DecisionBeforeMask",&bptx_np_m);
+      tree->SetBranchAddress("L1Tech_BPTX_minus.v0_DecisionBeforeMask",&bptx_m);
+      tree->SetBranchAddress("L1Tech_BPTX_plus.v0_DecisionBeforeMask",&bptx_p);
       tree->SetBranchAddress("L1Tech_BPTX_quiet.v0_DecisionBeforeMask",&bptx_quiet);
 
       //________________________________________________________________________________
@@ -130,8 +142,17 @@ int main()
       out_file->mkdir(sample_name[sample].c_str());
       out_file->cd(sample_name[sample].c_str());
       string add = sample_name[sample];
-      h_hf_hits_noise           = new TH1D((add + string("_h_hf_hits_noise")).c_str(),"",200,0,20);
-      h_hf_hits_beamgas        = new TH1D((add + string("_h_hf_hits_beamgas")).c_str(),"",200,0,20);
+      h_hf_hits_noise           = new TH1D((add + string("_h_hf_hits_noise")).c_str(),"",50,log10(0.5),log10(50));
+      h_hf_hits_beamgas        = new TH1D((add + string("_h_hf_hits_beamgas")).c_str(),"",50,log10(0.5),log10(50));
+      BinLogX(h_hf_hits_noise);
+      BinLogX(h_hf_hits_beamgas);
+
+      h_castor_sumE_noise           = new TH1D((add + string("_h_castor_sumE_noise")).c_str(),"",50,log10(0.01),log10(100));
+      h_castor_sumE_beam_minus        = new TH1D((add + string("_h_castor_sumE_beam_minus")).c_str(),"",50,log10(0.01),log10(100));
+      h_castor_sumE_beam_plus        = new TH1D((add + string("_h_castor_sumE_beam_plus")).c_str(),"",50,log10(0.01),log10(100));
+      BinLogX(h_castor_sumE_noise);
+      BinLogX(h_castor_sumE_beam_minus);
+      BinLogX(h_castor_sumE_beam_plus);
 
       h_hf_cut_single_noise     = new TH1D((add + string("_h_hf_cut_single_noise")).c_str(),"",101,-0.05,10.05);
       h_hf_cut_single_beamgas   = new TH1D((add + string("_h_hf_cut_single_beamgas")).c_str(),"",101,-0.05,10.05);
@@ -158,113 +179,18 @@ int main()
           TH1D* h_hf_rings_cut_single = new TH1D(hf_cut_str.str().c_str(),hf_cut_str.str().c_str(),101,-0.05,10.05);
         }
 
-      set<int> unpaired;
-      unpaired.insert(465);
-      unpaired.insert(473);
-      unpaired.insert(479);
-      unpaired.insert(482);
-      unpaired.insert(487);
-      unpaired.insert(490);
-      unpaired.insert(496);
-      unpaired.insert(499);
-      unpaired.insert(504);
-      unpaired.insert(507);
-      unpaired.insert(513);
-      unpaired.insert(516);
-      unpaired.insert(521);
-      unpaired.insert(524);
-      unpaired.insert(530);
-      unpaired.insert(533);
-      unpaired.insert(538);
-      unpaired.insert(541);
-      unpaired.insert(547);
-      unpaired.insert(550);
-      unpaired.insert(555);
-      unpaired.insert(558);
-      unpaired.insert(564);
-      unpaired.insert(567);
-      unpaired.insert(572);
-      unpaired.insert(575);
-      unpaired.insert(581);
-      unpaired.insert(584);
-      unpaired.insert(589);
-      unpaired.insert(592);
-      unpaired.insert(598);
-      unpaired.insert(601);
-      unpaired.insert(606);
-      unpaired.insert(609);
-      unpaired.insert(615);
-      unpaired.insert(618);
-      unpaired.insert(623);
-      unpaired.insert(626);
-      unpaired.insert(632);
-      unpaired.insert(635);
-      unpaired.insert(640);
-      unpaired.insert(643);
-      unpaired.insert(649);
-      unpaired.insert(652);
-      unpaired.insert(657);
-      unpaired.insert(660);
-      unpaired.insert(666);
-      unpaired.insert(674);
-      unpaired.insert(697);
-      unpaired.insert(705);
-      unpaired.insert(711);
-      unpaired.insert(714);
-      unpaired.insert(719);
-      unpaired.insert(722);
-      unpaired.insert(728);
-      unpaired.insert(731);
-      unpaired.insert(736);
-      unpaired.insert(739);
-      unpaired.insert(745);
-      unpaired.insert(748);
-      unpaired.insert(753);
-      unpaired.insert(756);
-      unpaired.insert(762);
-      unpaired.insert(765);
-      unpaired.insert(770);
-      unpaired.insert(773);
-      unpaired.insert(779);
-      unpaired.insert(782);
-      unpaired.insert(787);
-      unpaired.insert(790);
-      unpaired.insert(796);
-      unpaired.insert(799);
-      unpaired.insert(804);
-      unpaired.insert(807);
-      unpaired.insert(813);
-      unpaired.insert(816);
-      unpaired.insert(821);
-      unpaired.insert(824);
-      unpaired.insert(830);
-      unpaired.insert(833);
-      unpaired.insert(838);
-      unpaired.insert(841);
-      unpaired.insert(847);
-      unpaired.insert(855);
-
       for(int iEvent=0; iEvent<tree->GetEntries(); iEvent++)
         {
           if(iEvent==MAXEVT) break;
-          if(iEvent % 10000 == 0) cout << sample+1 << "/" << sample_name.size() << " -- " << sample_name[sample].c_str() << " -- Entry: " << iEvent << " / " << (MAXEVT>0?MAXEVT:tree->GetEntries()) << endl;
+          if(iEvent % 1000 == 0) cout << sample+1 << "/" << sample_name.size() << " -- " << sample_name[sample].c_str() << " -- Entry: " << iEvent << " / " << (MAXEVT>0?MAXEVT:tree->GetEntries()) << endl;
           tree->GetEntry(iEvent);
           //          if(event->runNb != 210885)
           //continue;
 
           bool noise=0, beamgas=0;
 
-          //beamgas      = (bptx_np_m || bptx_p_nm); // only single beam
-          noise         = bptx_quiet;// && !bptx_np_m && !bptx_p_nm; //not both and not single beam
-
-          if (unpaired.count(event->bxNb) && noise)
-            cout << iEvent << " BPTX quiet: " << noise << endl;
-
-           if(unpaired.count(event->bxNb))
-            {
-              noise = 0;
-              beamgas = 1;
-            }
+          beamgas      = (bptx_m != bptx_p); // only single beam
+          noise         = !bptx_p && !bptx_m; //not both and not single beam
 
           if(!noise && !beamgas) //not intersted
             continue;
@@ -276,20 +202,36 @@ int main()
           const double evtWeight  = lumiPerTime?double(prescale) / lumiPerTime:0.;
 
           //---------------------------------------------CASTOR
-          double sum_cas_e_em = 0;
-          double sum_cas_e_had = 0;
-          double sum_cas_e = 0;
+          double sum_CAS_E_em = 0;
+          double sum_CAS_E_had = 0;
+          vector<double> sum_CAS_E_mod(16,0.);
+
           for (vector<RecHitCASTOR>::const_iterator it = event->CASTOR.begin(); it < event->CASTOR.end(); ++it)
             {//break;
-              if(it->GetModuleId() < 3)
-                sum_cas_e_em += it->Energy;
+              double RecHitGeV =  it->Energy;
+              const int sec = it->GetSectorId();
+              const int mod = it->GetModuleId();
+
+              if(sample_type[sample] == DATA)
+                {
+                  //RecHitGeV -= castor::channelPedMean[sec][mod];
+                  #warning "remove for 3.8 T"
+                  RecHitGeV *= castor::corr0Tto38T[sec-1][mod-1];
+                  RecHitGeV *= castor::channelGainQE[sec][mod];
+                  RecHitGeV *= castor::absCasEscaleFactor;
+                }
+              RecHitGeV *= (int)castor::channelQuality[sec][mod];
+
+              sum_CAS_E_mod[it->GetModuleId()] += RecHitGeV;
+
+              if(it->GetModuleId() < 2)
+                sum_CAS_E_em += RecHitGeV;
               else if(it->GetModuleId() < 5)
-                sum_cas_e_had += it->Energy;
+                sum_CAS_E_had += RecHitGeV;
             }
-          sum_cas_e = sum_cas_e_had + sum_cas_e_em;
 
-
-
+          const double sum_CAS_E = sum_CAS_E_had + sum_CAS_E_em;
+          const bool castor_tag = sum_CAS_E > 5.6; //esstimated by sebastian for data only!
 
 
           //---------------------------------------------HF
@@ -385,24 +327,27 @@ int main()
 
 
           //---------------------------------------------Filling HISTOS
-          if(noise)                                                h_hf_hits_noise->Fill(hf_double_energy_max);
-          if(beamgas)                                              h_hf_hits_beamgas->Fill(hf_double_energy_max);
+          if(noise)                                                h_hf_hits_noise->Fill(hf_single_energy_max);
+          if(beamgas)                                              h_hf_hits_beamgas->Fill(hf_single_energy_max);
+          if(noise)                                                h_castor_sumE_noise->Fill(sum_CAS_E);
+          if(beamgas && bptx_m)                                    h_castor_sumE_beam_minus->Fill(sum_CAS_E);
+          if(beamgas && bptx_p)                                    h_castor_sumE_beam_plus->Fill(sum_CAS_E);
 
           for (double cut=0; cut <= 10; cut+=0.1)
             {
-              if((noise || beamgas) && hf_double_energy_max >= cut) h_hf_cut_double_noise->Fill(cut);
-              if((beamgas || beamgas) && hf_double_energy_max >= cut) h_hf_cut_double_beamgas->Fill(cut);
-              if((noise || beamgas) && hf_single_energy_max >= cut) h_hf_cut_single_noise->Fill(cut);
-              if((beamgas || beamgas) && hf_single_energy_max >= cut) h_hf_cut_single_beamgas->Fill(cut);
+              if((noise) && hf_double_energy_max >= cut) h_hf_cut_double_noise->Fill(cut);
+              if((beamgas) && hf_double_energy_max >= cut) h_hf_cut_double_beamgas->Fill(cut);
+              if((noise) && hf_single_energy_max >= cut) h_hf_cut_single_noise->Fill(cut);
+              if((beamgas) && hf_single_energy_max >= cut) h_hf_cut_single_beamgas->Fill(cut);
             }
 
           if(noise)                                                 h_noise_tracks_hf->Fill(hf_single_energy_max,event->Tracks.size());
           if(beamgas)                                               h_beamgas_tracks_hf->Fill(hf_single_energy_max,event->Tracks.size());
 
-          if((noise) && hf_single_energy_max > 8)        h_run_events_single->Fill(lumiPerTime,evtWeight);
-          if((noise) && hf_double_energy_max > 4)      h_run_events_double->Fill(lumiPerTime,evtWeight);
+          if((noise) && hf_single_energy_max > 4)        h_run_events_single->Fill(lumiPerTime,evtWeight);
+          if((noise) && hf_double_energy_max > 3)      h_run_events_double->Fill(lumiPerTime,evtWeight);
           if((noise) )                                   h_run_events->Fill(lumiPerTime,evtWeight);
-                                                                        
+
 
         }
 
@@ -417,4 +362,23 @@ int main()
   out_file->Save();
 
   return 0;
+}
+
+void BinLogX(TH1* h)
+{
+
+  TAxis *axis = h->GetXaxis();
+  int bins = axis->GetNbins();
+
+  Axis_t from = axis->GetXmin();
+  Axis_t to = axis->GetXmax();
+  Axis_t width = (to - from) / bins;
+  Axis_t *new_bins = new Axis_t[bins + 1];
+
+  for (int i = 0; i <= bins; i++) {
+    new_bins[i] = TMath::Power(10, from + i * width);
+
+  }
+  axis->Set(bins, new_bins);
+  delete new_bins;
 }

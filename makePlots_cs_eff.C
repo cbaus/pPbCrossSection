@@ -76,10 +76,11 @@ void makePlots_cs_eff(bool draw, double cut_value_single, double cut_value_doubl
   for(int n=0; n<int(type.size()); n++)
     {
       TFile* file = TFile::Open(filename.c_str());
-      TFile* file2 = TFile::Open("histos_new.root");
+      TFile* file2 = TFile::Open("histos_noise.root");
 
       TH1D* zb=(TH1D*)file->Get((string("data247324/data247324_h_hf_cut_") + type[n]).c_str());
-      TH1D* noise=(TH1D*)file->Get((string("data247324/data247324_h_hf_cut_") + type[n] + string("_noise")).c_str());
+      TH1D* noise=(TH1D*)file2->Get((string("data247324/data247324_h_hf_cut_") + type[n] + string("_noise")).c_str());
+      TH1D* beamgas=(TH1D*)file2->Get((string("data247324/data247324_h_hf_cut_") + type[n] + string("_beamgas")).c_str());
       TH1D* h_events=(TH1D*)file->Get(string("data247324/data247324_h_lumi").c_str()); //zb
       TH1D* h_lumi=(TH1D*)file->Get(string("data247324/data247324_h_run_events_lumi").c_str());
       // TH1D* sl1=(TH1D*)file->Get((string("Starlight_DPMJet/Starlight_DPMJet_h_hf_cut_") + type[n]).c_str());
@@ -149,16 +150,19 @@ void makePlots_cs_eff(bool draw, double cut_value_single, double cut_value_doubl
 
       zb->SetLineWidth(3);
       noise->SetLineWidth(3);
+      if(beamgas) beamgas->SetLineWidth(3);
       // sl1->SetLineWidth(3);
       // sl2->SetLineWidth(3);
       if(eposrew) eposrew->SetLineWidth(3);
       if(qgsrew) qgsrew->SetLineWidth(3);
       noise->SetLineColor(kBlack);
+      if(beamgas) beamgas->SetLineColor(kRed);
       // sl1->SetLineColor(kRed);
       // sl2->SetLineColor(kBlue);
       if(eposrew) eposrew->SetLineColor(kMagenta);
       if(qgsrew) qgsrew->SetLineColor(kMagenta);
       noise->SetMarkerColor(noise->GetLineColor());
+      if(beamgas) beamgas->SetMarkerColor(beamgas->GetLineColor());
       // sl1->SetMarkerColor(sl1->GetLineColor());
       // sl2->SetMarkerColor(sl2->GetLineColor());
       if(eposrew) eposrew->SetMarkerColor(eposrew->GetLineColor());
@@ -166,9 +170,12 @@ void makePlots_cs_eff(bool draw, double cut_value_single, double cut_value_doubl
       // sl2->SetLineStyle(9);
       if(eposrew) eposrew->SetLineStyle(10);
       if(qgsrew) qgsrew->SetLineStyle(10);
+      if(noise) noise->SetLineStyle(10);
+      if(beamgas) beamgas->SetLineStyle(7);
 
       zb->SetTitle("Data");
-      noise->SetTitle("Noise");
+      noise->SetTitle("No beam");
+      if(beamgas) beamgas->SetTitle("Single beam");
       if(eposrew) eposrew->SetTitle("EPOS-LHC (#sigma_{diff}x1.12)");
       if(qgsrew) qgsrew->SetTitle("QGSJETII-04 (#sigma_{diff}x1.50)");
 
@@ -185,7 +192,9 @@ void makePlots_cs_eff(bool draw, double cut_value_single, double cut_value_doubl
       // sl2->GetXaxis()->SetLimits(4,sl2->GetBinLowEdge(sl2->GetNbinsX())); //cut away first bin
 
       noise->GetXaxis()->SetRange(2,noise->GetNbinsX()*(type[n]=="double"?0.5:0.75));
+      if(beamgas) beamgas->GetXaxis()->SetRange(2,beamgas->GetNbinsX()*(type[n]=="double"?0.5:0.75));
       noise->GetYaxis()->SetRangeUser(2e-5,100);//type[n]=="double"?1e-5:1e-5,1.01);
+      if(beamgas) beamgas->GetYaxis()->SetRangeUser(2e-5,100);//type[n]=="double"?1e-5:1e-5,1.01);
 
       const double cut_value = type[n]=="single"?cut_value_single:cut_value_double;
 
@@ -200,7 +209,7 @@ void makePlots_cs_eff(bool draw, double cut_value_single, double cut_value_doubl
                 h_models[i]->Draw("HIST L SAME");
             }
 
-          TLine* line = new TLine(cut_value,type[n]=="single"?0.8:0.88,cut_value,1.001);
+          TLine* line = new TLine(cut_value,type[n]=="single"?0.85:0.75,cut_value,1.001);
           line->SetLineWidth(2);
           line->SetLineStyle(2);
           line->Draw("SAME");
@@ -209,21 +218,21 @@ void makePlots_cs_eff(bool draw, double cut_value_single, double cut_value_doubl
           if(type[n]=="single")
             {
               leg->SetX1(0.22);
-              leg->SetX2(0.58);
-              leg->SetY1(0.37);
-              leg->SetY2(0.62);
+              leg->SetX2(0.57);
+              leg->SetY1(0.2);
+              leg->SetY2(0.45);
 #ifdef __CINT__
-              CMSText(3,1,0,"Single-arm");
+              CMSText(3,0,1,"Single-arm");
 #endif
             }
           if(type[n]=="double")
             {
-              leg->SetX1(0.22);
-              leg->SetX2(0.58);
-              leg->SetY1(0.18);
-              leg->SetY2(0.41);
+              leg->SetX1(0.45);
+              leg->SetX2(0.80);
+              leg->SetY1(0.67);
+              leg->SetY2(0.92);
 #ifdef __CINT__
-              CMSText(3,0,1,"Double-arm");
+              CMSText(3,1,0,"Double-arm");
 #endif
             }
           for (int i=0; i<int(modelInfo.models.size()); ++i)
@@ -282,18 +291,21 @@ void makePlots_cs_eff(bool draw, double cut_value_single, double cut_value_doubl
           // const double f_em     = 0.5 * (sl1->GetBinContent(i) + sl2->GetBinContent(i));
           const double f_mcsys  = 0.5 * (getEffDiffWeight("PythiaMonash", cut_value, _diff_epos_reweight) + getEffDiffWeight("PythiaZ2Star", cut_value, _diff_qgs_reweight));
           const double f_noise  = noise->GetBinContent(i)/noise->GetBinContent(1);
+          double f_beamgas  = -1; if(beamgas) f_beamgas = beamgas->GetBinContent(i)/beamgas->GetBinContent(1);
           const double n_sel_zb = zb->GetBinContent(i);
           //const double n_zb     = 1;
 
           ///////////////////////////////////////////////////////////////////////
           //Number of events
-          cerr << " !!!! fix lumi" << endl;
+          //cerr << " !!!! fix lumi" << endl;
           const double n_zb = (events_integral/0.063923); //n_zb = (events_integral/lumi_integral);
           const double n_noise = f_noise * n_zb;
+          double n_beamgas = -1; if(beamgas) n_beamgas = f_beamgas * n_zb;
           // const double n_em = f_em * 0.195; //these are not n but already n/lumi
           if(i!=1)
             {
               noise->SetBinContent(i,f_noise);
+              if(beamgas) beamgas->SetBinContent(i,f_beamgas);
               // sl1->SetBinContent(i,sl1->GetBinContent(i)*0.195);
               // sl2->SetBinContent(i,sl2->GetBinContent(i)*0.195);
             }
@@ -305,6 +317,8 @@ void makePlots_cs_eff(bool draw, double cut_value_single, double cut_value_doubl
                 << endl << i << "(" << zb->GetBinCenter(i) << ")"
                 << endl << "f_mc= " << f_mc << " ± " << f_mce << " ( " << f_mce/f_mc*100. << "%)"
                 << endl << "f_mc_scaled= " << f_mcsys << " ± " << f_mcesys << " ( " << f_mcesys/f_mcsys*100. << "%)"
+                << endl << "f_noise (no beam)= " << f_noise << " ± " << "?" << " ( " << "?" << "%)"
+                << endl << "f_noise (single beam)= " << f_beamgas << " ± " << "?" << " ( " << "?" << "%)"
                 // << endl << "f_em= " << f_em << " ± " << f_eme << " ( " << f_eme/f_em*100. << "%)"
                 // << endl << "n_em= " << n_em << " ± " << f_eme/f_em*n_em << " ( " << f_eme/f_em*100. << "%)"
                 << endl << "for f_noise and n_noise consult makePlots_cs.C" << endl << endl;
@@ -327,6 +341,8 @@ void makePlots_cs_eff(bool draw, double cut_value_single, double cut_value_doubl
                 << endl << i << "(" << zb->GetBinCenter(i) << ")"
                 << endl << "f_mc= " << f_mc << " ± " << f_mce << " ( " << f_mce/f_mc*100. << "%)"
                 << endl << "f_mc_scaled= " << f_mcsys << " ± " << f_mcesys << " ( " << f_mcesys/f_mcsys*100. << "%)"
+                << endl << "f_noise (no beam)= " << f_noise << " ± " << "?" << " ( " << "?" << "%)"
+                << endl << "f_noise (single beam)= " << f_beamgas << " ± " << "?" << " ( " << "?" << "%)"
                 // << endl << "f_em= " << f_em << " ± " << f_eme << " ( " << f_eme/f_em*100. << "%)"
                 // << endl << "n_em= " << n_em << " ± " << f_eme/f_em*n_em << " ( " << f_eme/f_em*100. << "%)"
                 << endl << "for f_noise and n_noise consult makePlots_cs.C" << endl << endl;
@@ -357,40 +373,42 @@ void makePlots_cs_eff(bool draw, double cut_value_single, double cut_value_doubl
           noise->GetXaxis()->SetTitleOffset(noise->GetXaxis()->GetTitleOffset()*1.1);
           noise->GetYaxis()->SetTitleOffset(noise->GetYaxis()->GetTitleOffset()*1.0);
           noise->Draw("HIST l");
+          if(beamgas) beamgas->Draw("HIST SAME l");
           // sl1->Draw("HIST l SAME");
           // sl2->Draw("HIST l SAME");
           TLegend* leg2 = new TLegend(0.1,0.1,0.2,0.2);
 
           if(type[n]=="single")
             {
-              leg2->SetX1(0.22);
-              leg2->SetX2(0.56);
-              leg2->SetY1(0.18);
-              leg2->SetY2(0.38);
+              leg2->SetX1(0.6);
+              leg2->SetX2(0.9);
+              leg2->SetY1(0.65);
+              leg2->SetY2(0.7);
 #ifdef __CINT__
-              CMSText(3,0,1,"Single-arm");
+              CMSText(3,0,1,"Single-arm","Random trigger");
 #endif
             }
           if(type[n]=="double")
             {
-              leg2->SetX1(0.42);
-              leg2->SetX2(0.93);
-              leg2->SetY1(0.55);
-              leg2->SetY2(0.75);
+              leg2->SetX1(0.6);
+              leg2->SetX2(0.9);
+              leg2->SetY1(0.65);
+              leg2->SetY2(0.7);
 #ifdef __CINT__
-              CMSText(3,0,1,"Double-arm");
+              CMSText(3,0,1,"Double-arm","Random trigger");
 #endif
             }
           leg2->Draw();
 
           leg2->AddEntry(noise,"","l");
+          if(beamgas) leg2->AddEntry(beamgas,"","l");
           // leg2->AddEntry(sl1,"","l");
           // leg2->AddEntry(sl2,"","l");
 #ifdef __CINT__
           SetLegAtt(leg2,1.1);
 #endif
 
-          TLine* line = new TLine(cut_value,type[n]=="single"?1e-2:0,cut_value,type[n]=="single"?100:2e-2);
+          TLine* line = new TLine(cut_value,type[n]=="single"?0:0,cut_value,type[n]=="single"?1e-1:1e-2);
           line->SetLineWidth(2);
           line->SetLineStyle(2);
           line->Draw("SAME");
