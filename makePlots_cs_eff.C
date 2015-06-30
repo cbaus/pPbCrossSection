@@ -52,7 +52,7 @@ TVectorD corr_fac_mce(4);
 typedef map<string,TH1D*> histomap;
 map< string,histomap > histoman;
 
-void makePlots_cs_eff(bool draw=1, double cut_value_single = 4., double cut_value_double = 3,string filename = "histos.root");
+void makePlots_cs_eff(bool draw=1, double cut_value_single = 5., double cut_value_double = 3,string filename = "histos.root");
 double getEffDiffWeight(string model, double cut, double diffWeight);
 
 //available cuts single 5, 6.4, 7.2, 8, 8.8, 9.6, 10, 15, 20
@@ -309,7 +309,7 @@ void makePlots_cs_eff(bool draw, double cut_value_single, double cut_value_doubl
               // sl1->SetBinContent(i,sl1->GetBinContent(i)*0.195);
               // sl2->SetBinContent(i,sl2->GetBinContent(i)*0.195);
             }
-          if(i==zb->FindBin(cut_value_single) && type[n]==string("single"))
+          if(true)//i==zb->FindBin(cut_value_single) && type[n]==string("single"))
             {
               // if((i-1)%10 == 0)
               cout

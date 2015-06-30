@@ -1,5 +1,80 @@
 ///Plot the stacked hit distribution of (noise,em + data/mc) for HF
 
+
+class helperClass {
+private:
+  std::vector<double> xPl;
+  std::vector<double> yPl;
+
+  TPolyLine* pline;
+public:
+  helperClass() {}
+  ~helperClass() {}// delete pline; }
+
+  void histFillGaus(TH1* h, const int& nEvents = 1000) { h->FillRandom("gaus",nEvents); }
+
+  void createPolyLine(TH1* h, const double& Xerr) {
+    const int nBins = h->GetNbinsX();
+
+    xPl.resize(2*nBins+1);
+    yPl.resize(2*nBins+1);
+
+    // loop over bins of histogram
+    for(int ibin=1; ibin<=nBins; ibin++) {
+      // for TPolyLine
+      // move from the left and use lower error
+      double valLowX = h->GetBinCenter(ibin) * (1-Xerr);
+      double valLowY = h->GetBinContent(ibin) - h->GetBinErrorLow(ibin);
+
+      // always check if values not hit boundary of the frame
+      valLowX = valLowX < h->GetBinCenter(1)     ? h->GetBinCenter(1) :
+                valLowX > h->GetBinCenter(nBins) ? h->GetBinCenter(nBins) : valLowX;
+
+      valLowY = valLowY < h->GetMinimum() ? h->GetMinimum() :
+                valLowY > h->GetMaximum() ? h->GetMaximum() : valLowY;
+
+      xPl[ibin-1] = valLowX;
+      yPl[ibin-1] = valLowY;
+
+      // switch move from the right and use higher error
+      double valUpX = h->GetBinCenter(ibin) * (1+Xerr);
+      double valUpY = h->GetBinContent(ibin) + h->GetBinErrorUp(ibin);
+
+      // always check if values not hit boundary of the frame
+      valUpX = valUpX < h->GetBinCenter(1)     ? h->GetBinCenter(1) :
+               valUpX > h->GetBinCenter(nBins) ? h->GetBinCenter(nBins) : valUpX;
+
+      valUpY = valUpY < h->GetMinimum() ? h->GetMinimum() :
+                valUpY > h->GetMaximum() ? h->GetMaximum() : valUpY;
+
+      xPl[2*nBins-ibin] = valUpX;
+      yPl[2*nBins-ibin] = valUpY;
+
+      // set the end point
+      if( ibin == 1 ) {
+        xPl[2*nBins] = valLowX;
+        yPl[2*nBins] = valLowY;
+      }
+    }
+
+    pline = new TPolyLine(2*nBins+1,&xPl.front(),&yPl.front());
+  }
+
+  void setPolyLineStyle() {
+    pline->SetLineColor(kRed);
+    pline->SetLineWidth(2);
+    pline->SetFillColor(16);
+  }
+
+  void drawPolyLine(TH1* h,const double& Xerr,const TString& drawCmd = "") {
+    createPolyLine(h,Xerr);
+    setPolyLineStyle();
+
+    pline->Draw(drawCmd);
+  }
+
+};
+
 void ShowStack(TH1D* a,TH1D* a2,TH1D* b,TH1D* c,TH1D* d,TH1D* mc4, TH1D* e,TH1D* f,string type);
 TH1D* merge(TH1D* bg1, TH1D* bg2, TH1D* signal);
 
@@ -118,7 +193,7 @@ void ShowStack(TH1D* data,TH1D* noise,TH1D* mc1,TH1D* mc2,TH1D* mc3,TH1D* mc4, T
   // mc3->SetLineWidth(2);
   // sl->SetLineWidth(2);
 
-
+  data->SetFillColor(16);
   data->SetMarkerColor(kBlack);
   noise->SetMarkerColor(kGreen-9);
   mc1->SetMarkerColor(kRed);
@@ -186,6 +261,8 @@ void ShowStack(TH1D* data,TH1D* noise,TH1D* mc1,TH1D* mc2,TH1D* mc3,TH1D* mc4, T
 
   TCanvas* c1 = new TCanvas;
   data->Draw("P");
+  helperClass hlpc;
+  hlpc.drawPolyLine(data,0.4,"f same");//sqrt(pow(10.,2)+pow(5.,2))/100.,"f same");
   h_s_bg->Draw("SAME HIST F");
   mc1->Draw("SAME");
   if(mc2) mc2->Draw("SAME");
@@ -196,7 +273,7 @@ void ShowStack(TH1D* data,TH1D* noise,TH1D* mc1,TH1D* mc2,TH1D* mc3,TH1D* mc4, T
 
   TLegend* leg = new TLegend(0.23,0.70,0.43,0.93);
   SetLegAtt(leg);
-  leg->AddEntry(data,"","p");
+  leg->AddEntry(data,"","pf");
   leg->AddEntry(mc1,"","p");
   if(mc2) leg->AddEntry(mc2,"","p");
   if(mc3) leg->AddEntry(mc3,"","p");
@@ -208,7 +285,7 @@ void ShowStack(TH1D* data,TH1D* noise,TH1D* mc1,TH1D* mc2,TH1D* mc3,TH1D* mc4, T
   c1->SetLogx();
   CMSText(3,0,1,type=="single"?"Single-arm selection":"Double-arm selection");
 
-  TLine* line = new TLine(type=="single"?8:4,1e-6,type=="single"?8:4,0.1);
+  TLine* line = new TLine(type=="single"?4:3,1e-6,type=="single"?4:3,0.1);
   line->SetLineWidth(2);
   line->SetLineStyle(2);
   line->Draw("SAME");
