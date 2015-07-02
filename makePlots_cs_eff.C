@@ -66,7 +66,7 @@ void makePlots_cs_eff(bool draw, double cut_value_single, double cut_value_doubl
 #endif
 
   modelInfoClass modelInfo;
-  for (int i=0; i<int(modelInfo.models.size()); ++i)
+  for (int i=0; i<int(modelInfo.GetN()); ++i)
     {
       //corr_facs.push_back(new TVectorD(2));
     }

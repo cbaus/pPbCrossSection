@@ -8,6 +8,7 @@
 class modelInfoClass{
 
  public:
+  int GetN() { return int(models.size()); }
   std::vector<std::string> models;
   std::vector<std::string> names;
   std::vector<int> colors;

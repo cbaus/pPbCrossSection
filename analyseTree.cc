@@ -1,4 +1,4 @@
-#define _MAXEVT 10000
+#define _MAXEVT -10000
 #define _SkipHFRings 1 //skip 41 and 29 as suggested by HCAL DPG
 #define _HFEnergyScale 1.0 //1.0 //0.8
 #define _HFEnergyCalibration 0 //0 or 1 (rescale MC) or 2 this does not scale MC but data according to raddam from lev
@@ -17,6 +17,7 @@
 
 #include <assert.h>
 #include <iostream>
+#include <iomanip>
 #include <vector>
 #include <string>
 #include <map>
@@ -62,11 +63,11 @@ int main()
   //*************************************************************INPUT***********************************************************
   // sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_diffraction/cbaus/pp13TeV/inel_cross_section/data_247324.root"); sample_name.push_back("data247324"); sample_type.push_back(DATA);
 
-  // sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_diffraction/cbaus/pp13TeV/inel_cross_section/pythiaz2star.root"); sample_name.push_back("PythiaZ2Star"); sample_type.push_back(MC);
-  // sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_diffraction/cbaus/pp13TeV/inel_cross_section/pythiamonash.root"); sample_name.push_back("PythiaMonash"); sample_type.push_back(MC);
-  // sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_diffraction/cbaus/pp13TeV/inel_cross_section/pythiambr.root"); sample_name.push_back("PythiaMBR"); sample_type.push_back(MC);
+  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_diffraction/cbaus/pp13TeV/inel_cross_section/pythiaz2star.root"); sample_name.push_back("PythiaZ2Star"); sample_type.push_back(MC);
+  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_diffraction/cbaus/pp13TeV/inel_cross_section/pythiamonash.root"); sample_name.push_back("PythiaMonash"); sample_type.push_back(MC);
+  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_diffraction/cbaus/pp13TeV/inel_cross_section/pythiambr.root"); sample_name.push_back("PythiaMBR"); sample_type.push_back(MC);
   sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_diffraction/cbaus/pp13TeV/inel_cross_section/epos.root"); sample_name.push_back("Epos"); sample_type.push_back(MC);
-  // sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_diffraction/cbaus/pp13TeV/inel_cross_section/qgsjetii.root"); sample_name.push_back("QGSJetII"); sample_type.push_back(MC);
+  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_diffraction/cbaus/pp13TeV/inel_cross_section/qgsjetii.root"); sample_name.push_back("QGSJetII"); sample_type.push_back(MC);
 
 
 #if _HFEnergyCalibration == 1
@@ -257,10 +258,10 @@ int main()
   TH1D* h_mc_pt_single_sel;
   TH1D* h_mc_pt_double_sel;
 
-  TH1D* h_mc_pt_single_cut;
-  TH1D* h_mc_pt_double_cut;
-  TH1D* h_mc_pt_single_bg;
-  TH1D* h_mc_pt_double_bg;
+  TH1D* h_mc_xi_single_cut;
+  TH1D* h_mc_xi_double_cut;
+  TH1D* h_mc_xi_single_bg;
+  TH1D* h_mc_xi_double_bg;
 
   TH2D* h_mc_p_Ehf_correlation_single;
   TH2D* h_mc_p_Ehf_correlation_double;
@@ -678,10 +679,10 @@ int main()
 	  h_mc_pt_double        = new TH1D((add + string("_h_mc_pt_double")).c_str(),"",50,log10(1e-3),log10(1e2));
 	  h_mc_pt_single_sel    = new TH1D((add + string("_h_mc_pt_single_sel")).c_str(),"",50,log10(1e-3),log10(1e2));
 	  h_mc_pt_double_sel    = new TH1D((add + string("_h_mc_pt_double_sel")).c_str(),"",50,log10(1e-3),log10(1e2));
-	  h_mc_pt_single_cut = new TH1D((add + string("_h_mc_pt_single_cut")).c_str(),"",81,-0.025,4.025);
-	  h_mc_pt_double_cut = new TH1D((add + string("_h_mc_pt_double_cut")).c_str(),"",81,-0.025,4.025);
-	  h_mc_pt_single_bg = new TH1D((add + string("_h_mc_pt_single_bg")).c_str(),"",81,-0.025,4.025);
-	  h_mc_pt_double_bg = new TH1D((add + string("_h_mc_pt_double_bg")).c_str(),"",81,-0.025,4.025);
+	  h_mc_xi_single_cut = new TH1D((add + string("_h_mc_xi_single_cut")).c_str(),"",101,-10.05,0.05);
+	  h_mc_xi_double_cut = new TH1D((add + string("_h_mc_xi_double_cut")).c_str(),"",101,-10.05,0.05);
+	  h_mc_xi_single_bg = new TH1D((add + string("_h_mc_xi_single_bg")).c_str(),"",101,-10.05,0.05);
+	  h_mc_xi_double_bg = new TH1D((add + string("_h_mc_xi_double_bg")).c_str(),"",101,-10.05,0.05);
           BinLogX(h_mc_pt_single);
           BinLogX(h_mc_pt_double);
           BinLogX(h_mc_pt_single_sel);
@@ -877,8 +878,8 @@ int main()
 
           //---------------------------------------------GEN Particles
           const double s = 5020*5020;
-          double xi_p=0;
-          double xi_m=0;
+          double xi_p=-10;
+          double xi_m=-10;
           double rapGap=-1;
           double ymin = -5.2;
           double ymax = 5.2;
@@ -1304,8 +1305,8 @@ int main()
               if(coll && hf_single_tag)                                 h_mc_pt_single_sel->Fill(gen_HF_pt_single,evtWeight);
               if(coll && hf_double_tag)                                 h_mc_pt_double_sel->Fill(gen_HF_pt_double,evtWeight);
 
-              if(coll)                                                  h_mc_pt_Ehf_correlation_single->Fill(gen_HF_pt_single,hf_single_energy_max);
-              if(coll)                                                  h_mc_pt_Ehf_correlation_double->Fill(gen_HF_pt_double,hf_double_energy_max);
+              if(coll)                                                  h_mc_pt_Ehf_correlation_single->Fill(log10(xi_sd),hf_single_energy_max);
+              if(coll)                                                  h_mc_pt_Ehf_correlation_double->Fill(log10(xi_sd),hf_double_energy_max);
               if(coll)                                                  h_mc_p_Ehf_correlation_single->Fill(gen_HF_p_single,hf_single_energy_max);
               if(coll)                                                  h_mc_p_Ehf_correlation_double->Fill(gen_HF_p_double,hf_double_energy_max);
 
@@ -1320,15 +1321,15 @@ int main()
                   if(coll && !hf_double_tag && gen_HF_p_double >= cut) h_mc_p_double_bg->Fill(cut,evtWeight);
                 }
 
-              for (double cut=0; cut < 4; cut+=0.05)
+              for (double cut=-10; cut < 0; cut+=0.1)
                 { // bin 1 contains all events
-                  if(coll && hf_single_tag && gen_HF_pt_single >= cut)  h_mc_pt_single_cut->Fill(cut,evtWeight);
-                  if(coll && hf_double_tag && gen_HF_pt_double >= cut)  h_mc_pt_double_cut->Fill(cut,evtWeight);
-                  if(coll && !hf_single_tag && gen_HF_pt_single >= cut) h_mc_pt_single_bg->Fill(cut,evtWeight);
-                  if(coll && !hf_double_tag && gen_HF_pt_double >= cut) h_mc_pt_double_bg->Fill(cut,evtWeight);
+                  if(coll && hf_single_tag && log10(xi_sd) >= cut)  h_mc_xi_single_cut->Fill(cut,evtWeight);
+                  if(coll && hf_double_tag && log10(xi_sd) >= cut)  h_mc_xi_double_cut->Fill(cut,evtWeight);
+                  if(coll && !hf_single_tag && log10(xi_sd) >= cut) h_mc_xi_single_bg->Fill(cut,evtWeight);
+                  if(coll && !hf_double_tag && log10(xi_sd) >= cut) h_mc_xi_double_bg->Fill(cut,evtWeight);
                 }
 
-              if(coll)                                                  h_mc_unfold->Fill(hf_single_energy_max,gen_HF_E);
+              if(coll) h_mc_unfold->Fill(hf_single_energy_max,gen_HF_E);
             }
 
 
