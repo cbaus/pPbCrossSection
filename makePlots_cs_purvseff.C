@@ -31,6 +31,10 @@
 #define _LumiCorrpPb 1.142 //only use if trees don't contain vdm calibration factor
 #define _LumiCorrPbp 1.138
 
+#define EPOS_CS 2.081702 //ran again with more statistics. this introduced slight changes
+#define QGS_CS 2.180836
+#define DPM_CS 2.165823
+
 TVectorD corr_fac_em(2);
 TVectorD corr_fac_eme(2);
 TVectorD corr_fac_mc(4);
@@ -213,7 +217,8 @@ void makePlots_cs_purvseff(bool draw, string filename)
 
           ///////////////////////////////////////////////////////////////////////
           //Purity
-          double purity = 2.06 / (2.06 + n_noise + n_em);
+          double nvishad = f_mc * (EPOS_CS+QGS_CS) / 2.;
+          double purity = nvishad / (nvishad + n_noise + n_em);
           pur->SetPoint(i,purity,f_mc);
 
           if(i!=1)
