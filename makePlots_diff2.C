@@ -64,10 +64,10 @@ void makePlots_diff2()
   type.push_back(string("double"));
 
   vector<string> list;
-  list.push_back(string("DPMJet"));
   list.push_back(string("Epos"));
   list.push_back(string("Hijing"));
   list.push_back(string("QGSJetII"));
+  list.push_back(string("DPMJet"));
   vector<string> name;
   name.push_back(string("EPOS-LHC"));
   name.push_back(string("HIJING 1.383"));

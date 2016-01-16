@@ -728,16 +728,19 @@ void makePlots_cs(bool draw,double cut_value_single, double cut_value_double, do
        << " ! sigma_pu_double=" << sigma_pu_runs_double/fit_runs_double->Parameter(0)*100  << "%" << endl
        << " ! si_noise_double=" << sigma_oi_runs_double/fit_runs_double->Parameter(0)*100  << "%" << endl << endl;
   cout << " ! sigma_combine=" << fabs(fit_runs_single->Parameter(0)-fit_runs_double->Parameter(0))/2./sigmainel*100 << "%" << endl << endl;
-           
 
 
+  double si_diffr_single = fabs(1./eff_acc_single_sys-1./eff_acc_single)*fit_runs_single->Parameter(0);
+  double si_diffr_double = fabs(1./eff_acc_double_sys-1./eff_acc_double)*fit_runs_double->Parameter(0);
   //Write to files
   vec_sigma_inel[0] = sigmainel;
   vec_sigma_inel[1] = sigmainel_single;
   vec_sigma_inel[2] = sigmainel_double;
-  vec_sigma_inel_e[0] = staterr;
-  vec_sigma_inel_e[1] = staterr1;
-  vec_sigma_inel_e[2] = staterr2;
+  vec_sigma_inel_e[0] = sqrt(staterr*staterr+sigma_mc_runs_double*sigma_mc_runs_double+sigma_em_runs_double*sigma_em_runs_double);;
+  vec_sigma_inel_e[1] = sqrt(staterr1*staterr1+sigma_mc_runs_single*sigma_mc_runs_single + pow(si_diffr_single,2) + sigma_em_runs_single*sigma_em_runs_single+sigma_oi_runs_single*sigma_oi_runs_single);;;
+  //vec_sigma_inel_e[1] = sqrt(sigma_mc_runs_single*sigma_mc_runs_single);;;
+  vec_sigma_inel_e[2] = sqrt(staterr2*staterr2+sigma_mc_runs_double*sigma_mc_runs_double + pow(si_diffr_double,2) + sigma_em_runs_double*sigma_em_runs_double+sigma_oi_runs_double*sigma_oi_runs_double);;;
+  //vec_sigma_inel_e[2] = sqrt(sigma_mc_runs_double*sigma_mc_runs_double);;;
 
   vec_sigma_vis[0] = fit_runs_vis_single->Parameter(0);
   vec_sigma_vis[1] = fit_runs_vis_double->Parameter(0);
