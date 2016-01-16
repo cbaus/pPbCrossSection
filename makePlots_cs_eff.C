@@ -301,6 +301,7 @@ void makePlots_cs_eff(bool draw, double cut_value_single, double cut_value_doubl
             }
           if(i==zb->FindBin(cut_value_single) && type[n]==string("single"))
             {
+              cout << "pythia: " << sl2->GetBinContent(i) << " dpmjet: " << sl1->GetBinContent(i) << endl;
               // if((i-1)%10 == 0)
               cout
                 << setprecision(3)
@@ -325,6 +326,7 @@ void makePlots_cs_eff(bool draw, double cut_value_single, double cut_value_doubl
             }
           if(i==zb->FindBin(cut_value_double) && type[n]==string("double"))
             {
+              cout << "pythia: " << sl2->GetBinContent(i) << " dpmjet: " << sl1->GetBinContent(i) << endl;
               cout
                 << setprecision(3)
                 << endl << i << "(" << zb->GetBinCenter(i) << ")"
