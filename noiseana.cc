@@ -1,4 +1,4 @@
-#define MAXEVT -10000
+#define MAXEVT 30000
 
 #include "TChain.h"
 #include "TFile.h"
@@ -45,11 +45,13 @@ int main()
   //style();
 
   //*************************************************************INPUT***********************************************************
+  sample_fname.push_back("/tmp/cbaus/data259163.root"); sample_name.push_back("data259163"); sample_type.push_back(DATA);
   sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_diffraction/cbaus/pp13TeV/inel_cross_section/data_247324.root"); sample_name.push_back("data247324"); sample_type.push_back(DATA);
+  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_diffraction/cbaus/pp13TeV/inel_cross_section/noisesim.root"); sample_name.push_back("noisesim"); sample_type.push_back(MC);
 
   //**************************************************************OUTPUT*********************************************************
 
-  TFile* out_file = new TFile("histos_noise.root","RECREATE");
+  TFile* out_file = new TFile("histos_noise2.root","RECREATE");
 
 
   TH1D* h_hf_hits_noise;
@@ -128,10 +130,20 @@ int main()
       int bptx_m;
       int bptx_quiet;
       tree->SetBranchAddress("L1_ZeroBias_algPrescale",&zero_bias_prescale_L1);
-      tree->SetBranchAddress("HLT_ZeroBias_part0_v1_Prescl",&zero_bias_prescale_HLT);
-      tree->SetBranchAddress("HLT_ZeroBias_part0_v1",&zero_bias);
-      tree->SetBranchAddress("HLT_Random_v2",&random);
-      tree->SetBranchAddress("HLT_Random_v2_Prescl",&random_prescale_HLT);
+          if (sample_name[sample] == "data247324")
+            {
+              tree->SetBranchAddress("HLT_ZeroBias_part0_v1_Prescl",&zero_bias_prescale_HLT);
+              tree->SetBranchAddress("HLT_ZeroBias_part0_v1",&zero_bias);
+              tree->SetBranchAddress("HLT_Random_v2",&random);
+              tree->SetBranchAddress("HLT_Random_v2_Prescl",&random_prescale_HLT);
+            }
+          else
+            {
+              tree->SetBranchAddress("HLT_ZeroBias_v1_Prescl",&zero_bias_prescale_HLT);
+              tree->SetBranchAddress("HLT_ZeroBias_v1",&zero_bias);
+              tree->SetBranchAddress("HLT_Random_v1",&random);
+              tree->SetBranchAddress("HLT_Random_v1_Prescl",&random_prescale_HLT);
+            }
       tree->SetBranchAddress("L1Tech_BPTX_plus_AND_minus.v0_DecisionBeforeMask",&bptx_p_m);
       tree->SetBranchAddress("L1Tech_BPTX_minus.v0_DecisionBeforeMask",&bptx_m);
       tree->SetBranchAddress("L1Tech_BPTX_plus.v0_DecisionBeforeMask",&bptx_p);
@@ -142,17 +154,17 @@ int main()
       out_file->mkdir(sample_name[sample].c_str());
       out_file->cd(sample_name[sample].c_str());
       string add = sample_name[sample];
-      h_hf_hits_noise           = new TH1D((add + string("_h_hf_hits_noise")).c_str(),"",50,log10(0.5),log10(50));
-      h_hf_hits_beamgas        = new TH1D((add + string("_h_hf_hits_beamgas")).c_str(),"",50,log10(0.5),log10(50));
-      BinLogX(h_hf_hits_noise);
-      BinLogX(h_hf_hits_beamgas);
+      h_hf_hits_noise           = new TH1D((add + string("_h_hf_hits_noise")).c_str(),"",350,-5,20);
+      h_hf_hits_beamgas        = new TH1D((add + string("_h_hf_hits_beamgas")).c_str(),"",350,-5,20);
+      // BinLogX(h_hf_hits_noise);
+      // BinLogX(h_hf_hits_beamgas);
 
-      h_castor_sumE_noise           = new TH1D((add + string("_h_castor_sumE_noise")).c_str(),"",50,log10(0.01),log10(100));
-      h_castor_sumE_beam_minus        = new TH1D((add + string("_h_castor_sumE_beam_minus")).c_str(),"",50,log10(0.01),log10(100));
-      h_castor_sumE_beam_plus        = new TH1D((add + string("_h_castor_sumE_beam_plus")).c_str(),"",50,log10(0.01),log10(100));
-      BinLogX(h_castor_sumE_noise);
-      BinLogX(h_castor_sumE_beam_minus);
-      BinLogX(h_castor_sumE_beam_plus);
+      h_castor_sumE_noise           = new TH1D((add + string("_h_castor_sumE_noise")).c_str(),"",100,-10,20);
+      h_castor_sumE_beam_minus        = new TH1D((add + string("_h_castor_sumE_beam_minus")).c_str(),"",100,-10,20);
+      h_castor_sumE_beam_plus        = new TH1D((add + string("_h_castor_sumE_beam_plus")).c_str(),"",100,-10,20);
+      // BinLogX(h_castor_sumE_noise);
+      // BinLogX(h_castor_sumE_beam_minus);
+      // BinLogX(h_castor_sumE_beam_plus);
 
       h_hf_cut_single_noise     = new TH1D((add + string("_h_hf_cut_single_noise")).c_str(),"",101,-0.05,10.05);
       h_hf_cut_single_beamgas   = new TH1D((add + string("_h_hf_cut_single_beamgas")).c_str(),"",101,-0.05,10.05);
@@ -189,8 +201,16 @@ int main()
 
           bool noise=0, beamgas=0;
 
-          beamgas      = (bptx_m != bptx_p); // only single beam
-          noise         = !bptx_p && !bptx_m; //not both and not single beam
+          if (sample_type[sample] == DATA)
+            {
+              beamgas      = (bptx_m != bptx_p); // only single beam
+              noise         = !bptx_p && !bptx_m; //not both and not single beam
+            }
+          else
+            {
+              noise = 1;
+              beamgas =0;
+            }
 
           if(!noise && !beamgas) //not intersted
             continue;

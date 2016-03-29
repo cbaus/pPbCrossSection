@@ -8,28 +8,22 @@ void makePlots_noise_lumi()
   TCanvas* can2 = new TCanvas;
 
   vector<int> run_num;
-  run_num.push_back(210676);
-  run_num.push_back(210737);
-  run_num.push_back(210738);
-  run_num.push_back(210759);
-  run_num.push_back(210818);
-  run_num.push_back(210837);
-  run_num.push_back(210855);
-  run_num.push_back(210885);
+  run_num.push_back(247324);
+  run_num.push_back(259163);
   for (int run=0; run<int(run_num.size()); run++)
     {
       cout << endl << " Processing ... run: " << run_num[run] << endl << endl;
-      TFile* file = TFile::Open("histos_noise2.root");
+      TFile* file = TFile::Open("histos_noise.root");
       ostringstream runname_ss;
       runname_ss << run_num[run];
       string runname = runname_ss.str();
       ostringstream filename_ss;
-      filename_ss.str(""); filename_ss << "noise" << "/noise" << runname << "_h_run_events_single";
+      filename_ss.str(""); filename_ss << "data" << runname << "/data" << runname << runname << "_h_run_events_single";
       cout << filename_ss.str() << endl;
       TH1D* a=file->Get(filename_ss.str().c_str());
-      filename_ss.str(""); filename_ss << "noise" << "/noise" << runname << "_h_run_events_double";
+      filename_ss.str(""); filename_ss << "data" << runname << "/data" << runname << runname << "_h_run_events_double";
       TH1D* a2=file->Get(filename_ss.str().c_str());
-      filename_ss.str(""); filename_ss << "noise" << "/noise" << runname << "_h_run_events";
+      filename_ss.str(""); filename_ss << "data" << runname << "/data" << runname << runname << "_h_run_events";
       TH1D* atot=file->Get(filename_ss.str().c_str());
 
       a->Divide(atot);
@@ -75,4 +69,3 @@ void makePlots_noise_lumi()
   can1->SaveAs((string("plots/noise_lumi_double")+string(".pdf")).c_str());
   can1->SaveAs((string("plots/noise_lumi_double")+string(".png")).c_str());
 }
-

@@ -1,4 +1,4 @@
-#define _MAXEVT -10000
+#define _MAXEVT 50000
 #define _SkipHFRings 1 //skip 41 and 29 as suggested by HCAL DPG
 #define _HFEnergyScale 1.0 //1.0 //0.8
 #define _HFEnergyCalibration 0 //0 or 1 (rescale MC) or 2 this does not scale MC but data according to raddam from lev
@@ -61,7 +61,8 @@ int main()
     }
 
   //*************************************************************INPUT***********************************************************
-  // sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_diffraction/cbaus/pp13TeV/inel_cross_section/data_247324.root"); sample_name.push_back("data247324"); sample_type.push_back(DATA);
+  sample_fname.push_back("/tmp/cbaus/data259163.root"); sample_name.push_back("data259163"); sample_type.push_back(DATA);
+  sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_diffraction/cbaus/pp13TeV/inel_cross_section/data_247324.root"); sample_name.push_back("data247324"); sample_type.push_back(DATA);
 
   sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_diffraction/cbaus/pp13TeV/inel_cross_section/pythiaz2star.root"); sample_name.push_back("PythiaZ2Star"); sample_type.push_back(MC);
   sample_fname.push_back("root://eoscms//eos/cms/store/group/phys_diffraction/cbaus/pp13TeV/inel_cross_section/pythiamonash.root"); sample_name.push_back("PythiaMonash"); sample_type.push_back(MC);
@@ -337,6 +338,8 @@ int main()
   TH2D* h_mc_lrg_xi;
   TH2D* h_mc_lrg_xiy;
   TH2D* h_mc_xix_xiy;
+  TH2D* h_mc_xix_xiy_sdsel;
+  TH2D* h_mc_xix_xiy_ndsel;
   TH2D* h_mc_unfold;
 
   vector<double> deta_lev, eta_lev_m,eta_lev_p;
@@ -432,10 +435,20 @@ int main()
       if(sample_type[sample] == DATA)
         {
           tree->SetBranchAddress("L1_ZeroBias_algPrescale",&zero_bias_prescale_L1);
-          tree->SetBranchAddress("HLT_ZeroBias_part0_v1_Prescl",&zero_bias_prescale_HLT);
-          tree->SetBranchAddress("HLT_ZeroBias_part0_v1",&zero_bias);
-          tree->SetBranchAddress("HLT_Random_v2",&random);
-          tree->SetBranchAddress("HLT_Random_v2_Prescl",&random_prescale_HLT);
+          if (sample_name[sample] == "data247324")
+            {
+              tree->SetBranchAddress("HLT_ZeroBias_part0_v1_Prescl",&zero_bias_prescale_HLT);
+              tree->SetBranchAddress("HLT_ZeroBias_part0_v1",&zero_bias);
+              tree->SetBranchAddress("HLT_Random_v2",&random);
+              tree->SetBranchAddress("HLT_Random_v2_Prescl",&random_prescale_HLT);
+            }
+          else
+            {
+              tree->SetBranchAddress("HLT_ZeroBias_v1_Prescl",&zero_bias_prescale_HLT);
+              tree->SetBranchAddress("HLT_ZeroBias_v1",&zero_bias);
+              tree->SetBranchAddress("HLT_Random_v1",&random);
+              tree->SetBranchAddress("HLT_Random_v1_Prescl",&random_prescale_HLT);
+            }
           tree->SetBranchAddress("L1Tech_BPTX_plus_AND_minus.v0_DecisionBeforeMask",&bptx_p_m);
           tree->SetBranchAddress("L1Tech_BPTX_plus_AND_NOT_minus.v0_DecisionBeforeMask",&bptx_p_nm);
           tree->SetBranchAddress("L1Tech_BPTX_minus_AND_not_plus.v0_DecisionBeforeMask",&bptx_np_m);
@@ -635,6 +648,8 @@ int main()
           h_mc_lrg_xi             = new TH2D((add + string("_h_mc_lrg_xi")).c_str(),"",200,-9.5,2,500,-1,20);
           h_mc_lrg_xiy            = new TH2D((add + string("_h_mc_lrg_xiy")).c_str(),"",200,-9.5,2,500,-1,20);
           h_mc_xix_xiy            = new TH2D((add + string("_h_mc_xix_xiy")).c_str(),"",200,-9.5,2,200,-9.5,2);
+          h_mc_xix_xiy_sdsel      = new TH2D((add + string("_h_mc_xix_xiy_sdsel")).c_str(),"",200,-9.5,2,200,-9.5,2);
+          h_mc_xix_xiy_ndsel      = new TH2D((add + string("_h_mc_xix_xiy_ndsel")).c_str(),"",200,-9.5,2,200,-9.5,2);
           h_mc_unfold             = new TH2D((add + string("_h_mc_unfold")).c_str(),"",15,0,200,15,0,200);
 
           h_mc_diff_e_single_SD1  = new TH1D((add + string("_h_mc_diff_e_single_SD1")).c_str(),"",50,log10(0.5),log10(700));
@@ -1294,6 +1309,12 @@ int main()
               if(coll)                                                  h_mc_lrg_xi->Fill(log10(xi_sd),rapGap);
               if(coll)                                                  h_mc_lrg_xiy->Fill(log10(xi_p),rapGap);
               if(coll)                                                  h_mc_xix_xiy->Fill(log10(xi_m),log10(xi_p));
+              if(coll && hf_single_tag)                                 h_mc_xix_xiy_sdsel->Fill(log10(xi_m),log10(xi_p));
+              if(coll
+                 && hf_double_tag
+                 && event->nVertex >= 1
+                 && event->vertexIsFake == 0
+                 && event->Tracks.size() >= 3)                          h_mc_xix_xiy_ndsel->Fill(log10(xi_m),log10(xi_p));
 
               if(coll)                                                  h_mc_p_single->Fill(gen_HF_p_single,evtWeight);
               if(coll)                                                  h_mc_p_double->Fill(gen_HF_p_double,evtWeight);
