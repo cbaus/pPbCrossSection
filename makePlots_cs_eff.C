@@ -270,6 +270,8 @@ void makePlots_cs_eff(bool draw, double cut_value_single, double cut_value_doubl
         }
       f_eme /= double(count);
       f_mce /= double(count);
+      f_mce = fabs(epos->GetBinContent(zb->FindBin(cut_value))-qgs->GetBinContent(zb->FindBin(cut_value)));
+      cout << cut_value_single << " " << cut_value_double << " " << epos->GetBinContent(zb->FindBin(cut_value)) << " " << qgs->GetBinContent(zb->FindBin(cut_value)) << " " << fabs(epos->GetBinContent(zb->FindBin(cut_value))-qgs->GetBinContent(zb->FindBin(cut_value))) << endl;
       f_mcesys /= double(count);
 
 
